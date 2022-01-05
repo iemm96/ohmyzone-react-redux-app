@@ -5,7 +5,8 @@ import Logo from './assets/logo.svg';
 import { Button, Container, Divider, Grid, TextField, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { createSvgIcon } from '@mui/material/utils';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useNavigate } from 'react-router-dom';
 
 const HomeIcon = createSvgIcon(
   <>
@@ -32,8 +33,8 @@ const enteringFormTransition = {
     x: 0,
     transition: {
       delayChildren: .6,
-      staggerChildren: .04,
-      staggerDirection: -1,
+      staggerChildren: .1,
+      staggerDirection: 1,
     }
   }
 }
@@ -51,9 +52,13 @@ const inputTransition = {
 }
 
 function App() {
-  const { handleSubmit, control } = useForm();
+  const navigate = useNavigate();
+  const { handleSubmit, control, formState: {errors}, } = useForm();
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    console.log(data);
+    navigate('dashboard');
+  };
 
   const inputStyles = {
     '& .MuiFilledInput-input': {                      
@@ -66,7 +71,7 @@ function App() {
   }
 
   return (
-    <AnimatePresence initial={true} exitBeforeEnter>
+    <>
       <Box sx={{
         height: 290,
         backgroundColor: '#4664F6',
@@ -92,24 +97,33 @@ function App() {
         <motion.div initial='initial' animate='animate' exit='exit'>
           <motion.span variants={enteringFormTransition}>
             <motion.div variants={inputTransition}>
-            <Grid mt={5} mb={2}>
-              <Grid item>
+              <Grid mt={5} mb={2}>
+                <Grid item>
                   <Controller
                     name={"email"}
                     control={control}
+                    rules={{
+                      required: 'El correo es requerido.',
+                      pattern: {
+                        value: /^\S+@\S+$/i,
+                        message: 'El correo no es válido.'
+                      }
+                    }}
                     render={({ field: { onChange, value } }) => (
                       <TextField 
-                      InputProps={{
-                        disableUnderline: true
-                      }}
-                      sx={inputStyles} 
-                      fullWidth
-                      variant="filled"
-                      onChange={onChange}
-                      value={value}
-                      label="Email" />
+                        InputProps={{
+                          disableUnderline: true
+                        }}
+                        sx={inputStyles} 
+                        fullWidth
+                        variant="filled"
+                        onChange={onChange}
+                        value={value}
+                        label="Email" 
+                      />
                     )}
                   />
+                  {errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message}</Typography>}
                 </Grid>
               </Grid>
             </motion.div>
@@ -121,16 +135,16 @@ function App() {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField 
-                    InputProps={{
-                      disableUnderline: true,
-                      type: "password"
-                    }}
-                    sx={inputStyles} 
-                    fullWidth
-                    variant="filled"
-                    onChange={onChange}
-                    value={value}
-                    label="Contraseña" />
+                      InputProps={{
+                        disableUnderline: true,
+                        type: "password"
+                      }}
+                      sx={inputStyles} 
+                      fullWidth
+                      variant="filled"
+                      onChange={onChange}
+                      value={value}
+                      label="Contraseña" />
                   )}
                 />
               </Grid>
@@ -212,7 +226,7 @@ function App() {
           </Grid>
         </Box>
       </Container>
-    </AnimatePresence>
+    </>
   );
 }
 
