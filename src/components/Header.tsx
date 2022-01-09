@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from '@mui/material/styles';
 
 const transition = {
     duration: 1,
@@ -14,6 +15,7 @@ const transition = {
 const Header = () => {
     const navigation = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const theme = useTheme();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -35,9 +37,9 @@ const Header = () => {
             }}
         >
             <AppBar 
-                position="static"
+                position="fixed"
                 sx={{
-                    backgroundColor: '#4664F6'
+                    backgroundColor: theme.palette.primary.main
                 }}
             >
                 <Toolbar sx={{

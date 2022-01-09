@@ -1,17 +1,20 @@
-import { Grid } from '@mui/material';
+import React, { useImperativeHandle } from 'react'
 import { Box } from '@mui/system';
-import React from 'react'
 import { usePalette } from 'react-palette';
 
-type colorPaletteImageType = {
-    src:string
-}
+export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
+    const { data, loading } = usePalette(props.src);
 
-export const ColorPaletteImage = ({src}:colorPaletteImageType) => {
-    const { data, loading, error } = usePalette(src)
+    useImperativeHandle(ref,() => ({
+        updatePalette: () => {
+            props.setPrimaryColor(data.vibrant);
+            props.setSecondaryColor(data.lightVibrant);
+        }})
+    )
+    
 
     return (
-        <div>
+        <div >
             {!loading && 
             <Box sx={{padding: '1rem 0'}} display="flex" justifyContent="space-evenly">
                 <Box sx={{
@@ -54,3 +57,4 @@ export const ColorPaletteImage = ({src}:colorPaletteImageType) => {
         </div>
     )
 }
+)

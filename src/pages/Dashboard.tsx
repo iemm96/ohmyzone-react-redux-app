@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react";
+import {  createRef, useEffect, useState } from "react";
 import Header from "../components/Header";
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import axios from "axios";
-import { CardActionArea, Container, Grid } from "@mui/material";
-import Pallette from 'react-palette';
-import { ColorPaletteImage } from "../components/ColorPaletteImage";
+import { CardActionArea, Container, Grid, Paper, TextField, Button, IconButton } from "@mui/material";
+import {ColorPaletteImage} from "../components/ColorPaletteImage";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Search } from "@mui/icons-material";
 
-const pixabay_api_key = '25105059-4d7ff3f9a607aabea05e93997';
-const pixabay_url = 'https://pixabay.com/api/?key=25105059-4d7ff3f9a607aabea05e93997&q=sunset&image_type=photo';
+const pixabay_url = 'https://pixabay.com/api/?key=25105059-4d7ff3f9a607aabea05e93997';
 
-const path = 'https://pixabay.com/get/gcd9b3477c942fc3f3a24256459854e79272a801d30280d59e60ac52323ced0e139e2951708fb1c33a7f584f52c7de78662a307a8684d284eb2ec194477da124a_640.jpg';
 type mediaCardTypes = {
     url:string,
     alt:string,
@@ -22,34 +17,66 @@ type mediaCardTypes = {
 }
 
 const Dashboard = () => {
-    const [pixabayResults, setPixabayResults] = useState([])
+    const [pixabayResults, setPixabayResults] = useState([]);
+    const [primaryColor, setPrimaryColor] = useState('#4664F6');
+    const [secondaryColor, setSecondaryColor] = useState(null);
+    const [query,setQuery] = useState<String>('');
+    const [arrayRef,setArrayRef] = useState([]);
+
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: primaryColor,
+            },
+            secondary: {
+                main: secondaryColor ? secondaryColor : '#E4B7E5',
+            },
+        },
+    })
 
     useEffect(() => {
         retrievePixabayImages();
-        getProminentColor('https://pixabay.com/get/gcd9b3477c942fc3f3a24256459854e79272a801d30280d59e60ac52323ced0e139e2951708fb1c33a7f584f52c7de78662a307a8684d284eb2ec194477da124a_640.jpg');
     }, []);
 
     const retrievePixabayImages = async () => {
-        const result = await axios.get(pixabay_url)
+
+        const queryParams = {
+            lang: 'es',
+            q: query !== '' ? query : 'Paisaje',
+            image_type: 'all',
+        }
+
+        const result = await axios.get(`${pixabay_url}&lang=${queryParams.lang}&q=${queryParams.q}&image_type=${queryParams.image_type}`);
+
         if(result) {
-            setPixabayResults(result.data.hits)
+            const arr:any = [];
+            result.data.hits.map((v:any,i:any) => {
+                arr[i] = createRef();
+            });
+
+            setArrayRef(arr)
+            console.log(arrayRef);
+            setPixabayResults(result.data.hits);
+            
         }
     }
 
-    const getProminentColor = async (path:string) => {
+    const updateThemeColor = (index:any) => {
+        const reff:any = arrayRef[index];
+        reff?.current.updatePalette();
     }
 
     const mediaCard = ({url,alt,index}:mediaCardTypes) => {
         return(
-            <Card sx={{ maxWidth: 345, borderRadius: 4 }} key={index}>
-                <CardActionArea onClick={() => console.log('click')}>
+            <Card sx={{ maxWidth: 345, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)' }} key={index}>
+                <CardActionArea onClick={() => updateThemeColor(index)}>
                     <CardMedia
                         component="img"
                         height="140"
                         image={url}
                         alt={alt}
                     />
-                    <ColorPaletteImage src={url}/>    
+                    <ColorPaletteImage setSecondaryColor={setSecondaryColor} setPrimaryColor={setPrimaryColor} ref={arrayRef[index]} src={url}/>    
                 </CardActionArea>
             </Card>
         )
@@ -57,19 +84,42 @@ const Dashboard = () => {
 
     return(
         <>
-            <Header/>
-            <Container maxWidth="xl">
-                <Grid container spacing={2}>
-                    {pixabayResults.map((value:any,index) => {
-                        return(
-                            <Grid item sm={12} md={4}>
-                                {mediaCard({url:value.webformatURL,alt:'alt',index})}
+            <ThemeProvider theme={theme}>
+                <Header/>
+                <Paper sx={{
+                    backgroundColor: theme.palette.secondary.main,
+                    mt:6,
+                    paddingTop: 2
+                }}>
+                    <Container maxWidth="xl">
+                        <Grid display="flex" justifyContent="center" container my={4}>
+                            <Grid item xs={8}>
+                                <TextField 
+                                    label="Buscar imagenes"
+                                    value={query}
+                                    onChange={(event) => {setQuery(event.target.value)}}
+                                    sx={{
+                                        width:'100%'
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <IconButton onClick={() => retrievePixabayImages()}><Search/></IconButton>
+                                    }}
+                                />
                             </Grid>
-                        )
-                    })}
-                </Grid>
-            </Container>
-            
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {pixabayResults.map((value:any,index) => {
+                                return(
+                                    <Grid item sm={12} md={4}>
+                                        {mediaCard({url:value.webformatURL,alt:'alt',index})}
+                                    </Grid>
+                                )
+                            })}
+                        </Grid>
+                    </Container>
+                </Paper>
+                
+            </ThemeProvider>
         </>
     )
 }
