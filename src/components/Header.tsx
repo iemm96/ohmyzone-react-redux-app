@@ -1,7 +1,6 @@
 import React from "react";
 import { AppBar, Toolbar, IconButton, Menu, MenuItem } from "@mui/material"; 
 import { motion } from "framer-motion";
-import MenuIcon from '@mui/icons-material/Menu';
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";

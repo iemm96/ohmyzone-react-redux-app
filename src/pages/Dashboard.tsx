@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import axios from "axios";
 import { styled } from '@mui/material/styles';
-import { CardActionArea, Container, Grid, Paper, TextField, IconButton, Select, MenuItem } from "@mui/material";
+import { CardActionArea, Container, Grid, Paper, TextField, IconButton, Select, MenuItem, InputLabel } from "@mui/material";
 import {ColorPaletteImage} from "../components/ColorPaletteImage";
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
@@ -78,22 +78,20 @@ type CurrentPaletteType = {
 }
 
 type SearchOptions = {
-    query: string,
-    lang: string,
-    imageType: string | 'photo' | 'illustration' | undefined,
+    query: String,
+    lang: String,
+    imageType: String | 'photo' | 'illustration' | undefined,
     //colors: 'grayscale' | 'transparent' | 'red' | 'orange' | 'yellow' | 'green' | 'turquoise' | 'blue' | 'lilac' | 'pink' | 'white' | 'gray' | 'black' | 'brown'  | undefined,
     colors: any | undefined,
-    category: string | 'backgrounds' | 'fashion' | 'nature' | 'science' | 'education' | 'feelings' | 'health' | 'people' | 'religion' | 'places' | 'animals' | 'industry' | 'computer' | 'food' | 'sports' | 'transportation' | 'travel' | 'buildings' | 'business' | 'music' | undefined,
+    category: String | 'backgrounds' | 'fashion' | 'nature' | 'science' | 'education' | 'feelings' | 'health' | 'people' | 'religion' | 'places' | 'animals' | 'industry' | 'computer' | 'food' | 'sports' | 'transportation' | 'travel' | 'buildings' | 'business' | 'music' | undefined,
     perPage: number,
     page: number
 }
 
 const Dashboard = () => {
     const [pixabayResults, setPixabayResults] = useState([]);
-    const [primaryColor, setPrimaryColor] = useState('#4664F6');
-    const [secondaryColor, setSecondaryColor] = useState(null);
     const [colorsArray,setColorsArray] = useState<[]>([]);
-    const [totalResults,setTotalResults] = useState<Number>(1);
+    const [totalResults,setTotalResults] = useState<number>(1);
     const [searchOptions,setSearchOptions] = useState<SearchOptions>({
         query: 'Paisaje',
         lang: 'es',
@@ -170,7 +168,7 @@ const Dashboard = () => {
                         image={url}
                         alt={alt}
                     />
-                    <ColorPaletteImage setCurrentPalette={setCurrentPalette} darkMode={darkMode} setSecondaryColor={setSecondaryColor} setPrimaryColor={setPrimaryColor} ref={arrayRef[index]} src={url}/>    
+                    <ColorPaletteImage setCurrentPalette={setCurrentPalette} darkMode={darkMode} ref={arrayRef[index]} src={url}/>    
                 </CardActionArea>
             </Card>
         )
@@ -202,7 +200,7 @@ const Dashboard = () => {
                                 <TextField
                                     onKeyPress={(event) => {
                                         if(event.key === "Enter") {
-                                            retrievePixabayImages()
+                                            setSearchOptions({...searchOptions,query:query})
                                         }
                                     }}
                                     variant="filled"
@@ -214,13 +212,14 @@ const Dashboard = () => {
                                     }}
                                     InputProps={{
                                         disableUnderline: true,
-                                        endAdornment: <IconButton onClick={() => retrievePixabayImages()}><Search/></IconButton>
+                                        endAdornment: <IconButton onClick={() => setSearchOptions({...searchOptions,query:query})}><Search/></IconButton>
                                     }}
                                 />
                             </Grid>
                         </Grid>
                         <Grid container mb={2}>
                             <Grid item xs={6}>
+                                <InputLabel id="image-type-select-label">Tipo de imagen</InputLabel>
                                 <Select
                                     fullWidth
                                     variant="filled"
@@ -237,6 +236,7 @@ const Dashboard = () => {
                                 </Select>
                             </Grid>
                             <Grid item xs={6}>
+                                <InputLabel id="color-select-label">Color</InputLabel>
                                 <Select
                                     fullWidth
                                     variant="filled"
@@ -274,6 +274,7 @@ const Dashboard = () => {
                         </Grid>
                         <Grid container mb={4}>
                             <Grid item xs={12}>
+                                <InputLabel id="category-select-label">Categoría</InputLabel>
                                 <Select
                                     fullWidth
                                     variant="filled"
@@ -316,9 +317,9 @@ const Dashboard = () => {
                                 )
                             })}
                         </Grid>
-                        <Grid container mb={4}>
+                        <Grid container my={4}>
                             <Grid item xs={12}>
-                                <Pagination count={10} page={searchOptions.page} onChange={(e,value) => setSearchOptions({...searchOptions, page: value})} />
+                                <Pagination count={totalResults} page={searchOptions.page} onChange={(e,value) => setSearchOptions({...searchOptions, page: value})} />
                             </Grid>
                         </Grid>
                     </Container>
