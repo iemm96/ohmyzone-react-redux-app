@@ -7,12 +7,25 @@ export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
 
     useImperativeHandle(ref,() => ({
         updatePalette: () => {
+            props.setCurrentPalette({
+                vibrant: data.vibrant,
+                lightVibrant: data.lightVibrant,
+                darkVibrant: data.darkVibrant,
+                muted: data.muted,
+                lightMuted: data.lightMuted,
+                darkMuted: data.darkMuted
+            });
+            
             props.setPrimaryColor(data.vibrant);
-            props.setSecondaryColor(data.lightVibrant);
+
+            if(props.darkMode) {
+                props.setSecondaryColor(data.darkVibrant);
+            }else{
+                props.setSecondaryColor(data.lightVibrant);
+            }
         }})
     )
     
-
     return (
         <div >
             {!loading && 
