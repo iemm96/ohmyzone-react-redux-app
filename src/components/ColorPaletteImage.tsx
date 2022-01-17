@@ -24,7 +24,7 @@ export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
                 props.setSecondaryColor(data.lightVibrant);
             }
         }})
-    )
+    );
     
     return (
         <div >

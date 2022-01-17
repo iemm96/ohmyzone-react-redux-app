@@ -4,14 +4,15 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import axios from "axios";
 import { styled } from '@mui/material/styles';
-import { CardActionArea, Container, Grid, Paper, TextField, IconButton, Select, MenuItem, InputLabel } from "@mui/material";
+import { CardActionArea, Container, Grid, Paper, TextField, IconButton, Select, MenuItem, InputLabel, CircularProgress, Button, Stack } from "@mui/material";
 import {ColorPaletteImage} from "../components/ColorPaletteImage";
 import Switch from '@mui/material/Switch';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Search } from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, Search } from "@mui/icons-material";
 import Pagination from '@mui/material/Pagination';
+import { Box } from "@mui/system";
 
 const pixabay_url = 'https://pixabay.com/api/?key=25105059-4d7ff3f9a607aabea05e93997';
 
@@ -98,7 +99,7 @@ const Dashboard = () => {
         imageType: undefined,
         colors: '',
         category: undefined,
-        perPage: 10,
+        perPage: 8,
         page: 1
     });
 
@@ -136,15 +137,17 @@ const Dashboard = () => {
 
     const retrievePixabayImages = async () => {
 
+        setPixabayResults([]);
+
         const fullPath = `${pixabay_url}${searchOptions.lang && '&lang=' + searchOptions.lang}${searchOptions.query && '&q=' + searchOptions.query}${searchOptions.colors !== undefined && searchOptions.colors !== false && '&colors=' + searchOptions.colors}${searchOptions.category !== undefined && '&category=' + searchOptions.category}${searchOptions.imageType !== undefined && '&image_type=' + searchOptions.imageType}${searchOptions.perPage && '&per_page=' + searchOptions.perPage}${searchOptions.page && '&page=' + searchOptions.page}`
 
         const result = await axios.get(fullPath);
 
         if(result) {
             const arr:any = [];
-            result.data.hits.map((v:any,i:any) => {
-                arr[i] = createRef();
-            });
+            result.data.hits.map((v:any,i:any) => (
+                arr[i] = createRef()
+            ));
 
             setTotalResults(Math.round(result.data.totalHits/searchOptions.perPage))
             setArrayRef(arr)
@@ -308,20 +311,53 @@ const Dashboard = () => {
                                 </Select>
                             </Grid>
                         </Grid>
-                        <Grid justifyContent="center" container spacing={2}>
-                            {pixabayResults.map((value:any,index) => {
-                                return(
-                                    <Grid item xs={6} md={4}>
-                                        {mediaCard({url:value.webformatURL,alt:'alt',index})}
-                                    </Grid>
-                                )
-                            })}
-                        </Grid>
-                        <Grid container my={4}>
-                            <Grid item xs={12}>
-                                <Pagination count={totalResults} page={searchOptions.page} onChange={(e,value) => setSearchOptions({...searchOptions, page: value})} />
+
+                        {pixabayResults.length > 0 ? <>
+                            <Grid justifyContent="center" container spacing={2}>
+                                
+
+                                {pixabayResults.map((value:any,index) => {
+                                    return(
+                                        <Grid item xs={6} md={3}>
+                                            {mediaCard({url:value.webformatURL,alt:'alt',index})}
+                                        </Grid>
+                                    )
+                                })}
                             </Grid>
-                        </Grid>
+                            <Grid container my={4}>
+                                <Stack justifyContent="center" direction="row" spacing={2}>
+                                    <Button
+                                        sx={{
+                                            textTransform: 'none'
+                                        }}
+                                        startIcon={<ChevronLeft/>}
+                                    >
+                                        Anterior
+                                    </Button>
+                                    <Button
+                                        sx={{
+                                            textTransform: 'none'
+                                        }}
+                                        variant="contained"
+                                        color="primary"
+                                        endIcon={<ChevronRight/>}
+                                    >
+                                        Siguiente página
+                                    </Button>
+                                </Stack>
+                                <Grid item xs={12}>
+                                    
+                                    <Pagination count={totalResults} page={searchOptions.page} onChange={(e,value) => setSearchOptions({...searchOptions, page: value})} />
+                                </Grid>
+                            </Grid>
+                        </> : <Box sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                height: 400
+                            }}>
+                                <CircularProgress color="primary"/>
+                        </Box>}
                     </Container>
                 </Paper>
                 
