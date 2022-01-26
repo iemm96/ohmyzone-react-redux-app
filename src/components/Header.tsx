@@ -26,16 +26,7 @@ const Header = () => {
       };
 
     return(
-        <motion.div
-            initial={{
-                y:-50,
-            }}
-            animate={{
-                y:0,
-                transition
-            }}
-        >
-            <AppBar 
+        <AppBar 
                 position="fixed"
                 sx={{
                     backgroundColor: theme.palette.primary.main
@@ -54,7 +45,7 @@ const Header = () => {
                             x:0,
                             opacity: 1,
                             transition: {
-                                delay: 1
+                                delay: 0.5
                             }
                         }}
                         style={{
@@ -98,7 +89,6 @@ const Header = () => {
                         </div>
                 </Toolbar>
             </AppBar>
-        </motion.div>
     );
 }
 
