@@ -71,12 +71,13 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
         <>
             <Box
                 sx={{
+                    position: 'relative',
                     border: `1px solid ${theme.palette.primary.main}`,
                     borderRadius: 2,
                     borderStyle: 'dashed',
                     height: 'auto',
-                    p: 1,
-                    width: '100%',
+                    width: 'auto',
+                    p: 1
                 }}
             >
                 <Typography 
@@ -89,7 +90,7 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
                     sx={{
                         display: 'flex',
                         justifyContent: 'center',
-                        p: 1,
+                        p: 2,
                     }}
                 >
                     <input
@@ -128,7 +129,9 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
                                 <Clear/>
                             </IconButton>
                             <img
-                                height="400"
+                                style={{
+                                    maxWidth: 250
+                                }}
                                 src={dataUri}
                                 alt="preview"
                             />
