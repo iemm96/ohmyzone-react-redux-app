@@ -80,7 +80,10 @@ function App() {
         display:'flex'
       }}>
         <motion.img
-          initial={{opacity:0,y:20}}
+          initial={{ 
+            opacity:0,
+             y:20
+          }}
           animate={{
             opacity:1,
             y:0,
@@ -97,8 +100,8 @@ function App() {
         <motion.div initial='initial' animate='animate' exit='exit'>
           <motion.span variants={enteringFormTransition}>
             <motion.div variants={inputTransition}>
-              <Grid mt={5} mb={2}>
-                <Grid item>
+              <Grid mt={5} mb={2} container>
+                <Grid xs={ 12 } item>
                   <Controller
                     name={"email"}
                     control={control}
@@ -128,43 +131,45 @@ function App() {
               </Grid>
             </motion.div>
             <motion.div variants={inputTransition}>
-            <Grid mb={2}>
-              <Grid item>
-                <Controller
-                  name={"password"}
-                  control={control}
-                  render={({ field: { onChange, value } }) => (
-                    <TextField 
-                      InputProps={{
-                        disableUnderline: true,
-                        type: "password"
-                      }}
-                      sx={inputStyles} 
-                      fullWidth
-                      variant="filled"
-                      onChange={onChange}
-                      value={value}
-                      label="Contraseña" />
-                  )}
-                />
+              <Grid mb={2}>
+                <Grid item>
+                  <Controller
+                    name={"password"}
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <TextField 
+                        InputProps={{
+                          disableUnderline: true,
+                          type: "password"
+                        }}
+                        sx={inputStyles} 
+                        fullWidth
+                        variant="filled"
+                        onChange={onChange}
+                        value={value}
+                        label="Contraseña" />
+                    )}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
             </motion.div>
             <motion.div variants={inputTransition}>
-            <Button 
-          sx={{
-            width: '100%',
-            backgroundColor: '#4664F6',
-            color: 'white',
-            padding: '14px 0',
-            borderRadius: 3.5,
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: 'black'
-            }
-          }} onClick={handleSubmit(onSubmit)}>
-            Iniciar sesión
-        </Button>
+              <Button 
+                sx={{
+                  width: '100%',
+                  backgroundColor: '#4664F6',
+                  color: 'white',
+                  padding: '14px 0',
+                  borderRadius: 3.5,
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: 'black'
+                  }
+                }} 
+                onClick={handleSubmit(onSubmit)}
+              >
+              Iniciar sesión
+              </Button>
             </motion.div>
           </motion.span>
         </motion.div>
