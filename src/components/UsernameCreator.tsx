@@ -1,4 +1,4 @@
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, Paper, TextField, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material';
 
@@ -24,10 +24,9 @@ export const UsernameCreator = ({ fullName, textInputLabel }:UserNameCreatorType
     }
 
     return(
-        <Box
+        <Paper
             sx={{
                 p: 2,
-                backgroundColor: 'white',
                 borderRadius: 2,
                 border: `1px solid ${ theme.palette.primary.main }`
             }}
@@ -38,7 +37,7 @@ export const UsernameCreator = ({ fullName, textInputLabel }:UserNameCreatorType
                 value={ createdUsername }
             />
             <Typography variant="caption">ohmy.zone/{ createdUsername }</Typography>
-        </Box>
+        </Paper>
         
     );
 };
