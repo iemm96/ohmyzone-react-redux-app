@@ -7,6 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { createSvgIcon } from '@mui/material/utils';
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { startLogin } from './actions/auth';
 
 const HomeIcon = createSvgIcon(
   <>
@@ -54,10 +56,12 @@ const inputTransition = {
 function App() {
   const navigate = useNavigate();
   const { handleSubmit, control, formState: {errors}, } = useForm();
+  const dispatch = useDispatch();
 
   const onSubmit = (data: any) => {
     console.log(data);
-    navigate('dashboard');
+    dispatch( startLogin( data.email, data.password ) );
+    //navigate('dashboard');
   };
 
   const inputStyles = {
@@ -97,82 +101,82 @@ function App() {
       <Container>
         
         <form>        
-        <motion.div initial='initial' animate='animate' exit='exit'>
-          <motion.span variants={enteringFormTransition}>
-            <motion.div variants={inputTransition}>
-              <Grid mt={5} mb={2} container>
-                <Grid xs={ 12 } item>
-                  <Controller
-                    name={"email"}
-                    control={control}
-                    rules={{
-                      required: 'El correo es requerido.',
-                      pattern: {
-                        value: /^\S+@\S+$/i,
-                        message: 'El correo no es válido.'
-                      }
-                    }}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField 
-                        InputProps={{
-                          disableUnderline: true
-                        }}
-                        sx={inputStyles} 
-                        fullWidth
-                        variant="filled"
-                        onChange={onChange}
-                        value={value}
-                        label="Email" 
-                      />
-                    )}
-                  />
-                  {errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message}</Typography>}
+          <motion.div initial='initial' animate='animate' exit='exit'>
+            <motion.span variants={enteringFormTransition}>
+              <motion.div variants={inputTransition}>
+                <Grid mt={5} mb={2} container>
+                  <Grid xs={ 12 } item>
+                    <Controller
+                      name={"email"}
+                      control={control}
+                      rules={{
+                        required: 'El correo es requerido.',
+                        pattern: {
+                          value: /^\S+@\S+$/i,
+                          message: 'El correo no es válido.'
+                        }
+                      }}
+                      render={({ field: { onChange, value } }) => (
+                        <TextField 
+                          InputProps={{
+                            disableUnderline: true
+                          }}
+                          sx={inputStyles} 
+                          fullWidth
+                          variant="filled"
+                          onChange={onChange}
+                          value={value}
+                          label="Email" 
+                        />
+                      )}
+                    />
+                    {errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message}</Typography>}
+                  </Grid>
                 </Grid>
-              </Grid>
-            </motion.div>
-            <motion.div variants={inputTransition}>
-              <Grid mb={2}>
-                <Grid item>
-                  <Controller
-                    name={"password"}
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <TextField 
-                        InputProps={{
-                          disableUnderline: true,
-                          type: "password"
-                        }}
-                        sx={inputStyles} 
-                        fullWidth
-                        variant="filled"
-                        onChange={onChange}
-                        value={value}
-                        label="Contraseña" />
-                    )}
-                  />
+              </motion.div>
+              <motion.div variants={inputTransition}>
+                <Grid mb={2}>
+                  <Grid item>
+                    <Controller
+                      name={"password"}
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <TextField 
+                          InputProps={{
+                            disableUnderline: true,
+                            type: "password"
+                          }}
+                          sx={inputStyles} 
+                          fullWidth
+                          variant="filled"
+                          onChange={onChange}
+                          value={value}
+                          label="Contraseña" />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            </motion.div>
-            <motion.div variants={inputTransition}>
-              <Button 
-                sx={{
-                  width: '100%',
-                  backgroundColor: '#4664F6',
-                  color: 'white',
-                  padding: '14px 0',
-                  borderRadius: 3.5,
-                  textTransform: 'none',
-                  '&:hover': {
-                    backgroundColor: 'black'
-                  }
-                }} 
-                onClick={handleSubmit(onSubmit)}
-              >
-              Iniciar sesión
-              </Button>
-            </motion.div>
-          </motion.span>
-        </motion.div>
+              </motion.div>
+              <motion.div variants={inputTransition}>
+                <Button 
+                  sx={{
+                    width: '100%',
+                    backgroundColor: '#4664F6',
+                    color: 'white',
+                    padding: '14px 0',
+                    borderRadius: 3.5,
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: 'black'
+                    }
+                  }} 
+                  onClick={handleSubmit(onSubmit)}
+                >
+                Iniciar sesión
+                </Button>
+              </motion.div>
+            </motion.span>
+          </motion.div>
         </form>
         
         <Grid mt={2}>
@@ -188,7 +192,7 @@ function App() {
           bottom: 16,
           width: '100%'
         }}>
-          <Grid mt={12} mb={4} spacing={2}>
+          <Grid mt={12} mb={4}>
             <Divider sx={{
               mb:1,
               "&.MuiDivider-root": {
