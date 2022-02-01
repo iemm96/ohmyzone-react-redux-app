@@ -6,11 +6,6 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 
-const transition = {
-    duration: 1,
-    ease: [.2, .01, -0.05, 0.9]
-}
-
 const Header = () => {
     const navigation = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
