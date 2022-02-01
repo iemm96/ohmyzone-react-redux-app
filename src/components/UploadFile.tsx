@@ -12,11 +12,15 @@ import { ColorPaletteImage } from './ColorPaletteImage';
 
 
 type UploadFilePropsType = {
-    accept: string;
+    accept?: string;
     title?: string;
+    dataUri: any;
+    imageSrc: any; 
+    onChange: any;
+    handleDelete: any;
 }
 
-const fileToDataUri = (file:any) => new Promise((resolve, reject) => {
+const fileToDataUri = (file:any) => new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (event) => {
         if(event.target) {
@@ -26,13 +30,12 @@ const fileToDataUri = (file:any) => new Promise((resolve, reject) => {
     reader.readAsDataURL(file);
 })
 
-const UploadFile = ({ accept, title }:UploadFilePropsType) => {
-    const theme = useTheme();
-    const fileInput = React.useRef<HTMLInputElement>(null);
-    const [dataUri, setDataUri] = React.useState<null | string>(null);
-    const [imageSrc, setImageSrc] = React.useState<null | string>(null);
+export const useUploader = ( initialState = null ) => {
+    const [dataUri, setDataUri] = React.useState<null | string>(initialState);
+    const [imageSrc, setImageSrc] = React.useState<null | string>(initialState);
+    const [file, setFile] = React.useState<any | string>(initialState);
 
-    const uploadToCloudinary = async (file:any) => {
+    const uploadToCloudinary = async () => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', 'tm2ljrm7')
@@ -45,15 +48,15 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
             );
             
             setImageSrc( data.secure_url );
-
+            return data.secure_url;
         }catch(e) {
             console.log(e)
         }
         
     }
-    
-    const onChange = async (file:any) => {
-    
+
+    const onChange = (file:any) => {
+        console.log('changed ')
         if(!file) {
           setDataUri('');
           return;
@@ -64,9 +67,24 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
             setDataUri(dataUri)
           });
         
-        await uploadToCloudinary(file);
+          setFile(file);
+
+        //await uploadToCloudinary(file);
     }
 
+    const handleDelete = async () => {
+        setDataUri(null);
+        setImageSrc(null);
+    }
+
+    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary  }
+};
+
+
+const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, onChange, handleDelete }:UploadFilePropsType) => {
+    const theme = useTheme();
+    const fileInput = React.useRef<HTMLInputElement>(null);
+    
     return (
         <>
             <Box
@@ -100,6 +118,7 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
                         type="file"
                         onChange={(event) => {
                             if(event.target.files) {
+                                
                                 onChange(event?.target.files[0] || null)
                             }
                         }}
@@ -121,10 +140,7 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
                                     color: 'white'
                                 }}
                                 size="small"
-                                onClick={ () => {
-                                    setDataUri(null);
-                                    setImageSrc(null);
-                                }}
+                                onClick={ handleDelete }
                             >
                                 <Clear/>
                             </IconButton>
@@ -132,7 +148,7 @@ const UploadFile = ({ accept, title }:UploadFilePropsType) => {
                                 style={{
                                     maxWidth: 250
                                 }}
-                                src={dataUri}
+                                src={ dataUri }
                                 alt="preview"
                             />
                         </Box>
