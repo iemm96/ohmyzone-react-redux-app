@@ -4,13 +4,14 @@ import { styled } from '@mui/material/styles';
 import { motion } from "framer-motion";
 
 const StyledPhoneDiv =  styled('div')(() => ({
+    width: 320,
+    height: 520,
     border: '40px solid #ddd',
     borderWidth: '55px 7px',
     borderRadius: 40,
-    margin: '50px auto',
+    margin: '20px auto',
     overflow: 'hidden',
-    transition: 'all 0.5s ease',
-    //transform: 'rotateX(50deg) rotateY(0deg) rotateZ(-50deg)',
+    transition: 'all 0.5s ease',    
     boxShadow: '0px 3px 0 #BBB, 0px 4px 0 #BBB, 0px 5px 0 #BBB, 0px 7px 0 #BBB, 0px 10px 20px #666'
 }));
 
@@ -23,7 +24,7 @@ const StyledIframe = styled('iframe')(() => ({
 const PreviewSection = () => {
   return (
       <>
-        <Grid container>
+        <Grid sx={{ mb: 3 }} container>
             <Grid xs={ 12 } item>
                 <motion.div
                     initial={{
