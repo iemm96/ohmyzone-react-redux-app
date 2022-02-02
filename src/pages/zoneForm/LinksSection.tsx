@@ -14,16 +14,19 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import UploadFile from '../../components/UploadFile';
 import { useUploader } from '../../components/UploadFile';
 import { green } from '@mui/material/colors';
+import { postRecord } from '../../actions/postRecord';
 
 type LinksItemType = {
   title: string;
   description: string;
   imgUrl: string;
+  coverImg: string;
   category: string;
   whatsapp: boolean;
   whatsappMessage?: string;
   buttonText: string;
   isSaved: boolean;
+  file?: any;
 }
 
 type CategoryItemType = {
@@ -41,6 +44,7 @@ export const LinksSection = () => {
     title: '',
     description: '',
     imgUrl: '',
+    coverImg: '',
     category: '',
     whatsapp: false,
     whatsappMessage: '',
@@ -51,8 +55,8 @@ export const LinksSection = () => {
   const refLink = useRef<null | HTMLDivElement>(null);
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ linksItems, setLinksItems ] = useState<LinksItemType[] | []>([]);
-  const { handleSubmit, control, formState: {errors}, } = useForm();
-  const { dataUri, uploadToCloudinary, onChange, handleDelete, imageSrc } = useUploader();
+  const { handleSubmit, control, setValue, formState: {errors}, } = useForm();
+  const { dataUri, file, onChange, handleDelete, imageSrc } = useUploader();
   const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
 
@@ -92,9 +96,6 @@ export const LinksSection = () => {
     linksArray.push( link );
     setLinksItems( linksArray );
     
-    //setLinksItems( prev => [...prev ,link] );
-    console.log(linksArray);
-    console.log(link);
     if(refLink.current) {
       //refLink.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
@@ -103,16 +104,25 @@ export const LinksSection = () => {
   const submitForm = async (data:any, index:number) => {
     setLoading(true);
     const linksArray = [...linksItems];
-    const cloudinaryUrl = await uploadToCloudinary();
-    linksArray[index].imgUrl = cloudinaryUrl;
+
     linksArray[index].isSaved = true;
+    const formData = new FormData();
+    formData.append( 'file', file );
+
+    const { image } = await postRecord('images', formData);
+
+    console.log( image );
     linksArray[index].title = data[`title${index}`];
     linksArray[index].description = data[`description${index}`];
     linksArray[index].buttonText = data[`buttonText${index}`];
-
+    linksArray[index].coverImg = image.uid; //Assing recently created uid image
+    linksArray[index].whatsappMessage = data[`whatsappMessage${index}`];
+    
+    const result = await postRecord('links', linksArray[index]);
+    
     setCategorySelected( null );
     setLinksItems(linksArray);
-    handleDelete();
+    handleDelete(); //Deletes uploaded image preview
     setLoading(false);
   }
 
@@ -271,7 +281,7 @@ export const LinksSection = () => {
                             const arrayLinksItems = [...linksItems];
                             arrayLinksItems[index].whatsapp = !arrayLinksItems[index].whatsapp;
                             setLinksItems( arrayLinksItems );
-                            console.log(arrayLinksItems)
+                            setValue( `whatsappMessage${index}`, `Hola, me interesa tu ${ item.title ? item.title : 'Producto/Servicio' }` );
                           } }/>} label="Enlace a mi WhatsApp" />
                         </FormGroup>
                         <Tooltip title="Permite que las personas interesadas en este enlace te contacten por WhatsApp" arrow>
@@ -281,23 +291,27 @@ export const LinksSection = () => {
                         </Tooltip>
                         
                       </Grid>
-                      { item.whatsapp && (
-                        <Grid xs={ 12 } item>
+                      
+                        <Grid sx={{ display: item.whatsapp ? 'inline-flex' : 'none' }} xs={ 12 } item>
                           <Controller
-                            name={"whatsappMessage"}
+                            name={`whatsappMessage${index}`}
                             control={control}
+                            rules={{
+                              required: 'Agrega un mensaje de WhatsApp'
+                            }}
                             render={({ field: { onChange, value } }) => (
                               <TextField                       
                                 fullWidth
                                 multiline
                                 onChange={onChange}
-                                value={ value ? value : `Hola, me interesa tu ${ item.title ? item.title : 'Producto/Servicio' }` }
+                                value={ value }
                                 label="Mensaje automático de WhatsApp" 
+                                placeholder="Hola! me interesa tu producto/servicio"
                               />
                             )}
                           />
                         </Grid>
-                      ) }
+                      
                       <Grid xs={ 12 } item>
                         <Controller
                             name={`buttonText${index}`}
@@ -330,7 +344,6 @@ export const LinksSection = () => {
                         <Check/>
                       ) ) }
                       onClick={ 
-
                         item.isSaved ? handleAddLink : handleSubmit(data => submitForm(data,index)) 
                       }
                       variant="contained"

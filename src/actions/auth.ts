@@ -10,8 +10,8 @@ export const startGoogleLogin = () => {
 export const startLogin = ( email:string, password:string ) => {
 
     const payload = {
-        email: 'admin@ohmyzone.com',
-        password: 'Vq]cYun!v~Agf9Kv'
+        email,
+        password
     }
 
     return async ( dispatch:any ) => {
@@ -20,6 +20,7 @@ export const startLogin = ( email:string, password:string ) => {
             payload
         );
 
+        localStorage.setItem('token', data.token);
         dispatch( login(data.user.name, data.token ));
     }
 }
