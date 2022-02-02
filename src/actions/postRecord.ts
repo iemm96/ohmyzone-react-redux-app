@@ -1,4 +1,4 @@
-import {baseUrl} from "./../constants/baseUrl";
+import baseUrl from "./../constants/baseUrl";
 
 import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
 
