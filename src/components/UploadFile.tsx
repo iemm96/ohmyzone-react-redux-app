@@ -77,7 +77,7 @@ export const useUploader = ( initialState = null ) => {
         setImageSrc(null);
     }
 
-    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary  }
+    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file  }
 };
 
 
