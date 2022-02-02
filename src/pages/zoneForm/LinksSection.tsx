@@ -15,18 +15,24 @@ import UploadFile from '../../components/UploadFile';
 import { useUploader } from '../../components/UploadFile';
 import { green } from '@mui/material/colors';
 import { postRecord } from '../../actions/postRecord';
+import { fetchRecords } from '../../actions/fetchRecords';
 
 type LinksItemType = {
   title: string;
   description: string;
   imgUrl: string;
   coverImg: string;
-  category: string;
+  category: any;
   whatsapp: boolean;
   whatsappMessage?: string;
   buttonText: string;
   isSaved: boolean;
   file?: any;
+}
+
+type ObjectCategoryType = {
+  _id: string;
+  title: string;
 }
 
 type CategoryItemType = {
@@ -54,41 +60,39 @@ export const LinksSection = () => {
 
   const refLink = useRef<null | HTMLDivElement>(null);
   const [ loading, setLoading ] = useState<boolean>(false);
-  const [ linksItems, setLinksItems ] = useState<LinksItemType[] | []>([]);
+  const [ linksItems, setLinksItems ] = useState<LinksItemType[] | []>([link]);
   const { handleSubmit, control, setValue, formState: {errors}, } = useForm();
   const { dataUri, file, onChange, handleDelete, imageSrc } = useUploader();
   const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
 
   useEffect(() => {
+    getLinks();
+  },[]);
+
+  const getLinks = async () => {
+    const { links } = await fetchRecords('links');
     
-    const arrayLinksItems = [...linksItems];
-    const arrayCategories = [...categories];
-    
-    arrayCategories.map((item) => {
-      const result = arrayLinksItems.filter(obj => {
-        if( obj.isSaved ) {
-          return obj.category === item.title
-        }
+    const arrayCategories:any = [];
+
+    links.map((item:any) => {
+        arrayCategories.push(item.category)
+    });
+
+    arrayCategories.map((item:any) => {
+      const result = links.filter((obj:any) => {
+        
+        const cat:ObjectCategoryType = obj.category;
+        
+        return cat._id === item._id
+        
       });
       if(result.length > 0) {
         item.links = result;
       }
     });
+
     setCategories( arrayCategories );
-  },[linksItems]);
-
-  useEffect(() => {
-    setLinksItems([link])
-  },[]);
-
-  const handleSaveLink = (element:number) => {
-    const linksArray = [...linksItems];
-
-    linksArray[element].whatsappMessage = "mensaje pedorro";
-    linksArray[element].isSaved = true;
-
-    setLinksItems(linksArray);
   }
 
   const handleAddLink = () => {
@@ -111,19 +115,26 @@ export const LinksSection = () => {
 
     const { image } = await postRecord('images', formData);
 
-    console.log( image );
     linksArray[index].title = data[`title${index}`];
     linksArray[index].description = data[`description${index}`];
     linksArray[index].buttonText = data[`buttonText${index}`];
     linksArray[index].coverImg = image.uid; //Assing recently created uid image
     linksArray[index].whatsappMessage = data[`whatsappMessage${index}`];
+
+    if(categorySelected) {
+      linksArray[index].category = categorySelected.title;
+    }
     
     const result = await postRecord('links', linksArray[index]);
     
-    setCategorySelected( null );
-    setLinksItems(linksArray);
-    handleDelete(); //Deletes uploaded image preview
-    setLoading(false);
+    if(result) {
+      setCategorySelected( null );
+      setLinksItems(linksArray);
+      handleDelete(); //Deletes uploaded image preview
+      setLoading(false);
+      getLinks();
+    }
+    
   }
 
   return(
@@ -134,12 +145,12 @@ export const LinksSection = () => {
           <Typography sx={{ mb: 1 }} variant="h6"> 
             { itemCategory.title && itemCategory.title }
           </Typography>
-          { itemCategory.links?.map( (itemLink, indexLink) => (
+          { itemCategory.links?.map( (itemLink:any, indexLink) => (
             <Card sx={{ display: 'flex', mb: 1, borderRadius: 3 }} key={indexLink}>
               <CardMedia
                 component="img"
                 sx={{ width: 151 }}
-                image={ itemLink.imgUrl ? itemLink.imgUrl : '' }
+                image={ itemLink.coverImg.url ? itemLink.coverImg.url : '' }
                 alt="Cover link"
               />
               <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
