@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseUrl } from '../constants/baseUrl';
+import baseUrl from '../constants/baseUrl';
 import { actionTypes } from '../actionTypes/actionTypes';
 export const startGoogleLogin = () => {
     return (dispatch:any) => {
