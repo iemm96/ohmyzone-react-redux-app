@@ -61,7 +61,7 @@ function App() {
   const onSubmit = (data: any) => {
     console.log(data);
     dispatch( startLogin( data.email, data.password ) );
-    //navigate('dashboard');
+    navigate('zones/new/1');
   };
 
   const inputStyles = {

@@ -9,6 +9,8 @@ import { red } from '@mui/material/colors';
 //import { cloudinary } from 'cloudinary-react';
 import axios from 'axios';
 import { ColorPaletteImage } from './ColorPaletteImage';
+import PaletteType from '../types/PaletteType';
+import { postRecord } from '../actions/postRecord';
 
 
 type UploadFilePropsType = {
@@ -18,6 +20,7 @@ type UploadFilePropsType = {
     imageSrc: any; 
     onChange: any;
     handleDelete: any;
+    setCurrentPalette?: any;
 }
 
 const fileToDataUri = (file:any) => new Promise((resolve) => {
@@ -30,10 +33,11 @@ const fileToDataUri = (file:any) => new Promise((resolve) => {
     reader.readAsDataURL(file);
 })
 
-export const useUploader = ( initialState = null ) => {
-    const [dataUri, setDataUri] = React.useState<null | string>(initialState);
-    const [imageSrc, setImageSrc] = React.useState<null | string>(initialState);
-    const [file, setFile] = React.useState<any | string>(initialState);
+export const useUploader = ( initialState = null, createTheme = false ) => {
+    const [ dataUri, setDataUri ] = React.useState<null | string>(initialState);
+    const [ imageSrc, setImageSrc ] = React.useState<null | string>(initialState);
+    const [ file, setFile ] = React.useState<any | string>(initialState);
+
 
     const uploadToCloudinary = async () => {
         const formData = new FormData();
@@ -55,6 +59,8 @@ export const useUploader = ( initialState = null ) => {
         
     }
 
+
+
     const onChange = (file:any) => {
         console.log('changed ')
         if(!file) {
@@ -68,8 +74,15 @@ export const useUploader = ( initialState = null ) => {
           });
         
           setFile(file);
+    }
 
-        //await uploadToCloudinary(file);
+    const uploadToServer = async () => {
+        const formData = new FormData();
+        formData.append( 'file', file );
+
+        const { image } = await postRecord('images', formData);
+        
+        setImageSrc( image.url )
     }
 
     const handleDelete = async () => {
@@ -77,13 +90,14 @@ export const useUploader = ( initialState = null ) => {
         setImageSrc(null);
     }
 
-    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file  }
+    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer  }
 };
 
 
 const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, onChange, handleDelete }:UploadFilePropsType) => {
     const theme = useTheme();
     const fileInput = React.useRef<HTMLInputElement>(null);
+    const ref = React.useRef();
     
     return (
         <>
@@ -170,7 +184,7 @@ const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, on
                     }
                 </Box>
                 {
-                    imageSrc && <ColorPaletteImage src={imageSrc}/>
+                    imageSrc && <ColorPaletteImage ref={ ref } src={ imageSrc }/>
                 }
             </Box>       
         </>

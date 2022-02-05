@@ -1,8 +1,7 @@
 import withTheme from '../../components/WithTheme';
 import Header from '../../components/Header';
-import { Container, Paper, Grid, TextField, Typography, Box, Stepper, Step, StepLabel, FormGroup, InputAdornment, Stack, BottomNavigation, Button } from '@mui/material';
+import { Container, Paper, Grid, TextField, Box, Stepper, Step, StepLabel, InputAdornment, Stack, BottomNavigation, Button } from '@mui/material';
 import { useState } from 'react';
-import Uploader from '../Uploader';
 import { Controller, useForm } from 'react-hook-form';
 import { UsernameCreator } from '../../components/UsernameCreator';
 import { useTheme } from '@mui/material';
@@ -12,6 +11,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PreviewSection from './PreviewSection';
 import { LinksSection } from './LinksSection';
 import StyledSwitch from '../../styled/StyledSwitch';
+import UploadFile from '../../components/UploadFile';
+import { useUploader } from '../../components/UploadFile';
+import { postRecord } from '../../actions/postRecord';
 
 const steps = [
     'Datos de la portada',
@@ -30,6 +32,9 @@ type ContactOptionsType = {
   
 const ZoneForm = () => {
     const [ fullName, setFullName ] = useState<String | undefined>(undefined);
+    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer } = useUploader();
+    
+
     const [ contactOptions, setContactOptions ] = useState<ContactOptionsType>({
         facebook: false,
         instagram: false,
@@ -62,8 +67,11 @@ const ZoneForm = () => {
         }
     }
 
-    const submitForm = (data:any) => {
-        console.log(data);
+    const submitForm = async ( data:any ) => {
+        console.log('  submit!! ');
+        uploadToServer(); //Uploads image to server 
+
+
     }
 
     return (
@@ -78,7 +86,7 @@ const ZoneForm = () => {
                 }}
                 elevation={ 0 }
             >
-                <Container>
+                <Container maxWidth="sm">
                     <Box sx={{ width: '100%' }}>
                         <Stepper activeStep={params.part ? parseInt(params.part) - 1 : 0} alternativeLabel>
                             {steps.map((label) => (
@@ -91,11 +99,11 @@ const ZoneForm = () => {
                     { params.part === '1' ? <>
                         <Grid sx={{ mt: 2 }} container>
                             <Grid xs={12} item>
-                                <Uploader/>
+                                <UploadFile onChange={onChange} handleDelete={handleDelete} dataUri={dataUri} imageSrc={imageSrc} />
                             </Grid>
                         </Grid>
                         <form onSubmit={ handleSubmit( submitForm ) }>
-                            <Grid mt={1} mb={2} container>
+                            <Grid mt={1} mb={2} spacing={2} container>
                                 <Grid xs={12} md={6} item>
                                     <TextField 
                                         fullWidth
@@ -147,6 +155,9 @@ const ZoneForm = () => {
                                     </Stack>
                                 </Grid>
                             </Grid>
+                            <Button type="submit">
+                                            Guardar
+                            </Button>
                         </form>
                     </> : ''}
                     
@@ -182,7 +193,7 @@ const ZoneForm = () => {
                                     Volver
                                 </Button>
                                 <Button
-                                    onClick={ () => goNext() }
+                                    //onClick={ () => goNext() }
                                     sx={{
                                         textTransform: 'none'
                                     }}

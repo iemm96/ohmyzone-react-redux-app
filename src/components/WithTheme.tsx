@@ -4,16 +4,16 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const Theme = (props:any) => {
     const { children } = props;
-    const [darkMode,setDarkMode] = useState<Boolean>(false);
+    const [darkMode,setDarkMode] = useState<Boolean>(true);
 
     const theme = createTheme({
         palette: {
             mode: darkMode ? 'dark' : 'light',
             primary: {
-                main: '#4664F6',
+                main: '#F77F00',
             },
             secondary: {
-                main: darkMode ? '#FF1177' : '#F8FAFF',
+                main: darkMode ? '#003049' : '#F8FAFF',
             },
         },
     })

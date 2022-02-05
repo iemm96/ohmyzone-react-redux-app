@@ -1,9 +1,23 @@
 import React, { useImperativeHandle } from 'react'
 import { Box } from '@mui/system';
 import { usePalette } from 'react-palette';
+import { useEffect } from 'react';
 
 export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
     const { data, loading } = usePalette(props.src);
+
+    useEffect(() => {
+        if(data && !loading) {
+            props.setCurrentPalette({
+                vibrant: data.vibrant,
+                lightVibrant: data.lightVibrant,
+                darkVibrant: data.darkVibrant,
+                muted: data.muted,
+                lightMuted: data.lightMuted,
+                darkMuted: data.darkMuted
+            });
+        }
+    },[data]);
 
     useImperativeHandle(ref,() => ({
         updatePalette: () => {
