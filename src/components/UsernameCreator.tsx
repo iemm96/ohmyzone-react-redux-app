@@ -1,15 +1,23 @@
-import { Box, Paper, TextField, Typography } from '@mui/material';
+import { Box, TextField, Typography, InputAdornment } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { useTheme } from '@mui/material';
 
 type UserNameCreatorType = {
     fullName: String | undefined;
-    textInputLabel: String;
+    createdUsername: any;
+    setCreatedUsername: any; 
 }
 
-export const UsernameCreator = ({ fullName, textInputLabel }:UserNameCreatorType) => {
+export const useUsernameCreator = () => {
     const [createdUsername, setCreatedUsername] = useState<String | undefined>(undefined);
-    const theme = useTheme();
+    
+    return {
+        createdUsername,
+        setCreatedUsername,
+    }
+}
+
+export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername }:UserNameCreatorType) => {
+    
     useEffect(() => {
         clearString(fullName);
     },[fullName]);
@@ -24,20 +32,17 @@ export const UsernameCreator = ({ fullName, textInputLabel }:UserNameCreatorType
     }
 
     return(
-        <Paper
-            sx={{
-                p: 2,
-                borderRadius: 2,
-                border: `1px solid ${ theme.palette.primary.main }`
-            }}
-        >
-            <Typography variant="caption">Identificador de tu Zone:</Typography>
+        <Box>
             <TextField
-                fullWidth
+                fullWidth            
+                placeholder="tunombre"
+                InputProps={{
+                    startAdornment: <InputAdornment position="start">ohmy.zone/</InputAdornment>
+                }}
                 value={ createdUsername }
             />
-            <Typography variant="caption">ohmy.zone/{ createdUsername }</Typography>
-        </Paper>
+            <Typography variant="caption" sx={{ opacity: 0.5 }}>Podrás cambiarlo en cualquier momento.</Typography>
+        </Box>
         
     );
 };
