@@ -1,5 +1,6 @@
+import Logo from '../assets/logo.svg';
 import { motion } from "framer-motion";
-import { enteringFormTransition, inputTransition } from '../constants/transitions';
+import { enteringFormTransition, inputTransition, transition } from '../constants/transitions';
 import { inputLoginStyles } from '../styles/inputLoginStyles';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -11,12 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startRegister } from '../actions/auth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box } from "@mui/material";
 
 const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
     
     const { handleSubmit, control, formState: {errors}, } = useForm();
 
@@ -30,11 +31,39 @@ const RegisterForm = () => {
         console.log(data);
         await dispatch( startRegister( data.name, data.email, data.password ) );
         
-        //navigate('/dashboard');
     };
 
     return(
-        <Container>
+        <>
+            <motion.div
+                initial={{
+                    height: 290,
+                    backgroundColor: '#4664F6',
+                    justifyContent:'center',
+                    alignItems:'center',
+                    display:'flex'
+                }}
+                animate={{
+                    height: 100,
+                    transition: { ...transition }
+                }}
+            >
+            <motion.img
+              initial={{ 
+                height: 120,
+                 y: 0
+              }}
+              animate={{
+                y: 0,
+                height: 60,
+                transition: { ...transition }
+              }}
+              alt="logo"
+              src={Logo} style={{
+              height: 120
+            }}/>
+          </motion.div> 
+          <Container>
             <form>        
                 <motion.div initial='initial' animate='animate' exit='exit'>
                     <motion.span variants={ enteringFormTransition }>
@@ -61,7 +90,7 @@ const RegisterForm = () => {
                                             />
                                         )}
                                     />
-                                    {errors.email && <Typography variant="caption" sx={{color:'red'}}>{ errors.email.message }</Typography>}
+                                    {errors.name && <Typography variant="caption" sx={{color:'red'}}>{ errors.name.message }</Typography>}
                                 </Grid>
                             </Grid>
                         </motion.div>
@@ -69,28 +98,28 @@ const RegisterForm = () => {
                             <Grid mb={2} container>
                                 <Grid xs={ 12 } item>
                                     <Controller
-                                    name={ "email" }
-                                    control={ control }
-                                    rules={{
-                                        required: 'El correo es requerido.',
-                                        pattern: {
-                                            value: /^\S+@\S+$/i,
-                                            message: 'El correo no es válido.'
-                                        }
-                                    }}
-                                    render={({ field: { onChange, value } }) => (
-                                        <TextField
-                                            InputProps={{
-                                                disableUnderline: true
-                                            }}
-                                            sx={inputLoginStyles} 
-                                            fullWidth
-                                            variant="filled"
-                                            onChange={onChange}
-                                            value={value}
-                                            label="Tu email" 
-                                        />
-                                    )}
+                                        name={ "email" }
+                                        control={ control }
+                                        rules={{
+                                            required: 'El correo es requerido.',
+                                            pattern: {
+                                                value: /^\S+@\S+$/i,
+                                                message: 'El correo no es válido.'
+                                            }
+                                        }}
+                                        render={({ field: { onChange, value } }) => (
+                                            <TextField
+                                                InputProps={{
+                                                    disableUnderline: true
+                                                }}
+                                                sx={inputLoginStyles} 
+                                                fullWidth
+                                                variant="filled"
+                                                onChange={onChange}
+                                                value={value}
+                                                label="Tu email" 
+                                            />
+                                        )}
                                     />
                                     {errors.email && <Typography variant="caption" sx={{color:'red'}}>{ errors.email.message }</Typography>}
                                 </Grid>
@@ -100,23 +129,31 @@ const RegisterForm = () => {
                             <Grid mb={2}>
                                 <Grid item>
                                     <Controller
-                                    name={"password"}
-                                    control={ control }
-                                    render={({ field: { onChange, value } }) => (
-                                        <TextField 
-                                            InputProps={{
-                                                disableUnderline: true,
-                                                type: "password"
-                                            }}
-                                            sx={inputLoginStyles} 
-                                            fullWidth
-                                            variant="filled"
-                                            onChange={onChange}
-                                            value={value}
-                                            label="Ingresa una contraseña" 
-                                        />
-                                    )}
+                                        name={ "password" }
+                                        control={ control }
+                                        rules={{
+                                            required: 'La contraseña es requerida.',
+                                            minLength: {
+                                                value: 6,
+                                                message: 'La contraseña debe tener al menos 6 carácteres.'
+                                            }
+                                        }}
+                                        render={({ field: { onChange, value } }) => (
+                                            <TextField 
+                                                InputProps={{
+                                                    disableUnderline: true,
+                                                    type: "password"
+                                                }}
+                                                sx={inputLoginStyles} 
+                                                fullWidth
+                                                variant="filled"
+                                                onChange={onChange}
+                                                value={value}
+                                                label="Ingresa una contraseña" 
+                                            />
+                                        )}
                                     />
+                                    {errors.password && <Typography variant="caption" sx={{color:'red'}}>{ errors.password.message }</Typography>}
                                 </Grid>
                             </Grid>
                         </motion.div>
@@ -142,6 +179,8 @@ const RegisterForm = () => {
                 </motion.div>
             </form>
         </Container>
+        
+        </>
         
     )
 }
