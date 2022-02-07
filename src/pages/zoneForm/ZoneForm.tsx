@@ -1,19 +1,14 @@
 import withTheme from '../../components/WithTheme';
 import Header from '../../components/Header';
-import { Container, Paper, Grid, TextField, Box, Stepper, Step, StepLabel, InputAdornment, Stack, BottomNavigation, Button } from '@mui/material';
+import { Container, Paper, Box, Stepper, Step, StepLabel, Stack, BottomNavigation, Button } from '@mui/material';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { UsernameCreator } from '../../components/UsernameCreator';
+import { useForm } from 'react-hook-form';
 import { useTheme } from '@mui/material';
 import { motion } from "framer-motion";
-import { Facebook } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import PreviewSection from './PreviewSection';
 import { LinksSection } from './LinksSection';
-import StyledSwitch from '../../styled/StyledSwitch';
-import UploadFile from '../../components/UploadFile';
-import { useUploader } from '../../components/UploadFile';
-import { postRecord } from '../../actions/postRecord';
+import CoverSection from './CoverSection';
 
 const steps = [
     'Datos de la portada',
@@ -32,25 +27,11 @@ type ContactOptionsType = {
   
 const ZoneForm = () => {
     const [ fullName, setFullName ] = useState<String | undefined>(undefined);
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer } = useUploader();
     
-
-    const [ contactOptions, setContactOptions ] = useState<ContactOptionsType>({
-        facebook: false,
-        instagram: false,
-        tiktok: false,
-        phone: false,
-        email: false,
-    });
-
     const { handleSubmit, control, formState: {errors}, } = useForm();
     const params = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
-
-    const handleChangeName = (e:any) => {
-        setFullName(e.target.value);
-    }
 
     const goBack = () => {
         const parsedPart = params.part && parseInt( params.part );
@@ -67,21 +48,13 @@ const ZoneForm = () => {
         }
     }
 
-    const submitForm = async ( data:any ) => {
-        console.log('  submit!! ');
-        uploadToServer(); //Uploads image to server 
-
-
-    }
-
     return (
         <>
             <Header/>
             <Paper 
                 sx={{
                     pt: 10,
-                    pb: 8,
-                    height: '100%',
+                    height: '100vh',
                     backgroundColor: theme.palette.secondary.main
                 }}
                 elevation={ 0 }
@@ -96,118 +69,12 @@ const ZoneForm = () => {
                             ))}
                         </Stepper>
                     </Box>
-                    { params.part === '1' ? <>
-                        <Grid sx={{ mt: 2 }} container>
-                            <Grid xs={12} item>
-                                <UploadFile onChange={onChange} handleDelete={handleDelete} dataUri={dataUri} imageSrc={imageSrc} />
-                            </Grid>
-                        </Grid>
-                        <form onSubmit={ handleSubmit( submitForm ) }>
-                            <Grid mt={1} mb={2} spacing={2} container>
-                                <Grid xs={12} md={6} item>
-                                    <TextField 
-                                        fullWidth
-                                        onChange={ ( e ) => handleChangeName( e ) }
-                                        value={ fullName }
-                                        label="* Título o nombre de tu Zone" 
-                                    />
-                                </Grid>
-                                <Grid xs={12} md={6} item>
-                                    <Controller
-                                        name="subtitle"
-                                        control={ control }
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextField 
-                                                fullWidth
-                                                onChange={ onChange }
-                                                value={ value }
-                                                label="Subtítulo" 
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid xs={12} item>
-                                    <UsernameCreator fullName={ fullName } textInputLabel="Identificador"/>
-                                </Grid>
-                            </Grid>
-                            <Grid sx={{ mt: 2 }} container>
-                                <Grid item xs={12}>
-                                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <StyledSwitch 
-                                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => setContactOptions({ ...contactOptions, facebook: e.target.checked }) }
-                                            checked={ contactOptions.facebook } 
-                                        />
-                                        <TextField
-                                            
-                                            disabled={ !contactOptions.facebook }
-                                            placeholder="Url de tu Facebook"
-                                            fullWidth
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <Facebook color={ contactOptions.facebook ? "primary" : "disabled" }/>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                    </Stack>
-                                </Grid>
-                            </Grid>
-                            <Button type="submit">
-                                            Guardar
-                            </Button>
-                        </form>
-                    </> : ''}
+                    { params.part === '1' && <CoverSection/> }
                     
                     { params.part === '2' && <LinksSection/> }
 
                     { params.part === '4' && <PreviewSection/> }
                 </Container>
-                <motion.div 
-                    initial={{
-                        opacity: 0,
-                        bottom: -20
-                    }}
-                    animate={{
-                        opacity: 1,
-                        bottom: 0,
-                        transition: { delay: 3, duration: 0.5 }
-                    }}
-                >
-                    <Paper 
-                        sx={{
-                            p: 1,
-                            position: params.part === '4' ? 'fixed' : 'fixed',
-                            bottom: 0, 
-                            left: 0,
-                            right: 0,
-                            zIndex: 100
-                        }} 
-                        elevation={ params.part === '4' ? 3 : 0 }
-                    >
-                        <BottomNavigation sx={{ width: '100%' }}>
-                            <Stack sx={{ width: '100%', justifyContent: 'space-around' }} direction="row">
-                                <Button onClick={ () => goBack() }>
-                                    Volver
-                                </Button>
-                                <Button
-                                    //onClick={ () => goNext() }
-                                    sx={{
-                                        textTransform: 'none'
-                                    }}
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                >
-                                    Guardar y continuar
-                                </Button>
-                            </Stack>
-                            
-                        </BottomNavigation>
-                    </Paper>
-                </motion.div>
             </Paper>
         </>
     )
