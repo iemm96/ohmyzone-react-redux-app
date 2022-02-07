@@ -1,4 +1,8 @@
 export const actionTypes = {
     login: '[Auth] Login',
-    logout: '[Auth] Logout'
+    logout: '[Auth] Logout',
+
+    register: '[Auth] Register',
+
+    createZone: '[Zones] Create'
 }

@@ -21,14 +21,34 @@ export const startLogin = ( email:string, password:string ) => {
         );
 
         localStorage.setItem('token', data.token);
-        dispatch( login(data.user.name, data.token ));
+        dispatch( login(data.user.name, data.user.isNew, data.user.uid, data.token ));
     }
 }
 
-export const login = ( name:string, token:string ) => ({
+export const startRegister = ( name:string, email:string, password:string, role:string = "USER" ) => {
+    const payload = {
+        name, 
+        email,
+        password,
+        role
+    }
+
+    return async ( dispatch:any ) => {
+        await axios.post(
+            `${ baseUrl }users`,
+            payload
+        );
+
+        dispatch( startLogin( email, password ) );
+    }
+}
+
+export const login = ( name:string, isNew:boolean, uid:string, token:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
+        isNew,
+        uid,
         token
     }
-})
+});

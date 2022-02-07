@@ -7,8 +7,10 @@ import { Controller, useForm } from 'react-hook-form';
 import { createSvgIcon } from '@mui/material/utils';
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { startLogin } from './actions/auth';
+import { useEffect } from 'react';
+import { RootState } from './app/store';
 
 const HomeIcon = createSvgIcon(
   <>
@@ -54,14 +56,22 @@ const inputTransition = {
 }
 
 function App() {
+  const { isNew } = useSelector( (state:any ) => state.auth );
+  
   const navigate = useNavigate();
   const { handleSubmit, control, formState: {errors}, } = useForm();
   const dispatch = useDispatch();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    dispatch( startLogin( data.email, data.password ) );
-    navigate('zones/new/1');
+  useEffect(() => {
+    if( isNew ) {
+      navigate('/welcome');
+    }
+  },[isNew]);
+
+  const onSubmit = async (data: any) => {
+    await dispatch( startLogin( data.email, data.password ) );
+    
+    //navigate('/dashboard');
   };
 
   const inputStyles = {
@@ -230,7 +240,7 @@ function App() {
           <Grid mb={4}>
             <Grid item xs={12} justifyContent="center" display="flex">
               <Typography sx={{color: '#AAAFB6'}}>¿Aún no tienes cuenta?</Typography>
-              <Typography sx={{color: '#4664F6', fontWeight: 600, marginLeft:1}}>Regístrate</Typography>
+              <Button onClick={ () => navigate('/register') } sx={{p: 0, color: '#4664F6', fontWeight: 600, marginLeft:1}}>Regístrate</Button>
             </Grid>
           </Grid>
         </Box>
