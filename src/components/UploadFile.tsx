@@ -4,12 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { IconButton, Typography } from '@mui/material';
 import { AddAPhoto, Clear } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
-
-//@ts ignore
-//import { cloudinary } from 'cloudinary-react';
 import axios from 'axios';
-import { ColorPaletteImage } from './ColorPaletteImage';
-import PaletteType from '../types/PaletteType';
 import { postRecord } from '../actions/postRecord';
 
 
@@ -33,7 +28,7 @@ const fileToDataUri = (file:any) => new Promise((resolve) => {
     reader.readAsDataURL(file);
 })
 
-export const useUploader = ( initialState = null, createTheme = false ) => {
+export const useUploader = ( initialState = null ) => {
     const [ dataUri, setDataUri ] = React.useState<null | string>(initialState);
     const [ imageSrc, setImageSrc ] = React.useState<null | string>(initialState);
     const [ file, setFile ] = React.useState<any | string>(initialState);
@@ -59,10 +54,8 @@ export const useUploader = ( initialState = null, createTheme = false ) => {
         
     }
 
-
-
     const onChange = (file:any) => {
-        console.log('changed ')
+        
         if(!file) {
           setDataUri('');
           return;
@@ -76,13 +69,14 @@ export const useUploader = ( initialState = null, createTheme = false ) => {
           setFile(file);
     }
 
-    const uploadToServer = async () => {
+    const uploadToServer = async ( zone:string ) => {
         const formData = new FormData();
+        formData.append( 'zone', zone );
         formData.append( 'file', file );
 
         const { image } = await postRecord('images', formData);
         
-        setImageSrc( image.url )
+        setImageSrc( image.url );
     }
 
     const handleDelete = async () => {
@@ -94,7 +88,7 @@ export const useUploader = ( initialState = null, createTheme = false ) => {
 };
 
 
-const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, onChange, handleDelete }:UploadFilePropsType) => {
+export const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, onChange, handleDelete }:UploadFilePropsType) => {
     const theme = useTheme();
     const fileInput = React.useRef<HTMLInputElement>(null);
     const ref = React.useRef();
@@ -182,13 +176,9 @@ const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, on
                             <AddAPhoto/>
                         </IconButton>
                     }
-                </Box>
-                {
-                    imageSrc && <ColorPaletteImage ref={ ref } src={ imageSrc }/>
-                }
+                </Box>    
             </Box>       
         </>
     )
 }
 
-export default UploadFile;
