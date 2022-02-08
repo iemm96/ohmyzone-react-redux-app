@@ -12,7 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startRegister } from '../actions/auth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box } from "@mui/material";
+import { Box, Divider } from '@mui/material';
+import GoogleIcon from '../icons/GoogleIcon';
+import { ChevronLeft } from '@mui/icons-material';
 
 const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
@@ -63,7 +65,7 @@ const RegisterForm = () => {
               height: 120
             }}/>
           </motion.div> 
-          <Container>
+          <Container maxWidth="sm">
             <form>        
                 <motion.div initial='initial' animate='animate' exit='exit'>
                     <motion.span variants={ enteringFormTransition }>
@@ -159,25 +161,77 @@ const RegisterForm = () => {
                         </motion.div>
                         <motion.div variants={ inputTransition }>
                             <Button 
-                            sx={{
-                                width: '100%',
-                                backgroundColor: '#4664F6',
-                                color: 'white',
-                                padding: '14px 0',
-                                borderRadius: 3.5,
-                                textTransform: 'none',
-                                '&:hover': {
-                                    backgroundColor: 'black'
-                                }
-                            }} 
-                            onClick={ handleSubmit(onSubmit) }
+                                fullWidth
+                                sx={{
+                                    backgroundColor: '#4664F6',
+                                    color: 'white',
+                                    padding: '14px 0',
+                                    borderRadius: 3.5,
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: 'black'
+                                    }
+                                }} 
+                                onClick={ handleSubmit(onSubmit) }
                             >
                                 ¡Crear mi cuenta!
                             </Button>
                         </motion.div>
                     </motion.span>
-                </motion.div>
-            </form>
+                    </motion.div>
+                </form>
+                <Box sx={{
+                    backgroundColor: 'white',
+                    bottom: 16,
+                    width: '100%'
+                    }}>
+                    <Grid mt={12} mb={4}>
+                        <Divider sx={{
+                        mb:1,
+                        "&.MuiDivider-root": {
+                            "&::before": {
+                            borderTop: "thin solid #AAAFB6"
+                            },
+                            "&::after": {
+                            borderTop: "thin solid #AAAFB6"
+                            }
+                        },
+                        "& .MuiDivider-wrapper": {
+                            fontSize: 12,
+                            color: '#AAAFB6'
+                        }
+                        }}>
+                            O bien
+                        </Divider>
+                        <Grid item xs={12}>
+                        <Button 
+                            sx={{
+                            width: '100%',
+                            backgroundColor: 'white',
+                            border: '1px solid #4664F6',
+                            color: '#4664F6',
+                            padding: '14px 0',
+                            borderRadius: 3.5,
+                            textTransform: 'none'
+                            }}
+                            startIcon={<GoogleIcon/>}
+                            >
+                            Accede con Google
+                        </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid mb={4}>
+                        <Grid item xs={12} justifyContent="center" display="flex">
+                            <Button 
+                                onClick={ () => navigate('/') }
+                                sx={{color: '#4664F6'}}
+                                startIcon={ <ChevronLeft/> }
+                            >
+                                Volver
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Box>
         </Container>
         
         </>

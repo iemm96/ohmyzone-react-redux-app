@@ -42,7 +42,7 @@ const CoverSection = () => {
             </Grid>
             <form onSubmit={ handleSubmit( submitForm ) }>
                 <Grid mt={1} mb={2} spacing={2} container>
-                    <Grid xs={12} md={6} item>
+                    <Grid xs={12} item>
                         <TextField 
                             fullWidth
                             onChange={ ( e ) => handleChangeName( e ) }
@@ -58,8 +58,7 @@ const CoverSection = () => {
                 </Grid>
                 <Button
                     sx={{ 
-                        position: 'absolute',
-                        bottom: 4,
+                        mt: 8,
                         textTransform: 'none',
                     }}
                     variant="contained"

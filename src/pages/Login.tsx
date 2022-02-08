@@ -29,30 +29,35 @@ const Login = () => {
 
     return(
         <>
-            <Box sx={{
-                height: 290,
-                backgroundColor: '#4664F6',
-                justifyContent:'center',
-                alignItems:'center',
-                display:'flex'
-            }}>
+           <motion.div
+                initial={{
+                    height: 100,
+                    backgroundColor: '#4664F6',
+                    justifyContent:'center',
+                    alignItems:'center',
+                    display:'flex'
+                }}
+                animate={{
+                    height: 290,
+                    transition: { ...transition }
+                }}
+            >
             <motion.img
               initial={{ 
-                opacity:0,
-                 y:20
+                height: 60,
+                 y: 0
               }}
               animate={{
-                opacity:1,
-                y:0,
-                transition: {delay: .2, ...transition}
+                y: 0,
+                height: 120,
+                transition: { ...transition }
               }}
               alt="logo"
               src={Logo} style={{
               height: 120
             }}/>
-          </Box>      
-          <Container>
-            
+          </motion.div>      
+          <Container maxWidth="sm">
             <form>        
               <motion.div initial='initial' animate='animate' exit='exit'>
                 <motion.span variants={enteringFormTransition}>

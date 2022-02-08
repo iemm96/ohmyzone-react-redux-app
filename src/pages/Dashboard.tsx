@@ -14,6 +14,9 @@ import { ChevronLeft, ChevronRight, Search } from "@mui/icons-material";
 import Pagination from '@mui/material/Pagination';
 import { Box } from "@mui/system";
 import StyledSwitch from '../styled/StyledSwitch';
+import { fetchRecords } from '../actions/fetchRecords';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const pixabay_url = 'https://pixabay.com/api/?key=25105059-4d7ff3f9a607aabea05e93997';
 
@@ -23,8 +26,6 @@ type mediaCardTypes = {
     index:number
 }
 
-
-  
 type CurrentPaletteType = {
     vibrant: string,
     lightVibrant: string,
@@ -46,6 +47,11 @@ type SearchOptions = {
 }
 
 const Dashboard = () => {
+    const state = useSelector( state => state );
+
+    console.log(state);
+
+    const navigate = useNavigate();
     const [pixabayResults, setPixabayResults] = useState([]);
     const [colorsArray,setColorsArray] = useState<[]>([]);
     const [totalResults,setTotalResults] = useState<number>(1);
@@ -84,8 +90,17 @@ const Dashboard = () => {
     })
 
     useEffect(() => {
+
         retrievePixabayImages();
     }, []);
+
+    const getUserZones = async () => {
+        const { zones } = await fetchRecords( `zones/byUser/` );
+
+        if(zones.lenght == 0) {
+            navigate('/welcome');
+        }
+    }
 
     useEffect(() => {
         retrievePixabayImages();
