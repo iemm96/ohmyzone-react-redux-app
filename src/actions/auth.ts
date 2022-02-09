@@ -7,6 +7,25 @@ export const startGoogleLogin = () => {
     }
 }
 
+export const startValidateJWT = ( jwt:string ) => {
+
+    return async ( dispatch:any ) => {
+        const { data } = await axios.get(
+            `${ baseUrl }auth`,
+            {
+                headers: {'x-token': jwt}
+            }
+        );
+
+        if(data.user) {
+            return dispatch( login(data.user.name, data.user.isNew, data.user.uid, jwt ));
+        }else{
+            return false;
+        }
+        
+    }
+}
+
 export const startLogin = ( email:string, password:string ) => {
 
     const payload = {
