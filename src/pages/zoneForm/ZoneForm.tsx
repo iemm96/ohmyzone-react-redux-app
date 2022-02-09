@@ -14,8 +14,7 @@ const ZoneForm = () => {
     const theme = useTheme();
 
     return (
-        <>
-            <Header/>
+        <> 
             <Paper 
                 sx={{
                     pt: 10,
