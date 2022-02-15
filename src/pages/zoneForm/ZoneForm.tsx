@@ -1,5 +1,4 @@
 import withTheme from '../../components/WithTheme';
-import Header from '../../components/Header';
 import { Container, Paper } from '@mui/material';
 import { useTheme } from '@mui/material';
 import { useParams } from 'react-router-dom';
@@ -7,6 +6,7 @@ import PreviewSection from './PreviewSection';
 import CoverSection from './CoverSection';
 import StepperComponent from '../../components/StepperComponent';
 import SocialIconsSection from './SocialIconsSection';
+import { LinksSection } from './LinksSection';
   
 const ZoneForm = () => {
     
@@ -27,7 +27,9 @@ const ZoneForm = () => {
                     <StepperComponent actualStep={ params.part } totalSteps={ 4 } />
                     { params.part === '1' && <CoverSection/> }
                     
-                    { params.part === '2' && <SocialIconsSection prev={ 1 } next={ 2 }/> }
+                    { params.part === '2' && <SocialIconsSection prev={ 1 } next={ 3 }/> }
+
+                    { params.part === '3' && <LinksSection prev={ 2 } next={ 4 }/> }
 
                     { params.part === '4' && <PreviewSection/> }
                 </Container>

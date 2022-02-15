@@ -8,28 +8,45 @@ import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
 import { startCreateZone } from '../../actions/zones';
 import { useNavigate } from "react-router-dom";
+import { CircularProgress } from '@mui/material';
 
 const CoverSection = () => {
     const { auth } = useSelector( (state:any) => state );
+    const { createdUsername, setCreatedUsername } = useUsernameCreator();
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [ fullName, setFullName ] = useState<String | undefined>(undefined);
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer } = useUploader();
+
+    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
     const { handleSubmit } = useForm();
-    const { createdUsername, setCreatedUsername } = useUsernameCreator();
     
+    const [ fullName, setFullName ] = useState<string | undefined>(undefined);
+    const [ loading, setLoading ] = useState<boolean>(false);
+
+    useEffect(() => {
+        getZone();
+    },[])
+
+    const getZone = async () => {
+
+    }
+
     const handleChangeName = (e:any) => {
         setFullName(e.target.value);
     }
 
     const submitForm = async ( data:any ) => {
+        setLoading( true );
         data.username = createdUsername;
         data.title = fullName;
         data.user = auth.uid;
 
         const result:any = await dispatch( startCreateZone( data ) ); //Creates Zone
-        await uploadToServer( result.uid );
-        navigate('/zones/new/2')
+        await uploadToServer( result.uid ); //Uploads image to server with the id of the Zone recently created
+
+        setLoading( false );
+
+        navigate( `/zones/new/2/${result.uid}` )
         
     }
 
@@ -37,7 +54,20 @@ const CoverSection = () => {
         <>
             <Grid sx={{ mt: 2 }} container>
                 <Grid xs={12} item>
-                    <UploadFile onChange={onChange} handleDelete={handleDelete} dataUri={dataUri} imageSrc={imageSrc} />
+                  
+                    <UploadFile
+                        file={dataUri}
+                        openModal={ openModal }
+                        handleModal={ handleModal }
+                        onChange={ onChange } 
+                        handleDelete={ handleDelete }
+                        dataUri={ dataUri }
+                        imageSrc={ imageSrc }
+                        getCropData={ getCropData }
+                        setCropper={ setCropper }
+                        temporalDataUri={ temporalDataUri }
+                        useCropper={ true }
+                    />
                 </Grid>
             </Grid>
             <form onSubmit={ handleSubmit( submitForm ) }>
@@ -64,6 +94,8 @@ const CoverSection = () => {
                     variant="contained"
                     fullWidth
                     type="submit"
+                    disabled={ loading }
+                    startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
                 >
                     Guardar y continuar
                 </Button>
