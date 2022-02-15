@@ -6,17 +6,54 @@ import { AddAPhoto, Clear } from '@mui/icons-material';
 import { red } from '@mui/material/colors';
 import axios from 'axios';
 import { postRecord } from '../actions/postRecord';
-
+import { ModalCropper } from './ModalCropper';
+import { resizeImage } from '../actions/resizeImage';
 
 type UploadFilePropsType = {
     accept?: string;
     title?: string;
     dataUri: any;
-    imageSrc: any; 
+    imageSrc?: any; 
     onChange: any;
     handleDelete: any;
     setCurrentPalette?: any;
+    handleModal?: any;
+    openModal?: boolean;
+    file?: any;
+    getCropData?: any;
+    setCropper?: any;
+    temporalDataUri?: string | null;
+    useCropper?: boolean;
+    roundedPreview?: boolean;
+    maxFileSize?: number;
 }
+
+const dataURItoBlob = (dataURI:string) => {
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    var byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    //Old Code
+    //write the ArrayBuffer to a blob, and you're done
+    //var bb = new BlobBuilder();
+    //bb.append(ab);
+    //return bb.getBlob(mimeString);
+
+    //New Code
+    return new Blob([ab], {type: mimeString});
+
+}
+
 
 const fileToDataUri = (file:any) => new Promise((resolve) => {
     const reader = new FileReader();
@@ -28,11 +65,25 @@ const fileToDataUri = (file:any) => new Promise((resolve) => {
     reader.readAsDataURL(file);
 })
 
-export const useUploader = ( initialState = null ) => {
+export const useUploader = ( useCropper = false,  initialState = null ) => {
     const [ dataUri, setDataUri ] = React.useState<null | string>(initialState);
+    const [ temporalDataUri, setTemporalDataUri ] = React.useState<null | string>( initialState );
     const [ imageSrc, setImageSrc ] = React.useState<null | string>(initialState);
     const [ file, setFile ] = React.useState<any | string>(initialState);
+    const [ openModal, setOpenModal ] = React.useState<boolean>( false );
+    
+    const [cropper, setCropper] = React.useState<any>();
+    const handleModal = () => {
+        setOpenModal( !openModal );
+    }
 
+    const getCropData = () => {
+        console.log(' getCropData ');
+        if (typeof cropper !== "undefined") {
+          setDataUri( cropper.getCroppedCanvas().toDataURL() );
+          handleModal();
+        }
+    };
 
     const uploadToCloudinary = async () => {
         const formData = new FormData();
@@ -63,16 +114,39 @@ export const useUploader = ( initialState = null ) => {
     
         fileToDataUri(file)
           .then((dataUri:any) => {
-            setDataUri(dataUri)
+            useCropper ? setTemporalDataUri( dataUri ) : setDataUri( dataUri )
           });
         
-          setFile(file);
+          if( useCropper ) {
+            handleModal();
+            setFile(file); 
+          }
     }
 
     const uploadToServer = async ( zone:string ) => {
         const formData = new FormData();
         formData.append( 'zone', zone );
-        formData.append( 'file', file );
+        let fileToUpload:any = null;
+
+        if( useCropper ) {
+            let dataBlob:Blob = new Blob();
+            let metadata = {
+                type: file.type
+              };
+
+              if(dataUri) {
+                dataBlob = dataURItoBlob( dataUri )
+              }
+
+              fileToUpload = new File([ dataBlob ], file.name, metadata);
+        
+        }else {
+            fileToUpload = file;
+        }
+
+        const resized:any = await resizeImage( fileToUpload ); //Starts resizing image
+            
+        formData.append( 'file', resized );
 
         const { image } = await postRecord('images', formData);
         
@@ -84,19 +158,43 @@ export const useUploader = ( initialState = null ) => {
         setImageSrc(null);
     }
 
-    return { dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer  }
+    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper }
 };
 
 
-export const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, imageSrc, onChange, handleDelete }:UploadFilePropsType) => {
+export const UploadFile = ({ 
+    accept = '.jpg, .jpeg, .png',
+    title,
+    dataUri,
+    onChange,
+    handleDelete,
+    openModal,
+    handleModal,
+    setCropper,
+    getCropData,
+    temporalDataUri,
+    maxFileSize = 5242880,
+    roundedPreview = false,
+    useCropper = false,
+}:UploadFilePropsType) => {
+
     const theme = useTheme();
     const fileInput = React.useRef<HTMLInputElement>(null);
-    const ref = React.useRef();
-    
+
+
     return (
         <>
+            { useCropper && 
+                <ModalCropper
+                    openModal={ openModal }
+                    handleModal={ handleModal }
+                    file={ temporalDataUri }
+                    setCropper={ setCropper }
+                    getCropData={ getCropData }
+                />
+            }
             <Box
-                sx={{
+                sx={{   
                     position: 'relative',
                     border: `1px solid ${theme.palette.primary.main}`,
                     borderRadius: 2,
@@ -120,13 +218,17 @@ export const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, image
                     }}
                 >
                     <input
-                        accept={accept}
-                        ref={fileInput}
+                        accept={ accept }
+                        ref={ fileInput }
                         id="input-file"
                         type="file"
                         onChange={(event) => {
                             if(event.target.files) {
                                 
+                                if(event.target.files[0].size > maxFileSize ) {
+                                    alert(`El archivo no debe ser mayor a ${ Math.round(maxFileSize/1000000) }MB`);
+                                    return;
+                                }
                                 onChange(event?.target.files[0] || null)
                             }
                         }}
@@ -154,7 +256,8 @@ export const UploadFile = ({ accept = '.jpg, .jpeg, .png', title, dataUri, image
                             </IconButton>
                             <img
                                 style={{
-                                    maxWidth: 250
+                                    maxWidth: 250,
+                                    borderRadius: roundedPreview ? '50%' : 0
                                 }}
                                 src={ dataUri }
                                 alt="preview"
