@@ -10,18 +10,26 @@ export const startGoogleLogin = () => {
 export const startValidateJWT = ( jwt:string ) => {
 
     return async ( dispatch:any ) => {
-        const { data } = await axios.get(
-            `${ baseUrl }auth`,
-            {
-                headers: {'x-token': jwt}
-            }
-        );
 
-        if(data.user) {
-            return dispatch( login(data.user.name, data.user.isNew, data.user.uid, jwt ));
-        }else{
-            return false;
+        try{
+            const { data } = await axios.get(
+                `${ baseUrl }auth`,
+                {
+                    headers: {'x-token': jwt}
+                }
+            );
+
+            if(data.user) {
+                return dispatch( login(data.user.name, data.user.uid, jwt ));
+            }else{
+                return false;
+            }
+        }catch(e){
+            console.log(e);
         }
+        
+
+        
         
     }
 }
@@ -40,7 +48,7 @@ export const startLogin = ( email:string, password:string ) => {
         );
 
         localStorage.setItem('token', data.token);
-        dispatch( login(data.user.name, data.user.isNew, data.user.uid, data.token ));
+        dispatch( login(data.user.name, data.user.uid, data.token ));
     }
 }
 
@@ -62,11 +70,10 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, isNew:boolean, uid:string, token:string ) => ({
+export const login = ( name:string, uid:string, token:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
-        isNew,
         uid,
         token
     }
