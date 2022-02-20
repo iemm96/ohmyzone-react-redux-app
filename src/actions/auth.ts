@@ -20,7 +20,7 @@ export const startValidateJWT = ( jwt:string ) => {
             );
 
             if(data.user) {
-                return dispatch( login(data.user.name, data.user.uid, jwt ));
+                return dispatch( login(data.user.name, data.user.uid, jwt, data.user.plan ));
             }else{
                 return false;
             }
@@ -48,7 +48,12 @@ export const startLogin = ( email:string, password:string ) => {
         );
 
         localStorage.setItem('token', data.token);
-        dispatch( login(data.user.name, data.user.uid, data.token ));
+        dispatch( login(
+            data.user.name,
+            data.user.uid,
+            data.token,
+            data.user.plan,
+        ));
     }
 }
 
@@ -70,11 +75,12 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, uid:string, token:string ) => ({
+export const login = ( name:string, uid:string, token:string, plan:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
         uid,
-        token
+        token,
+        plan
     }
 });
