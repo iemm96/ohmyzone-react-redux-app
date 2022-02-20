@@ -27,13 +27,16 @@ export const ModalCropper = ({
     handleModal, 
     file, 
     setCropper, 
-    getCropData
+    getCropData,
+    aspectRatio=1
  }:{ 
     openModal?:boolean,
     handleModal:any,
     file:any,
     setCropper:any,
-    getCropData:any }) => {
+    getCropData:any
+    aspectRatio?:number
+ }) => {
 
     const [ loadingCropper, setLoadingCropper ] = useState<boolean>( true );
     return (
@@ -69,7 +72,7 @@ export const ModalCropper = ({
                         src={file}
                         ready={ () => setLoadingCropper( false ) }
                         viewMode={1}
-                        aspectRatio={1}
+                        aspectRatio={ aspectRatio }
                         minCropBoxHeight={10}
                         minCropBoxWidth={10}
                         background={false}
