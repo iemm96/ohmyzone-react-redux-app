@@ -20,6 +20,11 @@ export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername 
     const { setValue, control, formState: { errors } } = useForm();
     
     useEffect(() => {
+        if(createdUsername) {
+            setValue( 'username', createdUsername );
+        }
+    },[createdUsername])
+    useEffect(() => {
         if( fullName !== undefined ) {
             const clearedString = clearString(fullName);
             setCreatedUsername( clearedString );

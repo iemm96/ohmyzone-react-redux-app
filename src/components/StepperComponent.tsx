@@ -3,10 +3,10 @@ import { Stepper, Step, StepLabel, Box, LinearProgress, Typography, Grid } from 
 const StepperComponent = ( { actualStep, totalSteps }:{ actualStep:string | undefined, totalSteps:number } ) => {
     return(
         <Grid sx={{ alignItems: 'center' }} container>
-            <Grid xs={ 10 } item>
+            <Grid xs={ 9 } item>
                 { actualStep &&<LinearProgress variant="determinate" value={ (parseInt(actualStep) / totalSteps ) * 100 } /> }
             </Grid>
-            <Grid sx={{ justifyContent: 'right', display: 'flex' }} xs={ 2 } item>
+            <Grid sx={{ justifyContent: 'right', display: 'flex' }} xs={ 3 } item>
                 <Typography sx={{ opacity: 0.5 }} variant="caption">Paso { actualStep } de { totalSteps }</Typography>
             </Grid>
         </Grid>

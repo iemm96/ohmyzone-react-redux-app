@@ -4,21 +4,25 @@ import TextField from "@mui/material/TextField";
 import { UploadFile, useUploader } from '../../components/UploadFile';
 import { UsernameCreator, useUsernameCreator } from '../../components/UsernameCreator';
 import { useState, useEffect } from 'react';
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
 import { startCreateZone } from '../../actions/zones';
-import { useNavigate } from "react-router-dom";
-import { CircularProgress } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
+import { updateRecord } from '../../actions/updateRecord';
+import { fetchRecord } from '../../actions/fetchRecord';
 
 const CoverSection = () => {
+    const params = useParams();
     const { auth } = useSelector( (state:any) => state );
     const { createdUsername, setCreatedUsername } = useUsernameCreator();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [ isFormReady, setIsFormReady ] = useState<boolean>(false);
 
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
-    const { handleSubmit } = useForm();
+    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader( true );
+    const { handleSubmit, setValue, control } = useForm();
     
     const [ fullName, setFullName ] = useState<string | undefined>(undefined);
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -28,7 +32,18 @@ const CoverSection = () => {
     },[])
 
     const getZone = async () => {
+        if(params.zone) {
+            const { zone } = await fetchRecord('zones', params.zone);
 
+            if(zone.profileImage.url) {
+                setDataUri(zone.profileImage.url);
+            }
+
+            setValue( 'title', zone.title );
+            setCreatedUsername( zone.username );
+        }
+
+        setIsFormReady(true);
     }
 
     const handleChangeName = (e:any) => {
@@ -37,69 +52,122 @@ const CoverSection = () => {
 
     const submitForm = async ( data:any ) => {
         setLoading( true );
+        
         data.username = createdUsername;
         data.title = fullName;
-        data.user = auth.uid;
 
-        const result:any = await dispatch( startCreateZone( data ) ); //Creates Zone
-        await uploadToServer( result.uid ); //Uploads image to server with the id of the Zone recently created
+        let result:any;
+        let zoneUid:string = '';
 
+        if( params.zone ) {
+            result = await updateRecord( 'zones', data, params.zone );
+            zoneUid = result.zoneResult.uid;
+
+        }else {
+            data.user = auth.uid;
+
+            result = await dispatch( startCreateZone( data ) ); //Creates Zone
+            const image = await uploadToServer( result.uid ); //Uploads image to server with the id of the Zone recently created
+            zoneUid = result.uid;
+            if(image) {
+                await updateRecord('zones', {
+                    profileImage: image.uid
+                },
+                    zoneUid
+                );
+            }
+        }
+        
         setLoading( false );
 
-        navigate( `/zones/new/2/${result.uid}` )
-        
+        navigate( `/zones/new/2/${zoneUid}` );
+
     }
 
     return(
         <>
-            <Grid sx={{ mt: 2 }} container>
-                <Grid xs={12} item>
-                  
-                    <UploadFile
-                        file={dataUri}
-                        openModal={ openModal }
-                        handleModal={ handleModal }
-                        onChange={ onChange } 
-                        handleDelete={ handleDelete }
-                        dataUri={ dataUri }
-                        imageSrc={ imageSrc }
-                        getCropData={ getCropData }
-                        setCropper={ setCropper }
-                        temporalDataUri={ temporalDataUri }
-                        useCropper={ true }
-                    />
-                </Grid>
-            </Grid>
-            <form onSubmit={ handleSubmit( submitForm ) }>
-                <Grid mt={1} mb={2} spacing={2} container>
+        { isFormReady ? (
+            <>
+                <Grid sx={{ mt: 2 }} container>
                     <Grid xs={12} item>
-                        <TextField 
-                            fullWidth
-                            onChange={ ( e ) => handleChangeName( e ) }
-                            value={ fullName }
-                            label="Título de tu Zone" 
+                    
+                        <UploadFile
+                            file={dataUri}
+                            openModal={ openModal }
+                            handleModal={ handleModal }
+                            onChange={ onChange } 
+                            handleDelete={ handleDelete }
+                            dataUri={ dataUri }
+                            imageSrc={ imageSrc }
+                            getCropData={ getCropData }
+                            setCropper={ setCropper }
+                            temporalDataUri={ temporalDataUri }
+                            useCropper={ true }
+                            roundedPreview={ true }
                         />
                     </Grid>
                 </Grid>
-                <Grid container>
-                    <Grid xs={12} item>
-                        <UsernameCreator fullName={ fullName } createdUsername={ createdUsername } setCreatedUsername={ setCreatedUsername } />
+                <form onSubmit={ handleSubmit( submitForm ) }>
+                    <Grid mt={1} mb={2} spacing={2} container>
+                        <Grid xs={12} item>
+                            <Controller
+                                name="title"
+                                control={ control }
+                                render={ ({ field: { value, onChange } }) => (
+                                    <TextField
+                                        onChange={ ( e ) =>  {
+                                            onChange( e.target.value );
+                                            handleChangeName( e );
+                                        }}
+                                        fullWidth
+                                        value={ value }
+                                        label="Título de tu Zone" 
+                                    />
+                                ) }
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Button
-                    sx={{ 
-                        mt: 8,
-                        textTransform: 'none',
-                    }}
-                    variant="contained"
-                    fullWidth
-                    type="submit"
-                    disabled={ loading }
-                    startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                >
-                    Guardar y continuar
-                </Button>
-            </form>
+                    <Grid container>
+                        <Grid xs={12} item>
+                            <UsernameCreator 
+                                fullName={ fullName } 
+                                createdUsername={ createdUsername }
+                                setCreatedUsername={ setCreatedUsername } 
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button
+                        sx={{ 
+                            mt: 8,
+                            textTransform: 'none',
+                        }}
+                        variant="contained"
+                        fullWidth
+                        type="submit"
+                        disabled={ loading }
+                        startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
+                    >
+                        Guardar y continuar
+                    </Button>
+                </form>
+            </>
+            
+        ) 
+        :
+        (
+            <Box
+                sx={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: 400,
+                }}
+            >
+                <CircularProgress/>
+            </Box>
+        )
+        }
         </>
     )
 }

@@ -26,6 +26,7 @@ type UploadFilePropsType = {
     useCropper?: boolean;
     roundedPreview?: boolean;
     maxFileSize?: number;
+    aspectRatio?: number;
 }
 
 const dataURItoBlob = (dataURI:string) => {
@@ -78,7 +79,7 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
     }
 
     const getCropData = () => {
-        console.log(' getCropData ');
+        
         if (typeof cropper !== "undefined") {
           setDataUri( cropper.getCroppedCanvas().toDataURL() );
           handleModal();
@@ -151,6 +152,8 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
         const { image } = await postRecord('images', formData);
         
         setImageSrc( image.url );
+
+        return image;
     }
 
     const handleDelete = async () => {
@@ -158,7 +161,7 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
         setImageSrc(null);
     }
 
-    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper }
+    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper,setDataUri  }
 };
 
 
@@ -176,6 +179,7 @@ export const UploadFile = ({
     maxFileSize = 5242880,
     roundedPreview = false,
     useCropper = false,
+    aspectRatio = 1
 }:UploadFilePropsType) => {
 
     const theme = useTheme();
@@ -191,6 +195,7 @@ export const UploadFile = ({
                     file={ temporalDataUri }
                     setCropper={ setCropper }
                     getCropData={ getCropData }
+                    aspectRatio={ aspectRatio }
                 />
             }
             <Box

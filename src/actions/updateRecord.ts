@@ -2,7 +2,7 @@ import baseUrl from "./../constants/baseUrl";
 
 import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
 
-export const updateRecord = async (resource:string, payload: [], uid:string) => {
+export const updateRecord = async (resource:string, payload: any, uid:string) => {
 
     const authToken = localStorage.getItem('token');
 

@@ -29,11 +29,13 @@ const PreviewSection = () => {
                 <motion.div
                     initial={{
                         opacity: 0,
-                        transform: 'rotateX(0deg) rotateY(-60deg) rotateZ(0deg)'
+                        y: 20,
+                        //transform: 'rotateX(0deg) rotateY(-10deg) rotateZ(0deg)'
                     }}
                     animate={{
                         opacity: 1,
-                        transform: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
+                        y: 0,
+                        //transform: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
                         transition: { delay: 0.5, duration: 2, ease: [0.6, .01, -0.05, 0.9] }
                     }}
                 >

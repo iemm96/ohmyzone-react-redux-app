@@ -1,19 +1,22 @@
 import { useState } from 'react';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useSelector } from 'react-redux';
 
 
 const Theme = (props:any) => {
+    const { primaryMain, secondaryMain } = useSelector( (state:any) => state.theme );
+
     const { children } = props;
-    const [darkMode,setDarkMode] = useState<Boolean>(true);
+    const [ darkMode,setDarkMode ] = useState<Boolean>(true);
 
     const theme = createTheme({
         palette: {
             mode: darkMode ? 'dark' : 'light',
             primary: {
-                main: '#F77F00',
+                main: primaryMain ? primaryMain : '#F77F00',
             },
             secondary: {
-                main: darkMode ? '#003049' : '#F8FAFF',
+                main: secondaryMain ? secondaryMain : '#F8FAFF',
             },
         },
     })

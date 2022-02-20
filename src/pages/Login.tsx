@@ -1,30 +1,33 @@
 import Logo from '../assets/logo.svg';
-import { Button, Container, Divider, Grid, TextField, Typography, Box } from '@mui/material';
+import { Button, Container, Divider, Grid, TextField, Typography, Box, CircularProgress } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { startLogin } from '../actions/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { transition, enteringFormTransition, inputTransition } from '../constants/transitions';
 import { inputLoginStyles } from '../styles/inputLoginStyles';
 import GoogleIcon from '../icons/GoogleIcon';
 
 const Login = () => {
-    const { isNew } = useSelector( (state:any ) => state.auth );
+    const { name } = useSelector( (state:any ) => state.auth );
   
     const navigate = useNavigate();
     const { handleSubmit, control, formState: {errors}, } = useForm();
+    const [ loading, setLoading ] = useState<boolean>(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if( isNew ) {
-        navigate('/welcome');
+        if( name ) {
+          navigate('/dashboard');
         }
-    },[isNew]);
+    },[name]);
 
     const onSubmit = async (data: any) => {
+        setLoading( true );
         await dispatch( startLogin( data.email, data.password ) );
+        setLoading( false );
     };
 
     return(
@@ -117,6 +120,7 @@ const Login = () => {
                   </motion.div>
                   <motion.div variants={inputTransition}>
                     <Button 
+                      disabled={ loading }
                       sx={{
                         width: '100%',
                         backgroundColor: '#4664F6',
@@ -128,6 +132,7 @@ const Login = () => {
                           backgroundColor: 'black'
                         }
                       }} 
+                      startIcon={ loading && <CircularProgress sx={{ color:'inherit' }} size={ 12 }/> }
                       onClick={handleSubmit( onSubmit )}
                     >
                     Iniciar sesión

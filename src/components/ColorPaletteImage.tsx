@@ -2,9 +2,12 @@ import React, { useImperativeHandle } from 'react'
 import { Box } from '@mui/system';
 import { usePalette } from 'react-palette';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateTheme } from '../actions/themes';
 
 export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
     const { data, loading } = usePalette(props.src);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if(data && !loading) {
@@ -30,13 +33,11 @@ export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
                 darkMuted: data.darkMuted
             });
             
-            props.setPrimaryColor(data.vibrant);
-
-            if(props.darkMode) {
-                props.setSecondaryColor(data.darkVibrant);
-            }else{
-                props.setSecondaryColor(data.lightVibrant);
+            if(data.vibrant &&  data.darkVibrant ) {
+                dispatch( updateTheme( data.vibrant, data.darkVibrant ) );
             }
+
+    
         }})
     );
     
