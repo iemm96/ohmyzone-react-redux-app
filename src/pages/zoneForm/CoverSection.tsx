@@ -6,11 +6,12 @@ import { UsernameCreator, useUsernameCreator } from '../../components/UsernameCr
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
-import { startCreateZone } from '../../actions/zones';
+import { startupdateZone, updateZone, startUpdateZone } from '../../actions/zones';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CircularProgress, Box } from '@mui/material';
 import { updateRecord } from '../../actions/updateRecord';
 import { fetchRecord } from '../../actions/fetchRecord';
+import CircularProgressComponent from "../../components/CircularProgressComponent";
 
 const CoverSection = () => {
     const params = useParams();
@@ -60,13 +61,15 @@ const CoverSection = () => {
         let zoneUid:string = '';
 
         if( params.zone ) {
-            result = await updateRecord( 'zones', data, params.zone );
-            zoneUid = result.zoneResult.uid;
+            
+            result = await dispatch( startUpdateZone( data, params.zone ) ); //Updates Zone
+            zoneUid = result.uid;
+
 
         }else {
             data.user = auth.uid;
 
-            result = await dispatch( startCreateZone( data ) ); //Creates Zone
+            result = await dispatch( startupdateZone( data ) ); //Creates Zone
             const image = await uploadToServer( result.uid ); //Uploads image to server with the id of the Zone recently created
             zoneUid = result.uid;
             if(image) {
@@ -77,10 +80,12 @@ const CoverSection = () => {
                 );
             }
         }
+
+        
         
         setLoading( false );
 
-        navigate( `/zones/new/2/${zoneUid}` );
+        navigate( `/zones/edit/2/${zoneUid}` );
 
     }
 
@@ -155,17 +160,7 @@ const CoverSection = () => {
         ) 
         :
         (
-            <Box
-                sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: 400,
-                }}
-            >
-                <CircularProgress/>
-            </Box>
+            <CircularProgressComponent/>
         )
         }
         </>
