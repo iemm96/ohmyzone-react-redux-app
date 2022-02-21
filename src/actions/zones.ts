@@ -1,23 +1,30 @@
 import { postRecord } from './postRecord';
 import { actionTypes } from '../actionTypes/actionTypes';
-export const startCreateZone = ( payload:any ) => {
+import { updateRecord } from './updateRecord';
+
+export const startupdateZone = ( payload:any ) => {
 
     return( async (dispatch:any)  => {
         const { zone } = await postRecord( 'zones', payload );
 
-        dispatch( createZone( zone.title, zone.isCompleted, zone.isPublished, zone.uid ) );
+        dispatch( updateZone({ ...zone }) );
         
         return zone;
-    })
+    });
 
 }
 
-export const createZone = ( title:string, isCompleted:boolean, isPublished:boolean, uid:string ) => ({
-    type: actionTypes.createZone,
-    payload: {
-        title,
-        isCompleted,
-        isPublished,
-        uid,
-    }
+export const startUpdateZone = ( payload:any, uid:string ) => {
+    return( async (dispatch:any)  => {
+        const { zoneResult } = await updateRecord( 'zones', payload, uid );
+    
+        dispatch( updateZone( { ...zoneResult } ) );
+        
+        return zoneResult;
+    });
+}
+
+export const updateZone = ( payload:any ) => ({
+    type: actionTypes.updateZone,
+    payload
 });
