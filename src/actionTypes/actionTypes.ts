@@ -4,7 +4,8 @@ export const actionTypes = {
 
     register: '[Auth] Register',
 
-    createZone: '[Zones] Create',
-
+    updateZone: '[Zones] Update',
+    
     updateTheme: '[Themes] Update',
+
 }
