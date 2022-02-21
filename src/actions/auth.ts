@@ -27,10 +27,7 @@ export const startValidateJWT = ( jwt:string ) => {
         }catch(e){
             console.log(e);
         }
-        
-
-        
-        
+    
     }
 }
 
@@ -84,3 +81,7 @@ export const login = ( name:string, uid:string, token:string, plan:string ) => (
         plan
     }
 });
+
+export const logout = () => ({
+    type: actionTypes.logout,
+})
