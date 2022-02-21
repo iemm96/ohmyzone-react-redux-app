@@ -25,12 +25,12 @@ const RegisterForm = () => {
 
     useEffect(() => {
         if( uid ) {
-            navigate( '/welcome' );
+            navigate( '/dashboard' );
         }
     },[uid])
 
     const onSubmit = async (data: any) => {
-        console.log(data);
+        
         await dispatch( startRegister( data.name, data.email, data.password ) );
         
     };
