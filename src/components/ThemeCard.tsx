@@ -3,6 +3,8 @@ import { CardActionArea } from '@mui/material';
 import CardMedia from '@mui/material/CardMedia';
 import {ColorPaletteImage} from "./ColorPaletteImage";
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateZone } from '../actions/zones';
 
 
 type CurrentPaletteType = {
@@ -16,6 +18,8 @@ type CurrentPaletteType = {
 
 
 const ThemeCard = ({ arrayRef, urlImage, darkMode, index, setImage, largeImageURL }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, setImage:any }) => {
+    const { zone } = useSelector( (state:any) => state );
+    const dispatch = useDispatch();
 
     const [currentPalette,setCurrentPalette] = useState<CurrentPaletteType>({
         vibrant: '#4664F6',
@@ -29,6 +33,12 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, setImage, largeImageUR
     const updateThemeColor = (index:any) => {
         const reff:any = arrayRef[index];
         reff?.current.updatePalette();
+        dispatch( updateZone(
+            {
+                ...zone,
+                backgroundImage: largeImageURL
+            }
+        ) )
         setImage( largeImageURL );
     }
 
