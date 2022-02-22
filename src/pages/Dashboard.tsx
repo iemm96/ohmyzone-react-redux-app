@@ -42,13 +42,14 @@ const Dashboard = () => {
     return (
         <Paper
             sx={{ pt: 10 }}
+            elevation={ 0 }
         >
             <ModalPremium
                 handleModal={ handleModal }
                 openModal={ openModal }
                 modalTitle={ "Es momento de ser un Zoner Pro para crear Zones ilimitados" }
             />
-            <Container>
+            <Container maxWidth="md">
                 <Grid justifyContent="right" container>
                     <Grid item>
                         <StyledButton
@@ -64,7 +65,7 @@ const Dashboard = () => {
                 </Grid>
                 <Grid sx={{ mt: 2 }} spacing={ 2 } container>
                     { userZones.length > 0 && userZones.map((item:any,index:number) => (
-                        <Grid key={ index } xs={ 12 } md={ 4} item>
+                        <Grid key={ index } xs={ 12 } item>
                             <SavedZone
                                 data={ item }
                                 getZones={ getRecords }

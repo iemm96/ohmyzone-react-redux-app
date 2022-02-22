@@ -22,6 +22,7 @@ export const startValidateJWT = ( jwt:string ) => {
             if(data.user) {
                 return dispatch( login(data.user.name, data.user.uid, jwt, data.user.plan ));
             }else{
+                dispatch( logout );
                 return false;
             }
         }catch(e){

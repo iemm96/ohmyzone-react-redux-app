@@ -110,29 +110,9 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle }:ModalPremium
                       $49/mes
                     </Typography>
                     <Grid spacing={ 1 } container>
+                        
                         <Grid
-                            order={{
-                                xs: 2,
-                                md: 1
-                            }}
-                            xs={ 12 }
-                            md={ 6 }
-                            item
-                         >
-                            <StyledButton
-                                fullWidth
-                                onClick={ handleModal }
-                            >
-                                Tal vez luego
-                            </StyledButton>
-                        </Grid>
-                        <Grid
-                            order={{
-                                xs: 1,
-                                md: 2
-                            }}
-                            xs={ 12 }
-                            md={ 6 }
+                            xs={ 12 }                            
                             item
                          >
                             <StyledButton
@@ -144,7 +124,17 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle }:ModalPremium
                                 ¡Quiero ser Zoner Pro!
                             </StyledButton>
                         </Grid>
-
+                        <Grid
+                            xs={ 12 }
+                            item
+                         >
+                            <StyledButton
+                                fullWidth
+                                onClick={ handleModal }
+                            >
+                                Tal vez luego
+                            </StyledButton>
+                        </Grid>
                         
                         
                     </Grid>

@@ -5,7 +5,7 @@ import ZoneForm from '../pages/zoneForm/ZoneForm';
 import RegisterForm from '../pages/RegisterForm';
 import Login from "../pages/Login";
 import DashboardLayout from "../components/DashboardLayout";
-import ZonePreview from '../pages/ZonePreview';
+import ZoneComponent from '../components/ZoneComponent';
 
 const AppRoutes = () => {
     return(
@@ -20,8 +20,8 @@ const AppRoutes = () => {
 
                     <Route path="/zones/edit/:part/:zone" element={<ZoneForm/>}/>
 
-                    <Route path="/zones/preview/:zone" element={<ZonePreview/>}/>
                 </Route>
+                <Route path="/zones/preview/:zone" element={<ZoneComponent/>}/>
             </Routes>
         </AnimatePresence>
     );

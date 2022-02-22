@@ -51,10 +51,10 @@ const Dashboard = () => {
     console.log(state);
 
     const navigate = useNavigate();
-    const [pixabayResults, setPixabayResults] = useState([]);
-    const [colorsArray,setColorsArray] = useState<[]>([]);
-    const [totalResults,setTotalResults] = useState<number>(1);
-    const [searchOptions,setSearchOptions] = useState<SearchOptions>({
+    const [ pixabayResults, setPixabayResults ] = useState([]);
+    const [ colorsArray, setColorsArray ] = useState<[]>([]);
+    const [ totalResults, setTotalResults ] = useState<number>(1);
+    const [ searchOptions, setSearchOptions] = useState<SearchOptions>({
         query: 'Paisaje',
         lang: 'es',
         imageType: undefined,

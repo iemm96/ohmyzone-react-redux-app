@@ -20,6 +20,9 @@ import { motion } from "framer-motion";
 import { transition } from '../../constants/transitions';
 import SavedLink from '../../components/SavedLink';
 import { useLinkForm, LinkForm } from '../../components/LinkForm';
+import FormNavigationButtons from '../../components/FormNavigationButtons';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateZone } from '../../actions/zones';
 
 type LinksItemType = {
   title: string;
@@ -50,9 +53,9 @@ const filter = createFilterOptions<CategoryItemType>();
 
 
 export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
-  const { zone } = useParams();
-  
-  
+  const params = useParams();
+  const { zone } = useSelector( (state:any) => state );
+  const dispatch = useDispatch();
   const link:LinksItemType = {
     title: '',
     description: '',
@@ -75,21 +78,28 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
   const theme = useTheme();
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    dispatch( updateZone({
+      ...zone,
+      links: categories
+    }) );
+  },[categories]);
   
   useEffect(() => {
     getLinks();
-  },[]);
+  },[  ]);
 
   const getLinks = async () => {
  
-    if( zone ) {
-      const { links } = await fetchRecords(`links/byZone/${zone}`);
+    if( params.zone ) {
+      const { links } = await fetchRecords(`links/byZone/${ params.zone }`);
 
+
+    
       const arrayCategories:any = [];
 
       links.map((item:any) => {
-          arrayCategories.push(item.category)
+          arrayCategories.push(item.category);
       });
   
       arrayCategories.map((item:any) => {
@@ -198,33 +208,12 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
           isSaved: false
         } }
       />
-        <Stack>
-            <Button
-                sx={{ 
-                    mt: 8,
-                    textTransform: 'none',
-                }}
-                variant="contained"
-                fullWidth
-                type="submit"
-                disabled={ loading }
-                onClick={ () => navigate( `/zones/new/${next}` ) }
-                startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-            >
-                Guardar y continuar
-            </Button>
-            <Button
-                onClick={ () => navigate( `/zones/new/${prev}` ) }
-                sx={{ 
-                    mt: 2,
-                    textTransform: 'none',
-                }}
-                fullWidth
-                startIcon={ <ChevronLeft/> }
-            >
-                Volver
-            </Button>
-        </Stack>
+        <Box sx={{ mt:8 }}>
+            <FormNavigationButtons
+                loading={ loading }
+                prev={ `/zones/edit/2/${ zone.uid }` }
+            />
+        </Box>
     </Box>
     </>
   );

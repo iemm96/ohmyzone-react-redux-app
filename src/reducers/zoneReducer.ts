@@ -10,6 +10,9 @@ export const zoneReducer = ( state = { } , action:any ) => {
                 uid: action?.payload.uid,
                 username: action?.payload.username,
                 profileImage: action?.payload?.profileImage,
+                backgroundImage: action?.payload?.backgroundImage,
+                socialLinks: action?.payload?.socialLinks,
+                links: action?.payload?.links,
             }
         default:
             return state;

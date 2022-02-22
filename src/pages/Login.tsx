@@ -22,7 +22,7 @@ const Login = () => {
         if( name ) {
           navigate('/dashboard');
         }
-    },[name]);
+    },[ name ]);
 
     const onSubmit = async (data: any) => {
         setLoading( true );

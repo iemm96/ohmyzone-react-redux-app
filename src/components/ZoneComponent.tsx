@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import BannerPreview from './BannerPreview';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateZone } from '../actions/zones';
 import { fetchRecord } from '../actions/fetchRecord';
-
+import MainContentZone from './MainContentZone';
 
 const ZoneComponent = () => {
     const { zone } = useSelector( (state:any) => state );
@@ -13,12 +13,10 @@ const ZoneComponent = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getRecord();
-    },[params]);
-
-    useEffect(() => {
-        console.log('zone ',zone)
-    },[zone])
+        if( !zone ) {
+            getRecord();
+        }
+    },[ ])
 
     const getRecord = async () => {
         if(params.zone) {
@@ -30,11 +28,26 @@ const ZoneComponent = () => {
         }
     }
     return (
-        <Box>
-            <BannerPreview
-                data={ zone }
-            />
-        </Box>
+        <>
+        
+         <Box sx={{
+             position: 'relative',
+             overflowY: 'scroll'
+         }} >
+             <>
+                <BannerPreview
+                    data={ zone }
+                />
+                { zone?.links && (
+                    <MainContentZone
+                        data={ zone.links }
+                    />
+                ) }
+                
+             </>
+         </Box>
+        </>
+
     )
 }
 

@@ -18,12 +18,12 @@ export const usePixabaySelector = () => {
     const [ totalResults, setTotalResults ] = useState<number>(1);
     const [ arrayRef, setArrayRef ] = useState([]);
     const [ searchOptions, setSearchOptions] = useState<SearchOptions>({
-        query: 'Textura',
+        query: 'Planeta',
         lang: 'es',
         imageType: undefined,
         colors: '',
         category: undefined,
-        perPage: 12,
+        perPage: 16,
         page: 1
     });
 
@@ -75,9 +75,8 @@ export const PixabaySelector = ({
         <Grid spacing={ 2 } container>
             {
                 pixabayResults.map((value:any,index:number) => {
-                    console.log(value)
+                    
                     return(
-                
                     <Grid item xs={6} md={3}>
                         <ThemeCard
                             arrayRef={ arrayRef }

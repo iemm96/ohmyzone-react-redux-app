@@ -2,7 +2,7 @@ import StyledSwitch from '../../styled/StyledSwitch';
 import TextField from '@mui/material/TextField';
 import { InputAdornment, Grid, Stack, useTheme, Typography, CircularProgress } from '@mui/material';
 import { Call, ChevronLeft, Email, Facebook, Instagram, WhatsApp } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ContactOptionsType } from '../../types/ContactOptionsType';
 import Button from '@mui/material/Button';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,13 +11,22 @@ import { updateRecord } from '../../actions/updateRecord';
 import { motion } from "framer-motion";
 import { transition } from '../../constants/transitions';
 import { Controller, useForm } from 'react-hook-form';
+import CircularProgressComponent from '../../components/CircularProgressComponent';
+import { useSelector, useDispatch } from 'react-redux';
+import Box from '@mui/material/Box';
+import FormNavigationButtons from '../../components/FormNavigationButtons';
+import { updateZone } from '../../actions/zones';
 
 const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
-    const  { zone } = useParams();
+    const { zone } = useSelector( (state:any) => state );
+    const params = useParams();
     const [ loading, setLoading ] = useState<boolean>(false);
-    const navigate = useNavigate();
-    const { control, handleSubmit, formState: { errors }, clearErrors } = useForm();
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const { control, handleSubmit, formState: { errors }, clearErrors, setValue } = useForm();
+    const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
     const theme = useTheme();
 
     const [ contactOptions, setContactOptions ] = useState<ContactOptionsType>({
@@ -29,6 +38,26 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
         email: false,
     });
 
+    useEffect(() => {
+        if(! zone ) {
+            console.log( 'zone is required ');
+        }else {
+            
+            if( zone?.socialLinks ) {
+                setContactOptions( zone?.socialLinks );
+            }
+
+            setValue( 'instagram', zone?.socialLinks?.instagram );
+            setValue( 'email', zone?.socialLinks?.email );
+            setValue( 'whatsapp', zone?.socialLinks?.whatsapp );
+            setValue( 'tiktok', zone?.socialLinks?.tiktok );
+            setValue( 'phone', zone?.socialLinks?.phone );
+            setValue( 'facebook', zone?.socialLinks?.facebook );
+
+            setIsFormReady( true );
+        }
+    },[ ]);
+
     const onSubmit = async ( data:any ) => {
         setLoading( true );
         const links:any = {
@@ -37,7 +66,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
         if(zone) {
             await updateRecord( 'zones', links, zone );
             setLoading( false );
-            navigate( `/zones/new/${next}/${zone}`);
+            navigate( `/zones/edit/${next}/${ zone.uid }`);
         }
     }
 
@@ -57,257 +86,291 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
         >
             <Typography sx={{ mt: 2, mb: 1 }} variant="subtitle1">Botones de contacto</Typography>
         </motion.div>
-        <form onSubmit={ handleSubmit( onSubmit )}>
-            <Grid spacing={ 2 }  container>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                setContactOptions({ ...contactOptions, facebook: e.target.checked });
-                                clearErrors('facebook');
-                            } }
-                            checked={ contactOptions.facebook } 
-                        />
-                        <Controller
-                            name="facebook"
-                            control={ control }
-                            rules={{
-                                required: contactOptions.facebook ? 'Ingresa tu nombre de usuario de Facebook' : false
-                            }}
-                            render={({ field: { onChange, value } }) => (
-                                <TextField
-                                    disabled={ !contactOptions.facebook }
-                                    placeholder="Url de tu Facebook"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Facebook color={ contactOptions.facebook ? "primary" : "disabled" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
+        {
+            isFormReady ? 
+            (
+                <form onSubmit={ handleSubmit( onSubmit )}>
+                    <Grid spacing={ 2 }  container>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        
+                                        setContactOptions({ ...contactOptions, facebook: e.target.checked });
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                facebook: e.target.checked
+                                            }
+                                        }));
+
+                                        clearErrors('facebook');
+                                    } }
+                                    checked={ contactOptions?.facebook } 
                                 />
-                            )}
-                        />
-                    </Stack>
-                    { errors.facebook && <Typography variant="caption" sx={{color:'red'}}>{errors.facebook.message }</Typography>}
-                </Grid>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => 
-                                {
-                                    setContactOptions({ ...contactOptions, instagram: e.target.checked })
-                                    clearErrors('instagram');
-                                } }
-                            checked={ contactOptions.instagram } 
-                        />
-                        <Controller
-                            name="instagram"
-                            rules={{
-                                required: contactOptions.instagram ? 'Ingresa tu nombre de usuario de Instagram' : false
-                            }}
-                            control={ control }
-                            render={ ({ field: { onChange, value } }) => (
+                                <Controller
+                                    name="facebook"
+                                    control={ control }
+                                    rules={{
+                                        required: contactOptions?.facebook ? 'Ingresa tu nombre de usuario de Facebook' : false
+                                    }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <TextField
+                                            disabled={ !contactOptions.facebook }
+                                            placeholder="Url de tu Facebook"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Facebook color={ contactOptions.facebook ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Stack>
+                            { errors.facebook && <Typography variant="caption" sx={{color:'red'}}>{errors.facebook.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                            setContactOptions({ ...contactOptions, instagram: e.target.checked })
+                                            dispatch( updateZone({
+                                                ...zone,
+                                                socialLinks: {
+                                                    ...contactOptions,
+                                                    instagram: e.target.checked
+                                                }
+                                            }));
+
+                                            clearErrors('instagram');
+                                        } }
+                                    checked={ contactOptions?.instagram } 
+                                />
+                                <Controller
+                                    name="instagram"
+                                    rules={{
+                                        required: contactOptions?.instagram ? 'Ingresa tu nombre de usuario de Instagram' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ !contactOptions.instagram }
+                                            placeholder="Nombre de usuario de tu instagram"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Instagram color={ contactOptions.instagram ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Stack>
+                            { errors.instagram && <Typography variant="caption" sx={{color:'red'}}>{errors.instagram.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        setContactOptions({ ...contactOptions, phone: e.target.checked });
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                phone: e.target.checked
+                                            }
+                                        }));
+                                        clearErrors('phone');
+                                    } }
+                                    checked={ contactOptions?.phone } 
+                                />
+                                <Controller
+                                    name="phone"
+                                    rules={{
+                                        required: contactOptions.phone ? 'Ingresa tu teléfono' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ !contactOptions.phone }
+                                            placeholder="Tu teléfono"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Call color={ contactOptions.phone ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
                                 
-                                <TextField
-                                    disabled={ !contactOptions.instagram }
-                                    placeholder="Nombre de usuario de tu instagram"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Instagram color={ contactOptions.instagram ? "primary" : "disabled" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
+                            </Stack>
+                            { errors.phone && <Typography variant="caption" sx={{color:'red'}}>{errors.phone.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        setContactOptions({ ...contactOptions, whatsapp: e.target.checked });
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                whatsapp: e.target.checked
+                                            }
+                                        }));
+                                        clearErrors('whatsapp');
+                                    } }
+                                    checked={ contactOptions.whatsapp } 
                                 />
-                            )}
-                        />
-                    </Stack>
-                    { errors.instagram && <Typography variant="caption" sx={{color:'red'}}>{errors.instagram.message }</Typography>}
-                </Grid>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                setContactOptions({ ...contactOptions, phone: e.target.checked });
-                                clearErrors('phone');
-                            } }
-                            checked={ contactOptions.phone } 
-                        />
-                        <Controller
-                            name="phone"
-                            rules={{
-                                required: contactOptions.phone ? 'Ingresa tu teléfono' : false
-                            }}
-                            control={ control }
-                            render={ ({ field: { onChange, value } }) => (
+                                <Controller
+                                    name="whatsapp"
+                                    rules={{
+                                        required: contactOptions?.whatsapp ? 'Ingresa tu WhatsApp' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ !contactOptions.whatsapp }
+                                            placeholder="Tu WhatsApp"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <WhatsApp color={ contactOptions.whatsapp ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
                                 
-                                <TextField
-                                    disabled={ !contactOptions.phone }
-                                    placeholder="Tu teléfono"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Call color={ contactOptions.phone ? "primary" : "disabled" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
+                            </Stack>
+                            { errors.whatsapp && <Typography variant="caption" sx={{color:'red'}}>{errors.whatsapp.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        setContactOptions({ ...contactOptions, email: e.target.checked })
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                email: e.target.checked
+                                            }
+                                        }));
+
+                                        clearErrors('email');
+                                    } }
+                                    checked={ contactOptions.email } 
                                 />
-                            )}
+                                <Controller
+                                    name="email"
+                                    rules={{
+                                        required: contactOptions.email ? 'Ingresa tu Email' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ !contactOptions.email }
+                                            placeholder="Tu Email"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Email color={ contactOptions.email ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                                
+                            </Stack>
+                            { errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        setContactOptions({ ...contactOptions, tiktok: e.target.checked })
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                tiktok: e.target.checked
+                                            }
+                                        }));
+
+                                        clearErrors('tiktok');
+                                    } }
+                                    checked={ contactOptions.tiktok } 
+                                />
+                                <Controller
+                                    name="tiktok"
+                                    rules={{
+                                        required: contactOptions.tiktok ? 'Ingresa tu usuario de Tiktok' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ !contactOptions.tiktok }
+                                            placeholder="Nombre de usuario de tu Tiktok"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Tiktok size={24} color={ contactOptions.tiktok ? theme.palette.primary.main : "rgba(255,255,255,0.3)" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                                
+                            </Stack>
+                            { errors.tiktok && <Typography variant="caption" sx={{color:'red'}}>{errors.tiktok.message }</Typography>}
+                        </Grid>
+                    </Grid>
+                    <Box sx={{ mt:8 }}>
+                        <FormNavigationButtons
+                            loading={ loading }
+                            prev={ `/zones/edit/1/${ zone.uid }` }
                         />
+                    </Box>
+                </form>
+            ) : (
+                <CircularProgressComponent/>
+            )
                         
-                    </Stack>
-                    { errors.phone && <Typography variant="caption" sx={{color:'red'}}>{errors.phone.message }</Typography>}
-                </Grid>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                setContactOptions({ ...contactOptions, whatsapp: e.target.checked });
-                                clearErrors('whatsapp');
-                            } }
-                            checked={ contactOptions.whatsapp } 
-                        />
-                        <Controller
-                            name="whatsapp"
-                            rules={{
-                                required: contactOptions.whatsapp ? 'Ingresa tu WhatsApp' : false
-                            }}
-                            control={ control }
-                            render={ ({ field: { onChange, value } }) => (
-                                
-                                <TextField
-                                    disabled={ !contactOptions.whatsapp }
-                                    placeholder="Tu WhatsApp"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <WhatsApp color={ contactOptions.whatsapp ? "primary" : "disabled" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
-                        
-                    </Stack>
-                    { errors.whatsapp && <Typography variant="caption" sx={{color:'red'}}>{errors.whatsapp.message }</Typography>}
-                </Grid>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) =>{
-                                setContactOptions({ ...contactOptions, email: e.target.checked })
-                                clearErrors('email');
-                            } }
-                            checked={ contactOptions.email } 
-                        />
-                        <Controller
-                            name="email"
-                            rules={{
-                                required: contactOptions.tiktok ? 'Ingresa tu Email' : false
-                            }}
-                            control={ control }
-                            render={ ({ field: { onChange, value } }) => (
-                                
-                                <TextField
-                                    disabled={ !contactOptions.email }
-                                    placeholder="Tu Email"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Email color={ contactOptions.email ? "primary" : "disabled" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
-                        
-                    </Stack>
-                    { errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message }</Typography>}
-                </Grid>
-                <Grid item xs={12}>
-                    <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
-                        <StyledSwitch 
-                            onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                setContactOptions({ ...contactOptions, tiktok: e.target.checked })
-                                clearErrors('tiktok');
-                            } }
-                            checked={ contactOptions.tiktok } 
-                        />
-                        <Controller
-                            name="tiktok"
-                            rules={{
-                                required: contactOptions.tiktok ? 'Ingresa tu usuario de Tiktok' : false
-                            }}
-                            control={ control }
-                            render={ ({ field: { onChange, value } }) => (
-                                
-                                <TextField
-                                    disabled={ !contactOptions.tiktok }
-                                    placeholder="Nombre de usuario de tu Tiktok"
-                                    fullWidth
-                                    onChange={ onChange }
-                                    value={ value }
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Tiktok size={24} color={ contactOptions.tiktok ? theme.palette.primary.main : "rgba(255,255,255,0.3)" }/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            )}
-                        />
-                        
-                    </Stack>
-                    { errors.tiktok && <Typography variant="caption" sx={{color:'red'}}>{errors.tiktok.message }</Typography>}
-                </Grid>
-            </Grid>
-            <Stack>
-                <Button
-                    sx={{ 
-                        mt: 8,
-                        textTransform: 'none',
-                    }}
-                    variant="contained"
-                    fullWidth
-                    type="submit"
-                    disabled={ loading }
-                    startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                    
-                >
-                    Guardar y continuar
-                </Button>
-                <Button
-                    onClick={ () => navigate( `/zones/new/${prev}` ) }
-                    sx={{ 
-                        mt: 2,
-                        textTransform: 'none',
-                    }}
-                    fullWidth
-                    startIcon={ <ChevronLeft/> }
-                >
-                    Volver
-                </Button>
-            </Stack>
-        </form>
+        }
+        
         </>
     )
 }

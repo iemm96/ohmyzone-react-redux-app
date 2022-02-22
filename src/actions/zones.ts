@@ -18,7 +18,7 @@ export const startUpdateZone = ( payload:any, uid:string ) => {
     return( async (dispatch:any)  => {
         const { zoneResult } = await updateRecord( 'zones', payload, uid );
     
-        dispatch( updateZone( { ...zoneResult } ) );
+        dispatch( updateZone( { ...zoneResult, profileImage: zoneResult.profileImage.url } ) );
         
         return zoneResult;
     });

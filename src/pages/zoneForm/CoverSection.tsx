@@ -12,6 +12,7 @@ import { CircularProgress, Box } from '@mui/material';
 import { updateRecord } from '../../actions/updateRecord';
 import { fetchRecord } from '../../actions/fetchRecord';
 import CircularProgressComponent from "../../components/CircularProgressComponent";
+import FormNavigationButtons from '../../components/FormNavigationButtons';
 
 const CoverSection = () => {
     const params = useParams();
@@ -65,7 +66,6 @@ const CoverSection = () => {
             result = await dispatch( startUpdateZone( data, params.zone ) ); //Updates Zone
             zoneUid = result.uid;
 
-
         }else {
             data.user = auth.uid;
 
@@ -81,8 +81,6 @@ const CoverSection = () => {
             }
         }
 
-        
-        
         setLoading( false );
 
         navigate( `/zones/edit/2/${zoneUid}` );
@@ -141,19 +139,11 @@ const CoverSection = () => {
                             />
                         </Grid>
                     </Grid>
-                    <Button
-                        sx={{ 
-                            mt: 8,
-                            textTransform: 'none',
-                        }}
-                        variant="contained"
-                        fullWidth
-                        type="submit"
-                        disabled={ loading }
-                        startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                    >
-                        Guardar y continuar
-                    </Button>
+                    <Box sx={{ mt: 8 }}>
+                        <FormNavigationButtons
+                            loading={ loading }
+                        />
+                    </Box>
                 </form>
             </>
             
