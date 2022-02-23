@@ -1,10 +1,9 @@
-import React from 'react'
-import { Stack, CircularProgress, Grid } from '@mui/material';
+import { CircularProgress, Grid } from '@mui/material';
 import StyledButton from '../styled/StyledButton';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from '@mui/icons-material';
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
-const FormNavigationButtons = ({ prev, loading }:{ prev?:string, loading: boolean }) => {
+const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading: boolean, next?:string }) => {
     const navigate = useNavigate();
 
     return (
@@ -23,10 +22,11 @@ const FormNavigationButtons = ({ prev, loading }:{ prev?:string, loading: boolea
                 <StyledButton
                     variant="contained"
                     fullWidth
-                    type="submit"
+                    type={ next ? 'button' : 'submit' }
                     disabled={ loading }
                     startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                    
+                    onClick={ next ? () => navigate( next ) : undefined }
+                    endIcon={ <ChevronRight/> }
                 >
                     Guardar y continuar
                 </StyledButton>
@@ -36,6 +36,7 @@ const FormNavigationButtons = ({ prev, loading }:{ prev?:string, loading: boolea
                     <StyledButton
                         onClick={ () => navigate( prev ) }
                         fullWidth
+                        variant="outlined"
                         startIcon={ <ChevronLeft/> }
                     >
                         Volver

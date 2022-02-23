@@ -13,8 +13,9 @@ const StyledPhoneDiv =  styled('div')(() => ({
     border: '40px solid #ddd',
     borderWidth: '55px 7px',
     borderRadius: 40,
-    margin: '20px auto',
-    position: 'relative',
+    marginLeft: '20%',
+    transform: 'translate(-50%, 0)',
+    position: 'fixed',
     overflowY: 'scroll',
     transition: 'all 0.5s ease',    
     boxShadow: '0px 3px 0 #BBB, 0px 4px 0 #BBB, 0px 5px 0 #BBB, 0px 7px 0 #BBB, 0px 10px 20px #666'

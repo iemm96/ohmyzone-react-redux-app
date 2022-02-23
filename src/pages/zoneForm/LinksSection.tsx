@@ -1,28 +1,19 @@
-import { useRef, useState, useEffect } from 'react';
-import { Grid, Paper, Typography, TextField, FormGroup, Switch, Button, Tooltip, CircularProgress, Stack, useTheme } from '@mui/material';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import { Controller, useForm } from "react-hook-form";
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { Add, Check, ChevronLeft, Delete, Edit } from '@mui/icons-material';
+import { useState, useEffect } from 'react';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import StyledSwitch from '../../styled/StyledSwitch';
-import IconButton from '@mui/material/IconButton';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { UploadFile, useUploader } from '../../components/UploadFile';
-import { green } from '@mui/material/colors';
+import { useUploader } from '../../components/UploadFile';
 import { postRecord } from '../../actions/postRecord';
 import { fetchRecords } from '../../actions/fetchRecords';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { transition } from '../../constants/transitions';
 import SavedLink from '../../components/SavedLink';
-import { useLinkForm, LinkForm } from '../../components/LinkForm';
+import { LinkForm } from '../../components/LinkForm';
 import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateZone } from '../../actions/zones';
+import { ObjectCategoryType } from '../../types/ObjectCategoryType';
+import { fetchRecord } from '../../actions/fetchRecord';
 
 type LinksItemType = {
   title: string;
@@ -38,21 +29,13 @@ type LinksItemType = {
   zone: string;
 }
 
-type ObjectCategoryType = {
-  _id: string;
-  title: string;
-}
-
 type CategoryItemType = {
   inputValue?: string;
   title: string;
   links?: Array<LinksItemType> | null;
 }
 
-const filter = createFilterOptions<CategoryItemType>();
-
-
-export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
+export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
   const params = useParams();
   const { zone } = useSelector( (state:any) => state );
   const dispatch = useDispatch();
@@ -69,39 +52,61 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
     zone: '',
   }
 
-  const refLink = useRef<null | HTMLDivElement>(null);
   const [ loading, setLoading ] = useState<boolean>(false);
-  const [ linksItems, setLinksItems ] = useState<LinksItemType[] | []>([link]);
-  const { handleSubmit, control, setValue, formState: {errors}, } = useForm();
-  const { dataUri, onChange, handleDelete, imageSrc, file, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
-  const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
-  const theme = useTheme();
+  const [ categoriesAutocomplete, setCategoriesAutocomplete ] = useState<ObjectCategoryType[]>([]);
 
   useEffect(() => {
     dispatch( updateZone({
       ...zone,
       links: categories
     }) );
-  },[categories]);
+  },[ categories ]);
   
   useEffect(() => {
     getLinks();
   },[  ]);
 
+  const findCategoryInArray = (category:string, arrayCategories:ObjectCategoryType[]) => {
+    let exists = false;
+
+    arrayCategories.map((item:ObjectCategoryType) => (
+      (category === item.title) && (exists = true)
+    ));
+
+    return exists;
+  }
+
   const getLinks = async () => {
  
     if( params.zone ) {
+
+      if( Object.keys(zone).length === 0  ) {
+
+        const { zone } = await fetchRecord('zones', params.zone);
+
+        dispatch( updateZone({
+            ...zone,
+            profileImage: zone?.profileImage?.url
+        }));
+
+      }
+
       const { links } = await fetchRecords(`links/byZone/${ params.zone }`);
 
-
-    
       const arrayCategories:any = [];
 
       links.map((item:any) => {
-          arrayCategories.push(item.category);
+        if(!findCategoryInArray( item.category.title, arrayCategories )){
+          arrayCategories.push( item.category )
+        }
+
       });
+
+      console.log( arrayCategories );
   
+      setCategoriesAutocomplete( arrayCategories );
+
       arrayCategories.map((item:any) => {
         const result = links.filter((obj:any) => {
           
@@ -116,55 +121,6 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
       });
   
       setCategories( arrayCategories );
-    }
-    
-  }
-
-  const handleAddLink = () => {
-    console.log('handle')
-    const linksArray = [...linksItems];
-    linksArray.push( link );
-    setLinksItems( linksArray );
-    
-    if(refLink.current) {
-      //refLink.current.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }
-
-  const submitForm = async (data:any, index:number) => {
-
-    setLoading(true);
-    const linksArray = [...linksItems];
-
-    if( !zone ) {
-      return;
-    }
-
-    const image:any = await uploadToServer( zone );
-    
-    linksArray[index].title = data[`title${index}`];
-    linksArray[index].description = data[`description${index}`];
-    linksArray[index].buttonText = data[`buttonText${index}`];
-    linksArray[index].coverImg = image.uid; //Assing recently created uid image
-    linksArray[index].whatsappMessage = data[`whatsappMessage${index}`];
-    linksArray[index].isSaved = true;
-
-    if(zone) {
-      linksArray[index].zone = zone;
-    }
-
-    if(categorySelected) {
-      linksArray[index].category = categorySelected.title;
-    }
-    
-    const result = await postRecord('links', linksArray[index]);
-    
-    if(result) {
-      setCategorySelected( null );
-      setLinksItems(linksArray);
-      handleDelete(); //Deletes uploaded image preview
-      setLoading(false);
-      getLinks();
     }
     
   }
@@ -188,7 +144,7 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
     <Box>
       { categories.map( (itemCategory,indexCategory) => (
         itemCategory.links?.length && itemCategory.links?.length > 0 && 
-        <div key={indexCategory}>
+        <Box key={indexCategory}>
           <Typography sx={{ mb: 1 }} variant="h6"> 
             { itemCategory.title && itemCategory.title }
           </Typography>
@@ -199,21 +155,26 @@ export const LinksSection = ({prev, next}:{ prev:number, next:number }) => {
             </Box>
             
           ))}
-        </div> 
+        </Box> 
       ))}
-      <LinkForm
-        getLinks={ getLinks }
-        zone={ zone }
-        item={ {
-          isSaved: false
-        } }
-      />
-        <Box sx={{ mt:8 }}>
-            <FormNavigationButtons
-                loading={ loading }
-                prev={ `/zones/edit/2/${ zone.uid }` }
-            />
-        </Box>
+      <Box sx={{ mt: 2 }}>
+        <LinkForm
+          getLinks={ getLinks }
+          zone={ zone.uid }
+          defaultCategories={ categoriesAutocomplete }
+          item={ {
+            isSaved: false
+          } }
+        />
+      </Box>
+      
+      <Box sx={{ mt:8 }}>
+          <FormNavigationButtons
+              loading={ loading }
+              next={ `/zones/edit/${next}/${ zone.uid }` }
+              prev={ `/zones/edit/${prev}/${ zone.uid }` }
+          />
+      </Box>
     </Box>
     </>
   );

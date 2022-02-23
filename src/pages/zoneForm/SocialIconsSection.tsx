@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { updateZone } from '../../actions/zones';
+import { fetchRecord } from '../../actions/fetchRecord';
 
 const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
     const { zone } = useSelector( (state:any) => state );
@@ -39,24 +40,42 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
     });
 
     useEffect(() => {
-        if(! zone ) {
-            console.log( 'zone is required ');
-        }else {
-            
-            if( zone?.socialLinks ) {
-                setContactOptions( zone?.socialLinks );
-            }
-
-            setValue( 'instagram', zone?.socialLinks?.instagram );
-            setValue( 'email', zone?.socialLinks?.email );
-            setValue( 'whatsapp', zone?.socialLinks?.whatsapp );
-            setValue( 'tiktok', zone?.socialLinks?.tiktok );
-            setValue( 'phone', zone?.socialLinks?.phone );
-            setValue( 'facebook', zone?.socialLinks?.facebook );
-
-            setIsFormReady( true );
+        if( Object.keys(zone).length === 0 ) {
+            getZone();
+        }else{
+            setDefaultValues(zone);
+            setIsFormReady(true);
         }
-    },[ ]);
+    },[ ])
+
+    const getZone = async () => {
+        if( params.zone) {
+            const { zone } = await fetchRecord('zones', params.zone);
+
+            setDefaultValues(zone);
+
+            dispatch( updateZone({
+                ...zone,
+                profileImage: zone?.profileImage?.url
+            }));
+        }
+
+        setIsFormReady(true);
+    }
+
+    const setDefaultValues = (zone:any) => {
+
+        if( zone?.socialLinks ) {
+            setContactOptions( zone?.socialLinks );
+        }
+
+        zone?.socialLinks?.instagram && setValue( 'instagram', zone?.socialLinks?.instagram );
+        zone?.socialLinks?.email && setValue( 'email', zone?.socialLinks?.email );
+        zone?.socialLinks?.whatsapp && setValue( 'whatsapp', zone?.socialLinks?.whatsapp );
+        zone?.socialLinks?.tiktok && setValue( 'tiktok', zone?.socialLinks?.tiktok );
+        zone?.socialLinks?.phone && setValue( 'phone', zone.socialLinks.phone );
+        zone?.socialLinks?.facebook && setValue( 'facebook', zone?.socialLinks?.facebook );
+    }
 
     const onSubmit = async ( data:any ) => {
         setLoading( true );
@@ -64,7 +83,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
             socialLinks: data
         }
         if(zone) {
-            await updateRecord( 'zones', links, zone );
+            await updateRecord( 'zones', links, zone.uid );
             setLoading( false );
             navigate( `/zones/edit/${next}/${ zone.uid }`);
         }

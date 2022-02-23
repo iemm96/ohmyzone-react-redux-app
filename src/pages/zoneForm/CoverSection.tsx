@@ -1,4 +1,3 @@
-import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { UploadFile, useUploader } from '../../components/UploadFile';
@@ -6,9 +5,9 @@ import { UsernameCreator, useUsernameCreator } from '../../components/UsernameCr
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
-import { startupdateZone, updateZone, startUpdateZone } from '../../actions/zones';
+import { startupdateZone, startUpdateZone, updateZone } from '../../actions/zones';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CircularProgress, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { updateRecord } from '../../actions/updateRecord';
 import { fetchRecord } from '../../actions/fetchRecord';
 import CircularProgressComponent from "../../components/CircularProgressComponent";
@@ -16,12 +15,12 @@ import FormNavigationButtons from '../../components/FormNavigationButtons';
 
 const CoverSection = () => {
     const params = useParams();
-    const { auth } = useSelector( (state:any) => state );
+    const { auth, zone } = useSelector( (state:any) => state );
     const { createdUsername, setCreatedUsername } = useUsernameCreator();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [ isFormReady, setIsFormReady ] = useState<boolean>(false);
+    const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
 
     const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader( true );
     const { handleSubmit, setValue, control } = useForm();
@@ -30,8 +29,15 @@ const CoverSection = () => {
     const [ loading, setLoading ] = useState<boolean>(false);
 
     useEffect(() => {
-        getZone();
-    },[])
+        
+        if( Object.keys(zone).length === 0 ) {
+            getZone();
+        }else {
+            setDataUri( zone.profileImage );
+            setCreatedUsername( zone.username );
+            setIsFormReady( true );
+        }
+    },[]);
 
     const getZone = async () => {
         if(params.zone) {
@@ -43,6 +49,10 @@ const CoverSection = () => {
 
             setValue( 'title', zone.title );
             setCreatedUsername( zone.username );
+            dispatch( updateZone({
+                ...zone,
+                profileImage: zone?.profileImage?.url
+            }))
         }
 
         setIsFormReady(true);
@@ -63,8 +73,9 @@ const CoverSection = () => {
 
         if( params.zone ) {
             
-            result = await dispatch( startUpdateZone( data, params.zone ) ); //Updates Zone
-            zoneUid = result.uid;
+            const { zoneResult } = await updateRecord( 'zones', data, params.zone ); //Updates Zone
+        
+            zoneUid = zoneResult.uid;
 
         }else {
             data.user = auth.uid;
@@ -116,6 +127,7 @@ const CoverSection = () => {
                             <Controller
                                 name="title"
                                 control={ control }
+                                defaultValue={ zone ? zone.title : undefined }
                                 render={ ({ field: { value, onChange } }) => (
                                     <TextField
                                         onChange={ ( e ) =>  {
@@ -141,18 +153,13 @@ const CoverSection = () => {
                     </Grid>
                     <Box sx={{ mt: 8 }}>
                         <FormNavigationButtons
+                            prev={ `/dashboard` }
                             loading={ loading }
                         />
                     </Box>
                 </form>
             </>
-            
-        ) 
-        :
-        (
-            <CircularProgressComponent/>
-        )
-        }
+        ) : <CircularProgressComponent/> }
         </>
     )
 }
