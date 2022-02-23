@@ -33,7 +33,7 @@ const BannerPreview = ({ data }:{ data:any }) => {
             zIndex: 0,
             width: 320,
             height: 500,
-            backgroundColor: theme.palette.secondary.main           
+            backgroundColor: theme.palette.background.default          
         }}>
             {
             data?.backgroundImage && 
