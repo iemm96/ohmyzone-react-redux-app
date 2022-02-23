@@ -18,9 +18,8 @@ const ZoneForm = () => {
     const params = useParams();
     const theme = useTheme();
     const dispatch = useDispatch();
-    const mediaQuery = useMediaQuery(theme.breakpoints.up('sm'));
+    const mediaQuery = useMediaQuery(theme.breakpoints.up('md'));
 
-    console.log(mediaQuery)
     useEffect(() => {
         getZone();
     },[])
@@ -33,7 +32,6 @@ const ZoneForm = () => {
                 profileImage: zone?.profileImage?.url
             } ) );
         }
-
     }
 
     return (
@@ -46,10 +44,8 @@ const ZoneForm = () => {
                 }}
                 elevation={ 0 }
             >
-                <Container maxWidth="lg">
-                    
-                    
-                    <Grid container>
+                <Container maxWidth="lg">           
+                    <Grid sx={{ justifyContent: 'center' }} container>
                         <Grid md={ 6 } item>
                             <StepperComponent actualStep={ params.part } totalSteps={ 4 } />
 
@@ -63,14 +59,15 @@ const ZoneForm = () => {
 
                             { params.part === '4' && <ThemeSection prev={ 3 } next={ 5 }/> }
                         </Grid>
-                        <Grid md={ 6 } item>
-                            <PreviewSection/>
-                        </Grid>
+                        {
+                            mediaQuery && (
+                                <Grid md={ 6 } item>
+                                    <PreviewSection/>
+                                </Grid>
+                            )
+                        }
                     </Grid>
-
                 </Container>
-
-              
             </Paper>
         </>
     )
