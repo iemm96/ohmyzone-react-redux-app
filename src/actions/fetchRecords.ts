@@ -1,6 +1,6 @@
-import baseUrl from "./../constants/baseUrl";
-
 import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
+
+const { REACT_APP_API_HOST } = process.env;
 
 export const fetchRecords = async (resource:string) => {
 
@@ -16,7 +16,7 @@ export const fetchRecords = async (resource:string) => {
     }
 
     const options:AxiosRequestConfig<any> = {
-        url:`${baseUrl}${resource}`,
+        url:`${ REACT_APP_API_HOST }${ resource }`,
         method: 'GET',
         headers: headers,
     };

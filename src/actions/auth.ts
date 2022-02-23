@@ -1,5 +1,4 @@
 import axios from 'axios';
-import baseUrl from '../constants/baseUrl';
 import { actionTypes } from '../actionTypes/actionTypes';
 export const startGoogleLogin = () => {
     return (dispatch:any) => {
@@ -7,13 +6,15 @@ export const startGoogleLogin = () => {
     }
 }
 
+const { REACT_APP_API_HOST } = process.env;
+
 export const startValidateJWT = ( jwt:string ) => {
 
     return async ( dispatch:any ) => {
 
         try{
             const { data } = await axios.get(
-                `${ baseUrl }auth`,
+                `${ REACT_APP_API_HOST }auth`,
                 {
                     headers: {'x-token': jwt}
                 }
@@ -41,7 +42,7 @@ export const startLogin = ( email:string, password:string ) => {
 
     return async ( dispatch:any ) => {
         const { data } = await axios.post(
-            `${ baseUrl }auth/login`,
+            `${ REACT_APP_API_HOST }auth/login`,
             payload
         );
 
@@ -65,7 +66,7 @@ export const startRegister = ( name:string, email:string, password:string, role:
 
     return async ( dispatch:any ) => {
         await axios.post(
-            `${ baseUrl }users`,
+            `${ REACT_APP_API_HOST }users`,
             payload
         );
 

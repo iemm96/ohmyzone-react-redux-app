@@ -1,6 +1,6 @@
-import baseUrl from "./../constants/baseUrl";
-
 import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
+
+const { REACT_APP_API_HOST } = process.env;
 
 export const postRecord = async (resource:string, payload: any ) => {
 
@@ -16,7 +16,7 @@ export const postRecord = async (resource:string, payload: any ) => {
     }
 
     const options:AxiosRequestConfig<any> = {
-        url:`${baseUrl}${resource}`,
+        url:`${ REACT_APP_API_HOST }${ resource }`,
         method: 'POST',
         headers: headers,
         data: payload
