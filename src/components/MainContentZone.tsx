@@ -1,15 +1,18 @@
-import { Grid, Paper, useTheme, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import SavedLink from './SavedLink';
 import Box from '@mui/material/Box';
+import withTheme from './WithTheme';
+import { useTheme } from '@mui/material/styles';
 
 const MainContentZone = ({ data }:{ data:any }) => {
     const theme = useTheme();
+    
     return(
         <Paper
             sx={{
                 mt: 50,
-                backgroundColor: theme.palette.secondary.main,
+                backgroundColor: theme.palette.background.paper,
                 height: 'auto',
                 width: '100%',
                 position: 'relative',
@@ -40,4 +43,4 @@ const MainContentZone = ({ data }:{ data:any }) => {
     )
 }
 
-export default MainContentZone;
+export default withTheme(MainContentZone);

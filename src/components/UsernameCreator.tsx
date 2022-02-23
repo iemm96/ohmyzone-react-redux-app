@@ -54,6 +54,7 @@ export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername 
                         fullWidth
                         onChange={ (e) => setValue('username', clearString(e.target.value)) }
                         placeholder="tunombre"
+                        label="Nombre de usuario"
                         InputProps={{
                             startAdornment: <InputAdornment position="start">ohmy.zone/</InputAdornment>
                         }}

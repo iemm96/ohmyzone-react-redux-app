@@ -8,31 +8,13 @@ import StepperComponent from '../../components/StepperComponent';
 import SocialIconsSection from './SocialIconsSection';
 import { LinksSection } from './LinksSection';
 import ThemeSection from './ThemeSection';
-import { useEffect } from 'react';
-import { fetchRecord } from '../../actions/fetchRecord';
 import { useDispatch } from 'react-redux';
-import { updateZone } from '../../actions/zones';
   
 const ZoneForm = () => {
     
     const params = useParams();
     const theme = useTheme();
-    const dispatch = useDispatch();
     const mediaQuery = useMediaQuery(theme.breakpoints.up('md'));
-
-    useEffect(() => {
-        getZone();
-    },[])
-
-    const getZone = async () => {
-        if(params.zone) {
-            const { zone } = await fetchRecord('zones', params.zone);
-            dispatch( updateZone( {
-                ...zone,
-                profileImage: zone?.profileImage?.url
-            } ) );
-        }
-    }
 
     return (
         <> 

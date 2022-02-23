@@ -68,7 +68,14 @@ const SavedLink = ({ getLinks, data, disableEdit = false }:{  getLinks?:any, dat
                     </>
                     
             )}
-            <Card sx={{ display: 'flex', mb: 1, borderRadius: 3 }} >
+            <Card
+                sx={{ 
+                    display: 'flex',
+                    mb: 1,
+                    borderRadius: 3,
+                    backgroundColor: theme.palette.secondary.dark
+                }}
+                >
             
                 <CardMedia
                     component="img"
