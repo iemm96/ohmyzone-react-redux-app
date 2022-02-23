@@ -14,7 +14,7 @@ type DefaultThemeType = {
 }
 
 const Theme = (props:any) => {
-    const { primaryMain, secondaryMain, background } = useSelector( (state:any) => state.theme );
+    const { primaryMain, secondaryMain, background, paper, card } = useSelector( (state:any) => state.theme );
 
     const { children } = props;
     const [ mode, setMode ] = useState<PaletteMode>( 'dark' );
@@ -22,7 +22,7 @@ const Theme = (props:any) => {
     const [ defaultTheme, setDefaultTheme ] = useState<DefaultThemeType>({
         primaryMainLight: '#4664F6',
         primaryMainDark: '#4664F6',
-        secondaryMain: '#141B41',
+        secondaryMain: '#36F1CD',
         backgroundLight: '#F8FAFF',
         backgroundDark: '#010413',
         paperDark: '#030C3A',
@@ -68,10 +68,11 @@ const Theme = (props:any) => {
                     },
                     secondary: {
                         main: secondaryMain ? secondaryMain : defaultTheme.secondaryMain,
+                        dark: paper
                     },
                     background: {
                         default: background ? background : defaultTheme.backgroundDark,
-                        paper: defaultTheme.paperDark,
+                        paper: card
                     },
                 }),
           },
