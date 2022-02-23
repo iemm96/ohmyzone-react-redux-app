@@ -1,9 +1,8 @@
 import { actionTypes } from '../actionTypes/actionTypes';
 
-export const updateTheme = ( primaryMain:string, secondaryMain:string ) => ({
+export const updateTheme = ( data:any ) => ({
     type: actionTypes.updateTheme,
     payload: {
-        primaryMain,
-        secondaryMain
+        data
     }
 });
