@@ -1,10 +1,14 @@
 import { Box, TextField, Typography, InputAdornment } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, Control } from 'react-hook-form';
+import { red } from '@mui/material/colors';
 type UserNameCreatorType = {
     fullName: string | undefined;
     createdUsername: any;
-    setCreatedUsername: any; 
+    setCreatedUsername: any;
+    control: Control,
+    errors: any,
+    setValue: any
 }
 
 export const useUsernameCreator = () => {
@@ -16,14 +20,14 @@ export const useUsernameCreator = () => {
     }
 }
 
-export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername }:UserNameCreatorType) => {
-    const { setValue, control, formState: { errors } } = useForm();
+export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername, control, errors, setValue }:UserNameCreatorType) => {
     
     useEffect(() => {
         if(createdUsername) {
             setValue( 'username', createdUsername );
         }
-    },[createdUsername])
+    },[createdUsername]);
+    
     useEffect(() => {
         if( fullName !== undefined ) {
             const clearedString = clearString(fullName);
@@ -49,10 +53,13 @@ export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername 
                 rules={{
                     required: '¡Asegúrate de elegir un nombre de usuario!'
                 }}
-                render={ ( { field: { value } } ) => (
+                render={ ( { field: { value, onChange } } ) => (
                     <TextField
                         fullWidth
-                        onChange={ (e) => setValue('username', clearString(e.target.value)) }
+                        onChange={ (e) => {
+                            onChange(e);
+                            setValue('username', clearString(e.target.value))
+                        }}
                         placeholder="tunombre"
                         label="Nombre de usuario"
                         InputProps={{
@@ -62,8 +69,9 @@ export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername 
                     />
                 )}
             />
-            { errors.username && <Typography variant="caption" sx={{color:'red'}}>{errors.username.message}</Typography> }
-            <Typography variant="caption" sx={{ opacity: 0.5 }}>Podrás cambiarlo en cualquier momento.</Typography>
+            { errors.username ? <Typography variant="caption" sx={{ color: red[200] }}>{errors.username.message}</Typography> 
+            : <Typography variant="caption" sx={{ opacity: 0.5 }}>Podrás cambiarlo en cualquier momento.</Typography> }
+            
         </Box>
         
     );

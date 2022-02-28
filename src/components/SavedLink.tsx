@@ -69,11 +69,12 @@ const SavedLink = ({ getLinks, data, disableEdit = false }:{  getLinks?:any, dat
                     
             )}
             <Card
+                elevation={ 6 }
                 sx={{ 
                     display: 'flex',
                     mb: 1,
                     borderRadius: 3,
-                    backgroundColor: theme.palette.secondary.dark
+                    backgroundColor: theme.palette.background.paper
                 }}
                 >
             

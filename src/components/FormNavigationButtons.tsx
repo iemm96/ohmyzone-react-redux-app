@@ -3,7 +3,7 @@ import StyledButton from '../styled/StyledButton';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
-const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading: boolean, next?:string }) => {
+const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading?: boolean, next?:any }) => {
     const navigate = useNavigate();
 
     return (
@@ -25,7 +25,7 @@ const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading: 
                     type={ next ? 'button' : 'submit' }
                     disabled={ loading }
                     startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                    onClick={ next ? () => navigate( next ) : undefined }
+                    onClick={ next ? next : undefined }
                     endIcon={ <ChevronRight/> }
                 >
                     Guardar y continuar

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useUploader } from '../../components/UploadFile';
-import { postRecord } from '../../actions/postRecord';
 import { fetchRecords } from '../../actions/fetchRecords';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { transition } from '../../constants/transitions';
 import SavedLink from '../../components/SavedLink';
@@ -37,6 +35,8 @@ type CategoryItemType = {
 
 export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
   const params = useParams();
+  const navigate = useNavigate();
+  
   const { zone } = useSelector( (state:any) => state );
   const dispatch = useDispatch();
   const link:LinksItemType = {
@@ -52,7 +52,6 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
     zone: '',
   }
 
-  const [ loading, setLoading ] = useState<boolean>(false);
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
   const [ categoriesAutocomplete, setCategoriesAutocomplete ] = useState<ObjectCategoryType[]>([]);
 
@@ -92,7 +91,7 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
 
       }
 
-      const { links } = await fetchRecords(`links/byZone/${ params.zone }`);
+      const { links } = await fetchRecords( `links/byZone/${ params.zone }` );
 
       const arrayCategories:any = [];
 
@@ -102,8 +101,6 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
         }
 
       });
-
-      console.log( arrayCategories );
   
       setCategoriesAutocomplete( arrayCategories );
 
@@ -170,8 +167,7 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
       
       <Box sx={{ mt:8 }}>
           <FormNavigationButtons
-              loading={ loading }
-              next={ `/zones/edit/${next}/${ zone.uid }` }
+              next={ () => navigate( `/zones/edit/${next}/${ zone.uid }` ) }
               prev={ `/zones/edit/${prev}/${ zone.uid }` }
           />
       </Box>
