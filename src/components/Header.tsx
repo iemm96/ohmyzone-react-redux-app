@@ -3,13 +3,14 @@ import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer } from "@mui/materi
 import { motion } from "framer-motion";
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from "../actions/auth";
-import { Visibility } from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import PreviewSection from "../pages/zoneForm/PreviewSection";
 import { useState } from 'react';
+import StyledButton from '../styled/StyledButton';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -45,29 +46,38 @@ const Header = () => {
                     display: 'flex',
                     justifyContent: 'space-between'
                 }}>
-                    <motion.img
-                        initial={{
-                            opacity: 0,
-                            x: -10,
+                    <Link to="/dashboard">
+                        <motion.img
+                            initial={{
+                                opacity: 0,
+                                x: -10,
+                            }}
+                            animate={{
+                                x:0,
+                                opacity: 1,
+                                transition: {
+                                    delay: 0.5
+                                }
+                            }}
+                            style={{
+                                height: 40,
+                            }}
+                            alt="logo"
+                            src={Logo}
+                        />
+                    </Link>
+                    <StyledButton
+                        sx={{
+                            borderRadius: 10
                         }}
-                        animate={{
-                            x:0,
-                            opacity: 1,
-                            transition: {
-                                delay: 0.5
-                            }
-                        }}
-                        style={{
-                            height: 40,
-                        }}
-                        alt="logo"
-                        src={Logo}
-                    />
-                    <IconButton
+                        startIcon={ !openDrawer ? <Visibility/> : <VisibilityOff/> }
+                        color="secondary"
+                        variant="contained"
                         onClick={ () => setOpenDrawer( !openDrawer ) }
+                        size="small"
                     >
-                        <Visibility/>
-                    </IconButton>
+                        Vista previa
+                    </StyledButton>
                     <div>
                     <IconButton
                         size="large"
@@ -111,10 +121,21 @@ const Header = () => {
                         anchor="top"
                         open={ openDrawer }
                         sx={{
-                            zIndex: 100,
+                            zIndex: 100
+                        }}
+                        PaperProps={{
+                            sx:{
+                                pt: 10,
+                                pb: 5,
+                                justifyContent: 'center',
+                                display: 'flex',
+                                flexDirection: 'row'
+                            }
                         }}
                     >
-                        <PreviewSection/>
+                        <PreviewSection
+                            relative
+                        />
                     </Drawer>
                 )
             }
