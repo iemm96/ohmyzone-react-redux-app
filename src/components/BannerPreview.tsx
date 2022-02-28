@@ -4,11 +4,11 @@ import Box from '@mui/material/Box';
 import { Grid, Avatar, Typography, IconButton } from '@mui/material';
 import { Email, Phone, Facebook, Instagram } from '@mui/icons-material';
 
-const BannerPreview = ({ data }:{ data:any }) => {
+const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageUrl?:string }) => {
     const theme = useTheme();
 
     const StyledBackgroundContainer = styled('div')(({theme}) => ({
-        backgroundImage: `url(${ data.backgroundImage })`,
+        backgroundImage: `url(${ backgroundImageUrl })`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center top',
         backgroundSize: 'cover',
@@ -36,7 +36,7 @@ const BannerPreview = ({ data }:{ data:any }) => {
             backgroundColor: theme.palette.background.default          
         }}>
             {
-            data?.backgroundImage && 
+            backgroundImageUrl && 
                 <>
                     <StyledTraslucidLayer/>
                     <StyledBackgroundContainer/>
@@ -68,7 +68,7 @@ const BannerPreview = ({ data }:{ data:any }) => {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography align="center" variant="h5">{ data.title }</Typography>
+                            <Typography align="center" variant="h5">{ data.title ? data.title : 'Título de tu Zone' }</Typography>
                         </Grid>
                         { data.subtitle &&
                         <Grid item xs={12}>

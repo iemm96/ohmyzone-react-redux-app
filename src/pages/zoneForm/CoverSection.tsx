@@ -5,13 +5,15 @@ import { UsernameCreator, useUsernameCreator } from '../../components/UsernameCr
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
-import { startupdateZone, startUpdateZone, updateZone } from '../../actions/zones';
+import { startupdateZone, updateZone } from '../../actions/zones';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { updateRecord } from '../../actions/updateRecord';
 import { fetchRecord } from '../../actions/fetchRecord';
 import CircularProgressComponent from "../../components/CircularProgressComponent";
 import FormNavigationButtons from '../../components/FormNavigationButtons';
+import { updateTheme } from '../../actions/themes';
+import { red } from '@mui/material/colors';
 
 const CoverSection = () => {
     const params = useParams();
@@ -23,7 +25,7 @@ const CoverSection = () => {
     const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
 
     const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader( true );
-    const { handleSubmit, setValue, control } = useForm();
+    const { handleSubmit, setValue, control, formState: { errors } } = useForm();
     
     const [ fullName, setFullName ] = useState<string | undefined>(undefined);
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -52,13 +54,26 @@ const CoverSection = () => {
             dispatch( updateZone({
                 ...zone,
                 profileImage: zone?.profileImage?.url
-            }))
+            }));
+
+            if( zone.theme ) {
+                dispatch( updateTheme({
+                    ...zone.theme.palette,
+                    backgroundImageUrl: zone.theme.backgroundImageUrl
+                }) );
+            }
         }
 
         setIsFormReady(true);
     }
 
     const handleChangeName = (e:any) => {
+        
+        dispatch( updateZone({
+            ...zone,
+            title: e.target.value
+        }) );
+
         setFullName(e.target.value);
     }
 
@@ -95,7 +110,6 @@ const CoverSection = () => {
         setLoading( false );
 
         navigate( `/zones/edit/2/${zoneUid}` );
-
     }
 
     return(
@@ -127,6 +141,9 @@ const CoverSection = () => {
                             <Controller
                                 name="title"
                                 control={ control }
+                                rules={{
+                                    required: 'Ingresa un título para tu zone',
+                                }}
                                 defaultValue={ zone ? zone.title : undefined }
                                 render={ ({ field: { value, onChange } }) => (
                                     <TextField
@@ -140,14 +157,18 @@ const CoverSection = () => {
                                     />
                                 ) }
                             />
+                            { errors.title && <Typography variant="caption" sx={{color: red[200]}}>{errors.title.message}</Typography> }
                         </Grid>
                     </Grid>
                     <Grid container>
                         <Grid xs={12} item>
-                            <UsernameCreator 
+                            <UsernameCreator
+                                control={ control }
                                 fullName={ fullName } 
                                 createdUsername={ createdUsername }
-                                setCreatedUsername={ setCreatedUsername } 
+                                setCreatedUsername={ setCreatedUsername }
+                                errors={ errors }
+                                setValue={ setValue }
                             />
                         </Grid>
                     </Grid>

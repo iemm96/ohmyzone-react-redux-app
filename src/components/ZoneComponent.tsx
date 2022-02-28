@@ -8,7 +8,7 @@ import { fetchRecord } from '../actions/fetchRecord';
 import MainContentZone from './MainContentZone';
 
 const ZoneComponent = () => {
-    const { zone } = useSelector( (state:any) => state );
+    const { zone, theme } = useSelector( (state:any) => state );
     const params = useParams();
     const dispatch = useDispatch();
 
@@ -37,6 +37,7 @@ const ZoneComponent = () => {
              <>
                 <BannerPreview
                     data={ zone }
+                    backgroundImageUrl={ theme?.backgroundImageUrl }
                 />
                 { zone?.links && (
                     <MainContentZone
