@@ -26,29 +26,30 @@ const ZoneForm = () => {
                 }}
                 elevation={ 0 }
             >
-                <Container maxWidth="lg">           
-                    <Grid sx={{ justifyContent: 'center' }} container>
-                        <Grid md={ 6 } item>
-                            <StepperComponent actualStep={ params.part } totalSteps={ 4 } />
+                <Container maxWidth="lg">
+                    { params.part === '5' ? <PreviewSection/> : (
+                        <Grid sx={{ justifyContent: 'center' }} container>
+                            <Grid md={ 6 } item>
+                                <StepperComponent actualStep={ params.part } totalSteps={ 4 } />
 
-                            { params.part === '1' && <CoverSection/> }
-                        
-                            { params.part === '2' && <SocialIconsSection prev={ 1 } next={ 3 }/> }
+                                { params.part === '1' && <CoverSection/> }
+                            
+                                { params.part === '2' && <SocialIconsSection prev={ 1 } next={ 3 }/> }
 
-                            { params.part === '3' && <LinksSection prev={ 2 } next={ 4 }/> }
+                                { params.part === '3' && <LinksSection prev={ 2 } next={ 4 }/> }
 
-                            { params.part === '5' && <PreviewSection/> }
+                                { params.part === '4' && <ThemeSection prev={ 3 } next={ 5 }/> }
 
-                            { params.part === '4' && <ThemeSection prev={ 3 } next={ 5 }/> }
+                            </Grid>
+                            {
+                                mediaQuery && (
+                                    <Grid md={ 6 } item>
+                                        <PreviewSection/>
+                                    </Grid>
+                                )
+                            }
                         </Grid>
-                        {
-                            mediaQuery && (
-                                <Grid md={ 6 } item>
-                                    <PreviewSection/>
-                                </Grid>
-                            )
-                        }
-                    </Grid>
+                    )}
                 </Container>
             </Paper>
         </>

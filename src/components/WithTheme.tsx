@@ -14,12 +14,12 @@ type DefaultThemeType = {
 }
 
 const Theme = (props:any) => {
-    const { primaryMain, secondaryMain, background, paper, card } = useSelector( (state:any) => state.theme );
+    const { vibrant, lightMuted, darkMuted, muted, darkVibrant } = useSelector( (state:any) => state.theme );
 
     const { children } = props;
     const [ mode, setMode ] = useState<PaletteMode>( 'dark' );
     const [ theme, setTheme ] = useState<any>(null);
-    const [ defaultTheme, setDefaultTheme ] = useState<DefaultThemeType>({
+    const defaultTheme:DefaultThemeType = {
         primaryMainLight: '#4664F6',
         primaryMainDark: '#4664F6',
         secondaryMain: '#36F1CD',
@@ -27,22 +27,21 @@ const Theme = (props:any) => {
         backgroundDark: '#010413',
         paperDark: '#030C3A',
         paperLight: '#C5CEFC',
-    });
+    };
 
     useEffect(() => {
         setTheme(createTheme(getDesignTokens(mode)));
-    },[ primaryMain ]);
+    },[ vibrant ]);
 
 
     useEffect(() => {
        
-
         if( mode === 'light') {
-            document.body.style.backgroundColor = background ? background : defaultTheme.paperLight;
+            document.body.style.backgroundColor = darkMuted ? darkMuted : defaultTheme.paperLight;
         }else {
-            document.body.style.backgroundColor = background ? background : defaultTheme.paperDark;
+            document.body.style.backgroundColor = darkVibrant ? darkVibrant : defaultTheme.paperDark;
         }
-    },[])
+    },[ darkVibrant ])
 
     const getDesignTokens = (mode: PaletteMode) => ({
         palette: {
@@ -51,28 +50,28 @@ const Theme = (props:any) => {
               ? {
                     // palette values for light mode
                     primary: {
-                        main: primaryMain ? primaryMain : defaultTheme.primaryMainLight
+                        main: vibrant ? vibrant : defaultTheme.primaryMainLight
                     },
                     secondary: {
-                        main: secondaryMain ? secondaryMain : defaultTheme.secondaryMain,
+                        main: lightMuted ? lightMuted : defaultTheme.secondaryMain,
                     },
                     background: {
-                        default: background ? background : defaultTheme.backgroundLight,
+                        default: darkMuted ? darkMuted : defaultTheme.backgroundLight,
                         paper: defaultTheme.paperLight,
                     },
                 }
               : {
                     // palette values for light mode
                     primary: {
-                        main: primaryMain ? primaryMain : defaultTheme.primaryMainDark
+                        main: vibrant ? vibrant : defaultTheme.primaryMainDark
                     },
                     secondary: {
-                        main: secondaryMain ? secondaryMain : defaultTheme.secondaryMain,
-                        dark: paper
+                        main: lightMuted ? lightMuted : defaultTheme.secondaryMain,
+                        dark: muted ? muted : defaultTheme.secondaryMain,
                     },
                     background: {
-                        default: background ? background : defaultTheme.backgroundDark,
-                        paper: card
+                        default: darkMuted ? darkMuted : defaultTheme.backgroundDark,
+                        paper: darkVibrant ? darkVibrant : defaultTheme.paperDark
                     },
                 }),
           },
