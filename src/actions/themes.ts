@@ -6,3 +6,7 @@ export const updateTheme = ( data:any ) => ({
         data
     }
 });
+
+export const clearSelectedTheme = () => ({
+    type: actionTypes.clearSelectedTheme
+})

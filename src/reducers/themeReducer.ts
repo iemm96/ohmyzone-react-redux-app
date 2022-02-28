@@ -4,12 +4,16 @@ export const themeReducer = ( state = { } , action:any ) => {
     switch( action.type ) {
         case actionTypes.updateTheme:
             return {
-                primaryMain: action?.payload?.data.vibrant,
-                secondaryMain: action?.payload?.data.lightMuted,
-                background: action?.payload?.data.darkMuted,
-                paper: action?.payload?.data.muted,
-                card: action?.payload?.data.darkVibrant
+                vibrant: action?.payload?.data.vibrant,
+                lightVibrant: action?.payload?.data.lightVibrant,
+                darkVibrant: action?.payload?.data.darkVibrant,
+                muted: action?.payload?.data.muted,
+                lightMuted: action?.payload?.data.lightMuted,
+                darkMuted: action?.payload?.data.darkMuted,
+                backgroundImageUrl: action?.payload?.data.backgroundImageUrl
             }
+        case actionTypes.clearSelectedTheme:
+            return { }
         default:
             return state;
     }

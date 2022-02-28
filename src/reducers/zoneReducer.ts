@@ -14,6 +14,8 @@ export const zoneReducer = ( state = { } , action:any ) => {
                 socialLinks: action?.payload?.socialLinks,
                 links: action?.payload?.links,
             }
+        case actionTypes.clearSelectedZone: 
+            return { }
         default:
             return state;
     }

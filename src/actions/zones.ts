@@ -28,3 +28,7 @@ export const updateZone = ( payload:any ) => ({
     type: actionTypes.updateZone,
     payload
 });
+
+export const clearSelectedZone = () => ({
+    type: actionTypes.clearSelectedZone, 
+})
