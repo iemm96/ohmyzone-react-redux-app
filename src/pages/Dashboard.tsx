@@ -1,24 +1,28 @@
 import { Container, Grid, Paper } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { fetchRecords } from '../actions/fetchRecords';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import SavedZone from '../components/SavedZone';
 import { useNavigate } from 'react-router-dom';
 import StyledButton from '../styled/StyledButton';
 import { Add } from '@mui/icons-material';
-import { PremiumIcon } from '../assets/icons/PremiumIcon';
 import Premium from '../assets/icons/premium.svg';
 import { ModalPremium, useModalPremium } from '../components/ModalPremium';
+import { clearSelectedZone } from '../actions/zones';
+import { clearSelectedTheme } from '../actions/themes';
 
 const Dashboard = () => {
     const { uid, plan } = useSelector( (state:any) => state.auth );
     const [ userZones, setUserZones ] = useState<any>([]);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { handleModal, openModal } = useModalPremium();
 
     useEffect(() => {
+        dispatch( clearSelectedTheme() )
+        dispatch( clearSelectedZone() );
         getRecords().then();
-    }, [uid]);
+    }, [ uid ]);
 
     const getRecords = async () => {
 
@@ -38,7 +42,6 @@ const Dashboard = () => {
         }
     }
 
-
     return (
         <Paper
             sx={{ pt: 10 }}
@@ -57,7 +60,7 @@ const Dashboard = () => {
                             variant="contained"
                             color="secondary"
                             endIcon={ <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                            onClick={  plan === 'free' ? () => handleModal() : () => console.log('not free') }
+                            onClick={  plan === 'free' ? () => handleModal() : () => navigate('/zones/new/1') }
                         >
                             Crear nuevo Zone
                         </StyledButton>
