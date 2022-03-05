@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import BannerPreview from './BannerPreview';
 import { useParams } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateZone } from '../actions/zones';
 import { fetchRecord } from '../actions/fetchRecord';

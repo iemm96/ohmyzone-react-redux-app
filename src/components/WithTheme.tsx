@@ -22,7 +22,7 @@ const Theme = (props:any) => {
     const defaultTheme:DefaultThemeType = {
         primaryMainLight: '#4664F6',
         primaryMainDark: '#4664F6',
-        secondaryMain: '#36F1CD',
+        secondaryMain: '#6EFAFB',
         backgroundLight: '#F8FAFF',
         backgroundDark: '#010413',
         paperDark: '#030C3A',

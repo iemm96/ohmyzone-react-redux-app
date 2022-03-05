@@ -1,38 +1,82 @@
 
 
-import { styled } from '@mui/material/styles';
-import ZoneComponent from '../../components/ZoneComponent';
+import { StyledIframe } from '../../styled/StyledIframe';
+import Box from '@mui/material/Box';
+import { useSelector } from 'react-redux';
+import { Grid, Container } from '@mui/material';
+import StyledButton from '../../styled/StyledButton';
+import { ChevronLeft, Check } from '@mui/icons-material';
+import { updateRecord } from '../../actions/updateRecord';
+import ModalZonePublished, { useModalPublished } from '../../components/ModalZonePublished';
 
-interface StyledDivComponentProps {
-    relative: boolean | undefined;
-  }
+const { REACT_APP_PREVIEW_HOST } = process.env;
 
-const PreviewSection = ({ relative }:{ relative?:boolean }) => {
+const PreviewSection = () => {
+    const { zone } = useSelector( (state:any) => state );
+    const { handleModal, openModal } = useModalPublished();
 
-    const StyledPhoneDiv =  styled('div', {
-        shouldForwardProp: (prop) => prop !== "position"
-      })<StyledDivComponentProps>(({ relative }) => ({
-        width: 320,
-        height: 520,
-        border: '40px solid #ddd',
-        borderWidth: '55px 7px',
-        borderRadius: 40,
-        marginLeft: relative ? undefined : '20%',
-        transform: relative ? 'none': 'translate(-50%, 0)',
-        position: relative ? 'relative' : 'fixed',
-        overflowY: 'scroll',
-        transition: 'all 0.5s ease',    
-        boxShadow: '0px 3px 0 #BBB, 0px 4px 0 #BBB, 0px 5px 0 #BBB, 0px 7px 0 #BBB, 0px 10px 20px #666'
-    }));
+    const onSaveAndPublish = async ( ) => {
+        const result = await updateRecord( 'zones', {
+            currentStatus: 'isPublished'
+        }, zone.uid );
+
+        if( result ) {
+            handleModal( );
+        }
+        console.log( result );
+        
+    }
 
     return (
-        <>
-            <StyledPhoneDiv
-                relative={ relative }
+        <Container maxWidth="sm">
+            <ModalZonePublished
+                handleModal={ handleModal }
+                openModal={ openModal }
+                zoneUrl={ `${ REACT_APP_PREVIEW_HOST }/${ zone.username }` }
+            />
+            <Box
+                sx={{
+                    justifyContent: 'center',
+                    display: 'flex'
+                }}
             >
-                <ZoneComponent/>
-            </StyledPhoneDiv>
-        </>
+                <StyledIframe
+                    src={ `${ REACT_APP_PREVIEW_HOST }/${ zone.username }` }
+                />
+            </Box>
+            <Grid sx={{ mt: 4 }} spacing={ 2 } container>
+                <Grid xs={ 12 } item>
+                    <StyledButton
+                        variant="contained"
+                        fullWidth
+                        onClick={ onSaveAndPublish }
+                        startIcon={
+                            <Check/>
+                        }
+                    >
+                        ¡Guardar y publicar!
+                    </StyledButton>
+                </Grid>
+                <Grid xs={ 12 } item>
+                    <StyledButton
+                        variant="outlined"
+                        fullWidth
+                    >
+                        Guardar sin publicar
+                    </StyledButton>
+                </Grid>
+                <Grid xs={ 12 } item>
+                    <StyledButton
+                        fullWidth
+                        startIcon={
+                            <ChevronLeft/>
+                        }
+                    >
+                        Volver
+                    </StyledButton>
+                </Grid>
+            </Grid>
+        </Container>
     );
 };
 

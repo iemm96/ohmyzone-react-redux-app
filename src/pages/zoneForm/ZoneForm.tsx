@@ -9,6 +9,7 @@ import SocialIconsSection from './SocialIconsSection';
 import { LinksSection } from './LinksSection';
 import ThemeSection from './ThemeSection';
 import { useDispatch } from 'react-redux';
+import ZonePhonePreview from '../../components/ZonePhonePreview';
   
 const ZoneForm = () => {
     
@@ -44,7 +45,7 @@ const ZoneForm = () => {
                             {
                                 mediaQuery && (
                                     <Grid md={ 6 } item>
-                                        <PreviewSection/>
+                                        <ZonePhonePreview/>
                                     </Grid>
                                 )
                             }

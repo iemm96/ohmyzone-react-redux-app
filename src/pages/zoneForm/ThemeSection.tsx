@@ -20,7 +20,7 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
     const navigate = useNavigate();
     const state = useSelector( (state:any) => state );
     const theme = useTheme();
-    const { arrayRef, pixabayResults } = usePixabaySelector();
+    const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange } = usePixabaySelector();
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ image, setImage ] = useState<any>("'https://cdn.pixabay.com/photo/2020/04/30/20/14/sky-5114501_1280.jpg'");
     
@@ -72,7 +72,6 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
                 navigate( `/zones/edit/${ next }/${ state.zone.uid }` );
             }
             
-        
         }
 
     }
@@ -81,36 +80,24 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
         <>
             <Paper
                 sx={{
+                    pt: 2,
                     mt: 4,
                     backgroundColor: theme.palette.background.paper,
                     height: '100%',
                     borderRadius: '16px 16px 0 0',
-                    position:'relative',
-                    zIndex: 1000
+                    position:'relative',                
                 }}
                 elevation={ 2 }
             >
                 <Container maxWidth="md">
-                    <motion.div
-                        initial={{
-                            x: 20,
-                            opacity: 0
-
-                        }}
-                        animate={{
-                            x: 0,
-                            opacity: 1,
-                            transition: { ...transition }
-                        }}
-                    >
-                        <Typography sx={{ mt: 2 }} variant="subtitle1">¡Personaliza tu Zone!</Typography>
-                    </motion.div>
                     <PixabaySelector
-                        setImage={ setImage }
+                        handleSearchInputChange={ handleSearchInputChange }
+                        handleSearch={ handleSearch }
                         pixabayResults={ pixabayResults }
                         arrayRef={ arrayRef }
+                        lockResults={ true }
                     />
-                    <Typography sx={{ my: 2 }} variant="subtitle1">
+                    <Typography sx={{ my: 2 }} variant="caption">
                         ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
                     </Typography>
                     <Box sx={{

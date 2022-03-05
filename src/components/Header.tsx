@@ -11,6 +11,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import PreviewSection from "../pages/zoneForm/PreviewSection";
 import { useState } from 'react';
 import StyledButton from '../styled/StyledButton';
+import ZonePhonePreview from './ZonePhonePreview';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -133,7 +134,7 @@ const Header = () => {
                             }
                         }}
                     >
-                        <PreviewSection
+                        <ZonePhonePreview
                             relative
                         />
                     </Drawer>

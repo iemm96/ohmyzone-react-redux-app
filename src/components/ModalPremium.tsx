@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { useTheme, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {useState} from "react";
 
 import StyledButton from "../styled/StyledButton";
@@ -10,7 +10,6 @@ import { motion } from "framer-motion";
 
 import Background from "../assets/premium-illustration-logo.svg";
 import { transition } from '../constants/transitions';
-import { PremiumIcon } from '../assets/icons/PremiumIcon';
 import Premium from '../assets/icons/premium.svg';
 
 const style = {
@@ -45,8 +44,7 @@ export const useModalPremium = (  ) => {
 }
 
 export const ModalPremium = ({ handleModal, openModal, modalTitle }:ModalPremiumType) => {
-    const theme = useTheme();
-
+    
     return(
         <Modal
             open={openModal}
@@ -110,7 +108,6 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle }:ModalPremium
                       $49/mes
                     </Typography>
                     <Grid spacing={ 1 } container>
-                        
                         <Grid
                             xs={ 12 }                            
                             item
@@ -134,12 +131,9 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle }:ModalPremium
                             >
                                 Tal vez luego
                             </StyledButton>
-                        </Grid>
-                        
-                        
+                        </Grid>  
                     </Grid>
                 </Box>
-                
             </Box>
         </Modal>
     )

@@ -7,6 +7,7 @@ import { Email, Phone, Facebook, Instagram } from '@mui/icons-material';
 const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageUrl?:string }) => {
     const theme = useTheme();
 
+    console.log( backgroundImageUrl )
     const StyledBackgroundContainer = styled('div')(({theme}) => ({
         backgroundImage: `url(${ backgroundImageUrl })`,
         backgroundRepeat: 'no-repeat',

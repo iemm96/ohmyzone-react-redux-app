@@ -5,7 +5,9 @@ import {ColorPaletteImage} from "./ColorPaletteImage";
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateZone } from '../actions/zones';
-
+import Premium from '../assets/icons/premium.svg';
+import Box from '@mui/material/Box';
+import { updateTheme } from '../actions/themes';
 
 type CurrentPaletteType = {
     vibrant: string,
@@ -17,11 +19,11 @@ type CurrentPaletteType = {
 }
 
 
-const ThemeCard = ({ arrayRef, urlImage, darkMode, index, setImage, largeImageURL }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, setImage:any }) => {
-    const { zone } = useSelector( (state:any) => state );
+const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockResults }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, lockResults?:boolean }) => {
+    const { theme } = useSelector( (state:any) => state );
     const dispatch = useDispatch();
 
-    const [currentPalette,setCurrentPalette] = useState<CurrentPaletteType>({
+    const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>({
         vibrant: '#4664F6',
         lightVibrant: '#F8FAFF',
         darkVibrant: '#010413',
@@ -33,22 +35,35 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, setImage, largeImageUR
     const updateThemeColor = (index:any) => {
         const reff:any = arrayRef[index];
         reff?.current.updatePalette();
-        dispatch( updateZone(
-            {
-                ...zone,
-                backgroundImage: largeImageURL
-            }
-        ) )
-        setImage( largeImageURL );
+        dispatch( updateTheme({
+            ...currentPalette,
+            backgroundImageUrl: largeImageURL
+        }));
     }
 
     return(
 
         <Card sx={{ maxWidth: 345, borderRadius: 4, backgroundColor: darkMode ? currentPalette.lightVibrant : currentPalette.darkVibrant }} key={index}>
-            <CardActionArea onClick={() => {
+            <CardActionArea 
+                onClick={() => {
                     updateThemeColor(index);
-                    
-                }}>
+                }}
+            >
+                {
+                    lockResults && (
+                        <Box sx={{
+                            position: 'absolute',
+                            zIndex: 10,
+                            top: 4,
+                            right: 4,
+                            backgroundColor: 'rgba(0,0,0,0.4)',
+                            borderRadius: 4,
+                            px: 1.5,
+                        }}>
+                           <img src={ Premium } style={{ width: 16 }} alt="img-icon" />
+                        </Box>
+                    )
+                }
                 <CardMedia
                     component="img"
                     height="140"

@@ -33,14 +33,17 @@ export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
                 darkMuted: data.darkMuted
             });
             
+            /*
             if( 
                 data
 
             ) {
-                dispatch( updateTheme( 
-                    data
+                dispatch( updateTheme({
+                    ...data,
+                    backgroundImageUrl: props.src
+                }
                     ) );
-            }
+            }*/
 
     
         }})

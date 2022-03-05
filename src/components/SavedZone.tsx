@@ -10,6 +10,7 @@ import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import { ModalDelete, useModalDelete } from './ModalDelete';
 import { useNavigate } from 'react-router-dom';
+import { getZoneStatusLabel } from '../helpers/getZoneStatusLabel';
 
 
 const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
@@ -88,9 +89,9 @@ const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
                             @{ data.username }
                         </Typography>
                     </CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 3 }}>
                         <Chip
-                            label={ data.currentStatus }
+                            label={ getZoneStatusLabel( data.currentStatus ) }
                             size="small"
                         />
                     </Box>
