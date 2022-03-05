@@ -27,10 +27,12 @@
     "react-hook-form": "^7.22.5",
     "react-image-file-resizer": "^0.4.7",
     "react-palette": "^1.0.2",
+    "react-qr-code": "^2.0.3",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-select": "^5.2.2",
+    "react-share": "^4.4.0",
     "styled-components": "^5.3.3",
     "styled-icons": "^10.45.0",
     "use-image-color": "0.0.9"
