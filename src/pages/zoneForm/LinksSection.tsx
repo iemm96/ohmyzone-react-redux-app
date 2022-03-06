@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateZone } from '../../actions/zones';
 import { ObjectCategoryType } from '../../types/ObjectCategoryType';
 import { fetchRecord } from '../../actions/fetchRecord';
+import CircularProgressComponent from '../../components/CircularProgressComponent';
 
 type LinksItemType = {
   title: string;
@@ -54,6 +55,7 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
 
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
   const [ categoriesAutocomplete, setCategoriesAutocomplete ] = useState<ObjectCategoryType[]>([]);
+  const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
 
   useEffect(() => {
     dispatch( updateZone({
@@ -116,7 +118,8 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
           item.links = result;
         }
       });
-  
+      
+      setIsFormReady( true );
       setCategories( arrayCategories );
     }
     
@@ -154,18 +157,25 @@ export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
           ))}
         </Box> 
       ))}
-      <Box sx={{ mt: 2 }}>
-        <LinkForm
-          getLinks={ getLinks }
-          zone={ zone.uid }
-          defaultCategories={ categoriesAutocomplete }
-          item={ {
-            isSaved: false
-          } }
-        />
-      </Box>
-      
-      <Box sx={{ mt:8 }}>
+      {
+        isFormReady ? (
+          <Box sx={{ mt: 2 }}>
+            <LinkForm
+              getLinks={ getLinks }
+              zone={ zone.uid }
+              defaultCategories={ categoriesAutocomplete }
+              editingMode={ ( categories.length === 0 ) }
+              item={ {
+                isSaved: false
+              } }
+            />
+          </Box>
+        ) : (
+          <CircularProgressComponent/>
+        )
+      }
+
+      <Box sx={{ mt: 8, mb: 4 }}>
           <FormNavigationButtons
               next={ () => navigate( `/zones/edit/${next}/${ zone.uid }` ) }
               prev={ `/zones/edit/${prev}/${ zone.uid }` }

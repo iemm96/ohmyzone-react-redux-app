@@ -8,7 +8,6 @@ import StepperComponent from '../../components/StepperComponent';
 import SocialIconsSection from './SocialIconsSection';
 import { LinksSection } from './LinksSection';
 import ThemeSection from './ThemeSection';
-import { useDispatch } from 'react-redux';
 import ZonePhonePreview from '../../components/ZonePhonePreview';
   
 const ZoneForm = () => {
@@ -30,7 +29,7 @@ const ZoneForm = () => {
                 <Container maxWidth="lg">
                     { params.part === '5' ? <PreviewSection/> : (
                         <Grid sx={{ justifyContent: 'center' }} container>
-                            <Grid md={ 6 } item>
+                            <Grid xs={ 12 } md={ 6 } item>
                                 <StepperComponent actualStep={ params.part } totalSteps={ 4 } />
 
                                 { params.part === '1' && <CoverSection/> }

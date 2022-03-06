@@ -64,7 +64,7 @@ const CoverSection = () => {
             }
         }
 
-        setIsFormReady(true);
+        setIsFormReady( true );
     }
 
     const handleChangeName = (e:any) => {

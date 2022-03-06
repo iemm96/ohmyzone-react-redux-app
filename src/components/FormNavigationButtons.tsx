@@ -13,8 +13,8 @@ const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading?:
                 md={ 6 }
                 sx={{
                     order: {
-                        xs: 2,
-                        md: 1
+                        xs: 1,
+                        md: 2
                     }
                 }}
                 item
@@ -32,7 +32,18 @@ const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading?:
                 </StyledButton>
             </Grid>
             { prev && 
-                <Grid xs={ 12 } md={ 6 } item>
+                <Grid 
+                    sx={{
+                        order: {
+                            xs: 2,
+                            md: 1
+                        }
+                    }}
+                    xs={ 12 }
+                    md={ 6 }
+                    item
+                >
+                    
                     <StyledButton
                         onClick={ () => navigate( prev ) }
                         fullWidth
