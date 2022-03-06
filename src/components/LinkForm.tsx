@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Paper, TextField, FormGroup, Tooltip, CircularProgress, Stack } from '@mui/material';
+import { Grid, Paper, TextField, FormGroup, Tooltip, CircularProgress, Stack, Typography } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,6 +13,7 @@ import { green } from '@mui/material/colors';
 import { postRecord } from '../actions/postRecord';
 import { fetchRecords } from '../actions/fetchRecords';
 import StyledButton from '../styled/StyledButton';
+import { ModalCategory, useModalCategory } from './ModalCategory';
 
 type LinksItemType = {
     title: string;
@@ -36,9 +37,9 @@ type CategoryItemType = {
   
 const filter = createFilterOptions<CategoryItemType>();
 
-export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[] }) => {
+export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode }:{item:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean }) => {
 
-    const [ isEditing, setIsEditing ] = useState<boolean>( true );
+    const [ isEditing, setIsEditing ] = useState<boolean>( editingMode );
 
     const link:LinksItemType = {
         title: '',
@@ -55,10 +56,22 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
 
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ linksItems, setLinksItems ] = useState<LinksItemType>(link);
-    const { handleSubmit, control, setValue, formState: {errors}, } = useForm();
+    const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
     const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
     const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
     const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
+    const { handleModalCategory, openModalCategory, setNewCategory, newCategory } = useModalCategory();
+    useEffect(() => {
+      resetForm();
+    },[])
+    useEffect(() => {
+      if( newCategory ) {
+        setCategorySelected({
+          title: newCategory,
+        });
+      }
+      
+    },[ newCategory ]);
 
     useEffect(() => {
       if( defaultCategories ) {
@@ -66,7 +79,16 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
       }
     },[ defaultCategories ]);
 
+    useEffect(() => {
+      setIsEditing( editingMode );
+    },[ editingMode ])
+
     const submitForm = async ( data:any ) => {
+
+        if( !categorySelected ) {
+          alert( '¡Ups! Debes seleccionar al menos una categoría' );
+          return;
+        }
 
         setLoading(true);
     
@@ -82,46 +104,54 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
         if(zone) {
             data.zone = zone;
         }
-    
-        if(categorySelected) {
 
-            const { category } = await fetchRecords(`categories/find/${categorySelected.title}/${zone}`);
+        const { category } = await fetchRecords(`categories/find/${categorySelected.title}/${zone}`);
 
-            if( category ) {
-                data.category = category.uid
-            } else {
+        if( category ) {
+            data.category = category.uid
+        } else {
 
-                try{
-                    const categoryResult = await postRecord('categories', {
-                        title: categorySelected.title,
-                        zone
-                    });
-    
-                    console.log( categoryResult )
-                    data.category = categoryResult.category.uid;
-                }catch(e){
-                    console.log(e)
-                }
-               
+            try{
+                const categoryResult = await postRecord('categories', {
+                    title: categorySelected.title,
+                    zone
+                });
+
+                console.log( categoryResult )
+                data.category = categoryResult.category.uid;
+            }catch(e){
+                console.log(e)
             }
-
             
         }
 
         const result = await postRecord('links', data);
         
         if(result) {
-          setCategorySelected( null );
-          handleDelete(); //Deletes uploaded image preview
+          
           setLoading( false );
-          setIsEditing( false );
+
+          resetForm();
           getLinks();
         }
         
     }
 
+    const resetForm = () => {
+        reset()
+        setCategorySelected( null );
+        handleDelete(); //Deletes uploaded image preview
+        setIsEditing( false );
+        setLinksItems( link );
+    }
+
     return(
         <Box>
+            <ModalCategory
+                handleModalCategory={ handleModalCategory }
+                openModalCategory={ openModalCategory }
+                setNewCategory={ setNewCategory }
+            />
             { isEditing && (
               <Paper sx={{ p: 1, borderRadius: 3, mb: 1 }} elevation={ 4 }>
                 <form id={`form-link-${ item.uid }`}>
@@ -145,7 +175,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                     </Grid>
                     <Grid xs={ 12 } item>
                       <Controller
-                          name={`title`}
+                          name="title"
                           control={control}
                           rules={{
                             required: 'El título es requerido.'
@@ -159,6 +189,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                             />
                           )}
                         />
+                        { errors.title && <Typography variant="caption" sx={{color:'red'}}>{ errors.title.message }</Typography> }
                     </Grid>
                     <Grid xs={ 12 } item>
                       <Controller
@@ -176,79 +207,128 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                         />
                     </Grid>
                     <Grid xs={ 12 } item>
-                      <Autocomplete
-                        value={categorySelected}
-                        onChange={(event, newValue) => {
+                      {
+                        categories.length === 0 ? (
+                          <TextField
+                              disabled
+                              fullWidth
+                              label="Categoría"
+                              InputProps={{
+                                  endAdornment: loading ? <CircularProgress size={ 12 }/> :
+                                      <StyledButton
+                                          fullWidth
+                                          onClick={ handleModalCategory }
+                                          variant="contained"
+                                          color="secondary"
+                                          startIcon={ <Add/> }
+                                      >
+                                          Crear una categoría
+                                      </StyledButton>
+                              }}
+                          />
+                        ) : (
+                          <Autocomplete
+                            value={categorySelected}
+                            onChange={(event, newValue) => {
+                          
+                              if (typeof newValue === 'string') {
+                            
+                                setCategorySelected({
+                                  title: newValue,
+                                });
+
+                              } else if (newValue && newValue.inputValue) {
+
+                                setCategories( prev => [...prev, { title: newValue.inputValue ? newValue.inputValue : '' }] );
+                                const arrayLinksItems:any = linksItems;
+                                arrayLinksItems.category = newValue.inputValue ? newValue.inputValue : '';
+                                setLinksItems( arrayLinksItems );
+                                // Create a new value from the user input
+                                setCategorySelected({
+                                  title: newValue.inputValue,
+                                });
+                              } else {
+                                const arrayLinksItems:any = linksItems;
+                                console.log('onChange select ', newValue?.title);
+                                arrayLinksItems.category = newValue?.title ? newValue?.title : '';
+                                setCategorySelected({
+                                  title: newValue?.title ? newValue?.title : '',
+                                });
+                              }
+                            }}
+                            renderOption={( props:any, option:any ) => {
+
+                              //If is the last option
+                              if( ( categories.length - 1 ) === props["data-option-index"]) {
+                                  return(
+                                      <div key={ option.title }>
+                                          <li  {...props}>
+                                              { option.title }
+                                          </li>
+                                          <li>
+                                              <StyledButton
+                                                  onClick={ handleModalCategory }
+                                                  fullWidth
+                                                  color="secondary"
+                                                  startIcon={ <Add/> }
+                                              >
+                                                  Crear una categoría
+                                              </StyledButton>
+                                          </li>
+                                      </div>
+      
+                                  )
+                              }
+                              return(   <li { ...props }>
+                                  { option.title }
+                              </li> )
+                          }}
+                            filterOptions={(categories, params) => {
+                              const filtered = filter(categories, params);
+
+                              const { inputValue } = params;
+                              // Suggest the creation of a new value
+                              const isExisting = categories.some((category) => inputValue === category.title);
+                              if (inputValue !== '' && !isExisting) {
+                                filtered.push({
+                                  inputValue,
+                                  title: `Crear categoría: "${inputValue}"`,
+                                });
+                              }
+
+                              return filtered;
+                            }}
+                            selectOnFocus
+                            clearOnBlur
+                            handleHomeEndKeys
+                            id="free-solo-with-text-demo"
+                            options={ categories }
+                            getOptionLabel={(option) => {
+                              // Value selected with enter, right from the input
+                              if (typeof option === 'string') {
+                                return option;
+                              }
+                              // Add "xxx" option created dynamically
+                              if (option.inputValue) {
+                                return option.inputValue;
+                              }
+                              // Regular option
+                              return option.title;
+                            }}
+                            fullWidth
+                            freeSolo
+                            renderInput={(params) => {
+                              params.fullWidth = true;
+
+                              return (<TextField 
+                                {...params}
+                                label="Categoría"
+                              />)
+                            }}
+                          />
+                        )
+                      }
                       
-                          if (typeof newValue === 'string') {
-                        
-                            setCategorySelected({
-                              title: newValue,
-                            });
-
-                          } else if (newValue && newValue.inputValue) {
-
-                            setCategories( prev => [...prev, { title: newValue.inputValue ? newValue.inputValue : '' }] );
-                            const arrayLinksItems:any = linksItems;
-                            arrayLinksItems.category = newValue.inputValue ? newValue.inputValue : '';
-                            setLinksItems( arrayLinksItems );
-                            // Create a new value from the user input
-                            setCategorySelected({
-                              title: newValue.inputValue,
-                            });
-                          } else {
-                            const arrayLinksItems:any = linksItems;
-                            console.log('onChange select ', newValue?.title);
-                            arrayLinksItems.category = newValue?.title ? newValue?.title : '';
-                            setCategorySelected({
-                              title: newValue?.title ? newValue?.title : '',
-                            });
-                          }
-                        }}
-                        filterOptions={(categories, params) => {
-                          const filtered = filter(categories, params);
-
-                          const { inputValue } = params;
-                          // Suggest the creation of a new value
-                          const isExisting = categories.some((category) => inputValue === category.title);
-                          if (inputValue !== '' && !isExisting) {
-                            filtered.push({
-                              inputValue,
-                              title: `Crear categoría: "${inputValue}"`,
-                            });
-                          }
-
-                          return filtered;
-                        }}
-                        selectOnFocus
-                        clearOnBlur
-                        handleHomeEndKeys
-                        id="free-solo-with-text-demo"
-                        options={ categories }
-                        getOptionLabel={(option) => {
-                          // Value selected with enter, right from the input
-                          if (typeof option === 'string') {
-                            return option;
-                          }
-                          // Add "xxx" option created dynamically
-                          if (option.inputValue) {
-                            return option.inputValue;
-                          }
-                          // Regular option
-                          return option.title;
-                        }}
-                        renderOption={(props, option) => <li {...props}>{option.title}</li>}
-                        fullWidth
-                        freeSolo
-                        renderInput={(params) => {
-                          params.fullWidth = true;
-
-                          return (<TextField 
-                            {...params}
-                            label="Categoría"
-                          />)
-                        }}
-                      />
                     </Grid>
                     <Grid display="flex" justifyContent="space-between" xs={ 12 } item>
                       <FormGroup>
@@ -282,12 +362,12 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                         )}
                       />
                     </Grid>
-                    <Grid sx={{ display: !linksItems.whatsapp ? 'inline-flex' : 'none' }} xs={ 12 } item>
+                    <Grid sx={{ display: !linksItems.whatsapp ? 'inline' : 'none' }} xs={ 12 } item>
                       <Controller
-                        name={`link`}
+                        name="link"
                         control={ control }
                         rules={{
-                          required: !linksItems.whatsapp ? 'Agrega un enlace' : false
+                          required: !linksItems.whatsapp ? 'Debes agregar un enlace.' : false
                         }}
                         render={({ field: { onChange, value } }) => (
                           <TextField                       
@@ -300,11 +380,15 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                           />
                         )}
                       />
+                      { errors.link && <Typography variant="caption" sx={{color:'red'}}>{ errors.link.message }</Typography> }
                     </Grid>
                     <Grid xs={ 12 } item>
                       <Controller
                           name={`buttonText`}
                           control={control}
+                          rules={{
+                            required: 'Debes agregar un texto para tu botón.'
+                          }}
                           render={({ field: { onChange, value } }) => (
                             <TextField                       
                               fullWidth
@@ -316,12 +400,13 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories }:{item:any, 
                             />
                           )}
                         />
+                        { errors.buttonText && <Typography variant="caption" sx={{color:'red'}}>{ errors.buttonText.message }</Typography> }
                     </Grid>
                   </Grid>
                   <Stack spacing={ 2 } direction="row" sx={{ mt: 2, justifyContent: 'right' }}>
                     <StyledButton
                       variant="outlined"                      
-                      onClick={ () => setIsEditing( false ) }
+                      onClick={ resetForm }
                     >
                       Cancelar
                     </StyledButton>
