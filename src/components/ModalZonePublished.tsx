@@ -19,6 +19,7 @@ import {
     TwitterShareButton,
     WhatsappShareButton,
 } from "react-share";
+import ZonePublishedAnimation from './ZonePublishedAnimation';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -52,8 +53,6 @@ export const useModalPublished = (  ) => {
 
 const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType) => {
     const theme = useTheme();
-    const title = `¡Mira el Zone que acabo de crear!  ${ zoneUrl }`;
-    const shareUrl = zoneUrl;
 
     return(
         <Modal
@@ -63,45 +62,18 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
         aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Box 
-                    sx={{ 
-                        position: 'relative',
-                        display: 'flex',
-                        justifyContent: 'center', 
-                        width: '100%', 
-                        height: 200, 
-                        backgroundColor: '#4664F6',
-                        pt: 2,
-                        overflow: 'hidden'
-                    }}
-                >
-                    <motion.img
-                        initial={{ 
-                            height: 200,
-                            y: 50
-                        }}
-                        animate={{
-                            y: 5,
-                            height: 200,
-                            transition: { ...transition }
-                        }}
-                        alt="logo"
-                        src={ Background } 
-                        style={{
-                            height: 120,
-                            position: 'absolute',
-                            zIndex: 0
-                        }}
-                    />
-                </Box>
+                <ZonePublishedAnimation zoneUrl={ zoneUrl } />
                 <Box sx={{ p: 3, pb: 2 }}>
                     <Typography
-                        color="primary"
+                        color="secondary"
                         align="center"
                         id="modal-modal-title" 
-                        variant="subtitle1"
+                        variant="h6"
+                        sx={{
+                            mb: 2
+                        }}
                     >
-                        ¡Genial, tu Zone ha sido publicado!
+                        ¿Cómo lo comparto?
                     </Typography>
                     <Typography
                         variant="caption"
@@ -128,7 +100,7 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                          />
    
                     </Box>
-                    <Grid sx={{ mt: 2 }} spacing={ 1 } container>
+                    <Grid sx={{ mt: 0 }} spacing={ 2 } container>
                         <Grid
                             xs={ 12 }                            
                             item
@@ -178,6 +150,7 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                                         backgroundColor: theme.palette.secondary.main,
                                         borderRadius: '4px 0 0 4px',
                                         px: 2,
+                                        py: 1
                                     }}
                                 >
                                     <Share
@@ -186,7 +159,7 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                                         }}
                                     />
                                 </Box>
-                                    <Stack direction="row" spacing={ 3 }>
+                                    <Stack sx={{ py: 1, px: 2}} direction="row" spacing={ 3 }>
                                         <FacebookShareButton
                                             url={ zoneUrl }
                                             title="Comparte en Facebook"
