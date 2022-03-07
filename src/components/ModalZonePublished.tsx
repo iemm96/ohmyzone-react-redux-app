@@ -4,22 +4,21 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Grid, Stack, useTheme } from '@mui/material';
 import StyledButton from "../styled/StyledButton";
-import { transition } from '../constants/transitions';
-import { motion } from "framer-motion";
 
-import Background from "../assets/premium-illustration-logo.svg";
-import { ContentCopyRounded, Facebook, Share, Twitter } from '@mui/icons-material';
+import { ContentCopyRounded, Facebook, Share, Telegram, Twitter, WhatsApp } from '@mui/icons-material';
 
 import QRCode from 'react-qr-code';
 import { simplifyUrl } from '../helpers/simiplifyUrl';
 
 import {
-    EmailShareButton,
+    TelegramShareButton,
     FacebookShareButton,
     TwitterShareButton,
     WhatsappShareButton,
 } from "react-share";
 import ZonePublishedAnimation from './ZonePublishedAnimation';
+import { useNavigate } from 'react-router-dom';
+import { downloadQr } from '../helpers/downloadQr';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -42,7 +41,7 @@ export const useModalPublished = (  ) => {
     const [ openModal, setOpenModal ] = useState(false);
     const [ modalTitle, setModalTitle ] = useState<string>(' ');
     const handleModal = () => setOpenModal(!openModal);
-
+    
     return {
         openModal,
         handleModal,
@@ -53,13 +52,14 @@ export const useModalPublished = (  ) => {
 
 const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType) => {
     const theme = useTheme();
-
+    const navigate = useNavigate();
+    const QRCodeId:string = "QRCode";
     return(
         <Modal
-        open={openModal}
-        onClose={handleModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+            open={openModal}
+            onClose={handleModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
                 <ZonePublishedAnimation zoneUrl={ zoneUrl } />
@@ -85,6 +85,8 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
+                            alignItems: 'center',
+                            flexDirection: 'column',
                             borderRadius: 2,
                             py: 2,
                             border: `solid 1px ${ theme.palette.secondary.main }`
@@ -92,13 +94,24 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                     >
 
                         <QRCode
+                            id={ QRCodeId }
                             style={{
                                 borderRadius: 8,
                             }}
                             size={ 160 }
                             value={ zoneUrl }
                          />
-   
+                        <StyledButton
+                            sx={{
+                                borderRadius: 8,
+                                mt: 2,
+                            }}
+                            variant="contained"
+                            size='small'
+                            onClick={ () => downloadQr( QRCodeId, 'qr_de_mi_zone' ) }
+                        >
+                            Descargar tu QR
+                        </StyledButton>
                     </Box>
                     <Grid sx={{ mt: 0 }} spacing={ 2 } container>
                         <Grid
@@ -159,7 +172,7 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                                         }}
                                     />
                                 </Box>
-                                    <Stack sx={{ py: 1, px: 2}} direction="row" spacing={ 3 }>
+                                    <Stack sx={{ py: 1, px: 2, justifyContent: 'center', display: 'flex' }} direction="row" spacing={ 3 }>
                                         <FacebookShareButton
                                             url={ zoneUrl }
                                             title="Comparte en Facebook"
@@ -178,6 +191,23 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                                                 color="secondary"
                                             />
                                         </TwitterShareButton>
+                                        <WhatsappShareButton
+                                            url={ zoneUrl }
+                                            title={ "¡Mira el zone que acabo de crear! "}
+                                        >
+                                            <WhatsApp
+                                                color="secondary"
+                                            />
+                                        </WhatsappShareButton>
+                                        <TelegramShareButton
+                                            url={ zoneUrl }
+                                            title={ "¡Mira el zone que acabo de crear! "}
+                                           
+                                        >
+                                            <Telegram
+                                                color="secondary"
+                                            />
+                                        </TelegramShareButton>
                                     </Stack>
                                 </Box>
                         </Grid>
@@ -187,7 +217,10 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
                         >
                             <StyledButton
                                 fullWidth
-                                onClick={ handleModal }
+                                onClick={ () => {
+                                    handleModal()
+                                    navigate( '/dashboard' );
+                                }}
                             >
                                 Volver al dashboard
                             </StyledButton>
