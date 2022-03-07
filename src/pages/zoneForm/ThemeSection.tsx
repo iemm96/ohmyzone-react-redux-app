@@ -13,6 +13,8 @@ import { motion } from 'framer-motion';
 import { transition } from '../../constants/transitions';
 import { postRecord } from '../../actions/postRecord';
 import { updateRecord } from '../../actions/updateRecord';
+import axios from 'axios';
+import { fetchFile } from '../../actions/fetchFile';
 
 const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
     const params = useParams();
@@ -45,17 +47,27 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
 
     const submitTheme = async () => {
         const theme = state.theme;
-        
+        setLoading( true );
         //Saves palette
         const { palette } = await postRecord( 'palettes', {
             ...theme,
             zone: state.zone.uid
         } );
 
+        //fetch image from pixabay
+        const imageDownloaded:any = await fetchFile( state.theme.backgroundImageUrl );
+
+        const formData = new FormData();
+        formData.append( 'zone', state.zone.uid );
+        formData.append( 'file', imageDownloaded );
+
+        //Save image to cloudinary
+        const { image } = await postRecord( 'images', formData );
+    
         if( palette ) {
             const { theme } = await postRecord( 'themes', {
                 palette: palette.uid,
-                backgroundImageUrl: state.zone.backgroundImage,
+                backgroundImage: image.uid,
                 user: state.auth.uid
             } );
 
@@ -68,7 +80,7 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
                     ...state.zone,
                     zoneResult
                 }) );
-
+                setLoading( false );
                 navigate( `/zones/edit/${ next }/${ state.zone.uid }` );
             }
             
@@ -97,7 +109,7 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
                         arrayRef={ arrayRef }
                         lockResults={ true }
                     />
-                    <Typography sx={{ my: 2 }} variant="caption">
+                    <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
                         ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
                     </Typography>
                     <Box sx={{
