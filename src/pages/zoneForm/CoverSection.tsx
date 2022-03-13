@@ -5,7 +5,7 @@ import { UsernameCreator, useUsernameCreator } from '../../components/UsernameCr
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from 'react-redux';
-import { startupdateZone, updateZone } from '../../actions/zones';
+import { updateZone } from '../../actions/zones';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { updateRecord } from '../../actions/updateRecord';
@@ -16,7 +16,7 @@ import { updateTheme } from '../../actions/themes';
 import { red } from '@mui/material/colors';
 import { postRecord } from '../../actions/postRecord';
 
-const CoverSection = () => {
+const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const params = useParams();
     const { auth, zone } = useSelector( (state:any) => state );
     const { createdUsername, setCreatedUsername } = useUsernameCreator();
@@ -52,6 +52,8 @@ const CoverSection = () => {
             }
 
             setValue( 'title', zone.title );
+            setValue( 'subtitle', zone?.subtitle );
+            setValue( 'description', zone?.description );
             setCreatedUsername( zone.username );
             dispatch( updateZone({
                 ...zone,
@@ -97,8 +99,6 @@ const CoverSection = () => {
             data.user = auth.uid;
 
             const { zone } = await postRecord( 'zones', data ); //Creates Zone
-
-
 
             const image = await uploadToServer( zone.uid, zone.username ); //Uploads image to server with the id of the Zone recently created
 
@@ -169,6 +169,25 @@ const CoverSection = () => {
                             />
                             { errors.title && <Typography variant="caption" sx={{color: red[200]}}>{errors.title.message}</Typography> }
                         </Grid>
+                        {
+                            fullForm && (
+                                <Grid xs={12} item>
+                                    <Controller
+                                        name="subtitle"
+                                        control={ control }
+                                        defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
+                                        render={ ({ field: { value, onChange } }) => (
+                                            <TextField
+                                                onChange={ onChange }
+                                                fullWidth
+                                                value={ value }
+                                                label="Subtítulo" 
+                                            />
+                                        ) }
+                                    />
+                                </Grid>
+                            )
+                        }
                     </Grid>
                     <Grid container>
                         <Grid xs={12} item>
@@ -181,6 +200,30 @@ const CoverSection = () => {
                                 setValue={ setValue }
                             />
                         </Grid>
+                    </Grid>
+                    <Grid sx={{ mt: 2 }} container>
+                        {
+                            fullForm && (
+                                <Grid xs={12} item>
+                                    <Controller
+                                        name="description"
+                                        control={ control }
+                                        defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
+                                        render={ ({ field: { value, onChange } }) => (
+                                            <TextField
+                                                multiline
+                                                rows={ 2 }
+                                                onChange={ onChange }
+                                                fullWidth
+                                                value={ value }
+                                                label="Mi bio"
+                                                placeholder="Descríbete a tí o a tu negocio" 
+                                            />
+                                        ) }
+                                    />
+                                </Grid>
+                            )
+                        }
                     </Grid>
                     <Box sx={{ mt: 8, mb: 4 }}>
                         <FormNavigationButtons

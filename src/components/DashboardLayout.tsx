@@ -4,6 +4,7 @@ import withTheme from './WithTheme';
 import { useEffect } from 'react';
 import { startValidateJWT } from '../actions/auth';
 import { useDispatch } from 'react-redux';
+import { Box } from "@mui/system";
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
@@ -30,7 +31,9 @@ const DashboardLayout = () => {
     return(
         <>
             <Header/>
-            <Outlet />
+            <Box sx={{ mt: 12 }}>
+                <Outlet />                
+            </Box>
         </>
     )
 }

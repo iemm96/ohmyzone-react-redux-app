@@ -34,7 +34,7 @@ type CategoryItemType = {
   links?: Array<LinksItemType> | null;
 }
 
-export const LinksSection = ({prev, next}:{ prev:number, next?:number }) => {
+export const LinksSection = ({prev, next}:{ prev?:number, next?:number }) => {
   const params = useParams();
   const navigate = useNavigate();
   

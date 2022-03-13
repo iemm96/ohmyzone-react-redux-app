@@ -44,7 +44,6 @@ const Dashboard = () => {
 
     return (
         <Paper
-            sx={{ pt: 10 }}
             elevation={ 0 }
         >
             <ModalPremium

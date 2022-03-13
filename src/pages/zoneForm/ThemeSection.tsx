@@ -18,7 +18,7 @@ import { fetchFile } from '../../actions/fetchFile';
 import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
 
-const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
+const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();

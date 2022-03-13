@@ -6,6 +6,7 @@ import RegisterForm from '../pages/RegisterForm';
 import Login from "../pages/Login";
 import DashboardLayout from "../components/DashboardLayout";
 import ZoneComponent from '../components/ZoneComponent';
+import ZoneDashboard from "../pages/ZoneDashboard";
 
 const AppRoutes = () => {
     return(
@@ -19,9 +20,9 @@ const AppRoutes = () => {
                     <Route path="/zones/new/:part/:zone" element={<ZoneForm/>}/>
 
                     <Route path="/zones/edit/:part/:zone" element={<ZoneForm/>}/>
-
+                    <Route path="/zones/:zone" element={<ZoneDashboard/>}/>
                 </Route>
-                <Route path="/zones/preview/:zone" element={<ZoneComponent/>}/>
+
             </Routes>
         </AnimatePresence>
     );

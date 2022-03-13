@@ -54,8 +54,12 @@ const ModalZonePublished = ({ handleModal, openModal, zoneUrl }:ModalPremiumType
     const theme = useTheme();
     const navigate = useNavigate();
     const QRCodeId:string = "QRCode";
+ 
     return(
         <Modal
+            sx={{
+                overflow: 'scroll'
+            }}
             open={openModal}
             onClose={handleModal}
             aria-labelledby="modal-modal-title"

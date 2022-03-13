@@ -1,6 +1,6 @@
 import { Typography, Stack, useTheme } from '@mui/material';
 
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -47,17 +47,6 @@ const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
                 spacing={ 2 }
             >
                 <IconButton
-                    onClick={ () => navigate( `/zones/edit/1/${ data.uid }`)}
-                    sx={{
-                        backgroundColor: theme.palette.primary.main,
-                        width: 48,
-                        height: 20,
-                        borderRadius: 2
-                    }}
-                >
-                    <Edit sx={{ fontSize: 14 }}/>
-                </IconButton >
-                <IconButton
                     sx={{
                         backgroundColor: theme.palette.error.main,
                         width: 48,
@@ -73,7 +62,7 @@ const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
                     <Delete sx={{ fontSize: 14 }}/>
                 </IconButton>
             </Stack>
-            <Card sx={{ display: 'flex', mb: 1, borderRadius: 3, cursor: 'pointer' }} onClick={ () => navigate( `/zones/preview/${ data.uid }`)}>
+            <Card sx={{ display: 'flex', mb: 1, borderRadius: 3, cursor: 'pointer' }} onClick={ () => navigate( `/zones/${ data.uid }`)}>
                 <CardMedia
                     component="img"
                     sx={{ width: 151 }}
