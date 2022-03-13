@@ -4,19 +4,12 @@ import CardMedia from '@mui/material/CardMedia';
 import {ColorPaletteImage} from "./ColorPaletteImage";
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateZone } from '../actions/zones';
 import Premium from '../assets/icons/premium.svg';
 import Box from '@mui/material/Box';
 import { updateTheme } from '../actions/themes';
+import { CurrentPaletteType } from '../types/CurrentPaletteType';
 
-type CurrentPaletteType = {
-    vibrant: string,
-    lightVibrant: string,
-    darkVibrant: string,
-    muted: string,
-    lightMuted: string,
-    darkMuted: string
-}
+
 
 
 const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockResults }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, lockResults?:boolean }) => {

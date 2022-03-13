@@ -1,10 +1,9 @@
 import StyledSwitch from '../../styled/StyledSwitch';
 import TextField from '@mui/material/TextField';
-import { InputAdornment, Grid, Stack, useTheme, Typography, CircularProgress } from '@mui/material';
-import { Call, ChevronLeft, Email, Facebook, Instagram, WhatsApp } from '@mui/icons-material';
+import { InputAdornment, Grid, Stack, useTheme, Typography } from '@mui/material';
+import { Call, Email, Facebook, Instagram, WhatsApp } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { ContactOptionsType } from '../../types/ContactOptionsType';
-import Button from '@mui/material/Button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Tiktok } from '@styled-icons/boxicons-logos/Tiktok';
 import { updateRecord } from '../../actions/updateRecord';
@@ -137,7 +136,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                     render={({ field: { onChange, value } }) => (
                                         <TextField
                                             disabled={ !contactOptions.facebook }
-                                            placeholder="Url de tu Facebook"
+                                            placeholder="Nombre de usuario de tu Facebook"
                                             fullWidth
                                             onChange={ onChange }
                                             value={ value }

@@ -14,6 +14,7 @@ import CircularProgressComponent from "../../components/CircularProgressComponen
 import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { updateTheme } from '../../actions/themes';
 import { red } from '@mui/material/colors';
+import { postRecord } from '../../actions/postRecord';
 
 const CoverSection = () => {
     const params = useParams();
@@ -43,6 +44,7 @@ const CoverSection = () => {
 
     const getZone = async () => {
         if(params.zone) {
+
             const { zone } = await fetchRecord('zones', params.zone);
 
             if(zone.profileImage.url) {
@@ -83,7 +85,6 @@ const CoverSection = () => {
         data.username = createdUsername;
         data.title = fullName;
 
-        let result:any;
         let zoneUid:string = '';
 
         if( params.zone ) {
@@ -95,9 +96,18 @@ const CoverSection = () => {
         }else {
             data.user = auth.uid;
 
-            result = await dispatch( startupdateZone( data ) ); //Creates Zone
-            const image = await uploadToServer( result.uid ); //Uploads image to server with the id of the Zone recently created
-            zoneUid = result.uid;
+            const { zone } = await postRecord( 'zones', data ); //Creates Zone
+
+
+
+            const image = await uploadToServer( zone.uid, zone.username ); //Uploads image to server with the id of the Zone recently created
+
+            dispatch( updateZone( {
+                ...zone,
+                profileImage: image.url
+            } ) );
+
+            zoneUid = zone.uid;
             if(image) {
                 await updateRecord('zones', {
                     profileImage: image.uid
@@ -172,7 +182,7 @@ const CoverSection = () => {
                             />
                         </Grid>
                     </Grid>
-                    <Box sx={{ mt: 8 }}>
+                    <Box sx={{ mt: 8, mb: 4 }}>
                         <FormNavigationButtons
                             prev={ `/dashboard` }
                             loading={ loading }

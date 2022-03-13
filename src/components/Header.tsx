@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer } from "@mui/material"; 
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer, useMediaQuery } from '@mui/material'; 
 import { motion } from "framer-motion";
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -8,17 +8,17 @@ import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from "../actions/auth";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import PreviewSection from "../pages/zoneForm/PreviewSection";
 import { useState } from 'react';
 import StyledButton from '../styled/StyledButton';
 import ZonePhonePreview from './ZonePhonePreview';
 
 const Header = () => {
+    const theme = useTheme();
     const navigate = useNavigate();
     const { zone } = useSelector( (state:any) => state )
     const [ anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [ openDrawer, setOpenDrawer ] = useState<boolean>( false );
-    const theme = useTheme();
+    const mediaQuery = useMediaQuery(theme.breakpoints.down('md'));
     const dispatch = useDispatch();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -67,32 +67,36 @@ const Header = () => {
                             src={Logo}
                         />
                     </Link>
-                    <StyledButton
-                        sx={{
-                            borderRadius: 10
-                        }}
-                        startIcon={ !openDrawer ? <Visibility/> : <VisibilityOff/> }
-                        color="secondary"
-                        variant="contained"
-                        onClick={ () => setOpenDrawer( !openDrawer ) }
-                        size="small"
-                    >
-                        Vista previa
-                    </StyledButton>
+                    {
+                        mediaQuery && (
+                            <StyledButton
+                                sx={{
+                                    borderRadius: 10
+                                }}
+                                startIcon={ !openDrawer ? <Visibility/> : <VisibilityOff/> }
+                                color="secondary"
+                                variant="contained"
+                                onClick={ () => setOpenDrawer( !openDrawer ) }
+                                size="small"
+                            >
+                                Vista previa
+                            </StyledButton>
+                        )
+                    }
                     <div>
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleMenu}
-                        color="inherit"
-                        sx={{
-                            p:0
-                        }}
-                    >
-                        <AccountCircle />
-                    </IconButton>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleMenu}
+                            color="inherit"
+                            sx={{
+                                p:0
+                            }}
+                        >
+                            <AccountCircle />
+                        </IconButton>
                         <Menu
                             id="menu-appbar"
                             anchorEl={anchorEl}

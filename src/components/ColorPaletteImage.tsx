@@ -7,7 +7,6 @@ import { updateTheme } from '../actions/themes';
 
 export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
     const { data, loading } = usePalette(props.src);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         if(data && !loading) {

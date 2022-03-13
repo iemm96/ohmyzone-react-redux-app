@@ -29,6 +29,7 @@ type UploadFilePropsType = {
     roundedPreview?: boolean;
     maxFileSize?: number;
     aspectRatio?: number;
+    height?: number;
 }
 
 const dataURItoBlob = (dataURI:string) => {
@@ -134,9 +135,14 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
           }
     }
 
-    const uploadToServer = async ( zone:string ) => {
+    const uploadToServer = async ( zone:string, cloudinaryFolder?:string ) => {
         const formData = new FormData();
         formData.append( 'zone', zone );
+
+        if( cloudinaryFolder ) {
+            formData.append( 'folderName', cloudinaryFolder );
+        }
+
         let fileToUpload:any = null;
 
         if( useCropper ) {
@@ -193,7 +199,8 @@ export const UploadFile = ({
     maxFileSize = 5242880,
     roundedPreview = false,
     useCropper = false,
-    aspectRatio = 1
+    aspectRatio = 1,
+    height
 }:UploadFilePropsType) => {
 
     const theme = useTheme();
@@ -218,7 +225,7 @@ export const UploadFile = ({
                     border: `1px solid ${theme.palette.primary.main}`,
                     borderRadius: 2,
                     borderStyle: 'dashed',
-                    height: 'auto',
+                    minHeight: height ? height : 'auto',
                     width: 'auto',
                     p: 1
                 }}
@@ -257,7 +264,7 @@ export const UploadFile = ({
                         dataUri ?
                         <Box
                             sx={{
-                                position: 'relative'
+                                position: 'relative',
                             }}
                         >
                             <IconButton

@@ -8,13 +8,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchRecord } from '../../actions/fetchRecord';
-import { updateZone, startUpdateZone } from '../../actions/zones';
-import { motion } from 'framer-motion';
-import { transition } from '../../constants/transitions';
+import { updateZone } from '../../actions/zones';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { postRecord } from '../../actions/postRecord';
 import { updateRecord } from '../../actions/updateRecord';
-import axios from 'axios';
 import { fetchFile } from '../../actions/fetchFile';
+
+import Premium from '../../assets/icons/premium.svg';
+import CustomThemeCreator from '../../components/CustomThemeCreator';
 
 const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
     const params = useParams();
@@ -24,8 +26,17 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
     const theme = useTheme();
     const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange } = usePixabaySelector();
     const [ loading, setLoading ] = useState<boolean>(false);
-    const [ image, setImage ] = useState<any>("'https://cdn.pixabay.com/photo/2020/04/30/20/14/sky-5114501_1280.jpg'");
     
+    const [ themeMode, setThemeMode ] = useState<string>( 'search' );
+
+    const handleChangeMode = (
+      event: React.MouseEvent<HTMLElement>,
+      newMode: string,
+    ) => {
+        console.log( event );
+        setThemeMode(newMode);
+    };
+
     useEffect(() => {
         
         if( Object.keys(state.zone).length === 0 ) {
@@ -102,16 +113,55 @@ const ThemeSection = ({ prev, next }:{ prev:number, next:number }) => {
                 elevation={ 2 }
             >
                 <Container maxWidth="md">
-                    <PixabaySelector
-                        handleSearchInputChange={ handleSearchInputChange }
-                        handleSearch={ handleSearch }
-                        pixabayResults={ pixabayResults }
-                        arrayRef={ arrayRef }
-                        lockResults={ true }
-                    />
-                    <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
-                        ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
-                    </Typography>
+                    <Box
+                        sx={{
+                            mb: 4
+                        }}
+                    >
+                        <ToggleButtonGroup
+                            color="primary"
+                            value={ themeMode }
+                            exclusive
+                            onChange={ handleChangeMode }
+                            fullWidth
+                        >
+                            <ToggleButton
+                                sx={{
+                                    textTransform: 'none'
+                                }}
+                                value="search"
+                            >
+                                Buscar temas
+                            </ToggleButton>
+                            <ToggleButton
+                                sx={{
+                                    textTransform: 'none'
+                                }}
+                                
+                                value="create"
+                            >
+                                Crear mi tema <img src={ Premium } style={{ width: 12, marginLeft: 4 }} alt="img-icon" />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Box>
+                    {
+                        themeMode === 'search' ? (
+                            <Box>
+                                <PixabaySelector
+                                    handleSearchInputChange={ handleSearchInputChange }
+                                    handleSearch={ handleSearch }
+                                    pixabayResults={ pixabayResults }
+                                    arrayRef={ arrayRef }
+                                    lockResults={ true }
+                                />
+                                <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
+                                    ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <CustomThemeCreator/>
+                        )
+                    }
                     <Box sx={{
                         mt: 4
                     }}>
