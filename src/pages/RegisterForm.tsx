@@ -9,12 +9,13 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { startRegister } from '../actions/auth';
+import { startLogin } from '../actions/auth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Divider } from '@mui/material';
 import GoogleIcon from '../icons/GoogleIcon';
 import { ChevronLeft } from '@mui/icons-material';
+import { postRecord } from '../actions/postRecord';
 
 const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
@@ -31,7 +32,12 @@ const RegisterForm = () => {
 
     const onSubmit = async (data: any) => {
         
-        await dispatch( startRegister( data.name, data.email, data.password ) );
+        const { user } = await postRecord('users', {
+            ...data,
+            role: 'USER'
+        });
+
+        dispatch( startLogin( user.email, data.password ) );
         
     };
 
