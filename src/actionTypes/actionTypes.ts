@@ -8,5 +8,7 @@ export const actionTypes = {
     clearSelectedZone: '[Zones] Clear',
 
     updateTheme: '[Themes] Update',
-    clearSelectedTheme: '[Themes] Clear'
+    clearSelectedTheme: '[Themes] Clear',
+
+    showModalPremium: '[UI] Show Modal Premium'
 }

@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import { authReducer } from '../reducers/authReducer';
 import { zoneReducer } from '../reducers/zoneReducer';
 import { themeReducer } from '../reducers/themeReducer';
+import { uiReducer } from '../reducers/uiReducer';
 
 declare global {
   interface Window {
@@ -19,7 +20,8 @@ const composeEnhancers =
  const reducers = combineReducers({
   auth: authReducer,
   zone: zoneReducer,
-  theme: themeReducer
+  theme: themeReducer,
+  ui: uiReducer
 })
 
 export const store = createStore(
