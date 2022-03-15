@@ -1,6 +1,6 @@
 import { Typography, Stack, useTheme } from '@mui/material';
 
-import { Delete } from '@mui/icons-material';
+import { Delete, Lock } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,10 +11,13 @@ import IconButton from '@mui/material/IconButton';
 import { ModalDelete, useModalDelete } from './ModalDelete';
 import { useNavigate } from 'react-router-dom';
 import { getZoneStatusLabel } from '../helpers/getZoneStatusLabel';
+import { useDispatch } from 'react-redux';
+import { showModalPremium } from '../actions/ui';
 
 
-const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
+const SavedZone = ({ getZones, data, isLocked }:{  getZones?:any, data:any, isLocked?:boolean }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const {
         openModal,
@@ -62,7 +65,39 @@ const SavedZone = ({ getZones, data }:{  getZones?:any, data:any }) => {
                     <Delete sx={{ fontSize: 14 }}/>
                 </IconButton>
             </Stack>
-            <Card sx={{ display: 'flex', mb: 1, borderRadius: 3, cursor: 'pointer' }} onClick={ () => navigate( `/zones/${ data.uid }`)}>
+            <Card 
+                sx={{ 
+                    position:'relative',
+                    display: 'flex',
+                    mb: 1,
+                    borderRadius: 3,
+                    cursor: 'pointer'
+                }} 
+                onClick={ isLocked ? () => dispatch( showModalPremium("¡Continúa editando tus Zones siendo Zoner Pro!") ) : () => navigate( `/zones/${ data.uid }`) }>
+                {
+                    isLocked && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                width: '100%',
+                                height: '100%',
+                                zIndex: 10,
+                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                        
+                            }}
+                        >
+                            <Lock
+                                sx={{
+                                    fontSize: 32
+                                }}
+                            />
+                        </Box>
+                    )
+                }
+                
                 <CardMedia
                     component="img"
                     sx={{ width: 151 }}
