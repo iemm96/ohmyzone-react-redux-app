@@ -20,7 +20,6 @@ const ZoneForm = () => {
         <> 
             <Paper 
                 sx={{
-                    pt: 10,
                     height: '100%',
                     borderRadius: 0
                 }}

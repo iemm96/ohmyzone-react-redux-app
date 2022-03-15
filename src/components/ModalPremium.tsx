@@ -2,8 +2,8 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { Grid, TextField, CircularProgress } from '@mui/material';
-import { useState } from "react";
+import { Grid, TextField, CircularProgress, ToggleButtonGroup, ToggleButton, Chip, useTheme } from '@mui/material';
+import { useState, useEffect } from 'react';
 import Check from '@mui/icons-material/Check';
 
 import StyledButton from "../styled/StyledButton";
@@ -12,6 +12,8 @@ import { motion } from "framer-motion";
 import Background from "../assets/premium-illustration-logo.svg";
 import { transition } from '../constants/transitions';
 import Premium from '../assets/icons/premium.svg';
+import PaypalButtonComponent from './PaypalButtonComponent';
+import { useSelector } from 'react-redux';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -31,13 +33,25 @@ type ModalPremiumType = {
     loading?: boolean;
     setLoading?: any;
     handleValidateCode?: any;
+    isExpired?: boolean
 }
 
 
 export const useModalPremium = () => {
+    const { ui } = useSelector( (state:any) => state );
     const [openModal, setOpenModal] = React.useState(false);
-    const [modalTitle, setModalTitle] = useState<string>(' ');
+    const [ modalTitle, setModalTitle ] = useState<string>(' ');
     const [ loading, setLoading ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if( ui.modalPremium ) {
+            handleModal();
+            if( ui.titleModalPremium ) {
+                setModalTitle( ui.titleModalPremium );
+            }
+        }
+    },[ui])
+
     const handleModal = () => setOpenModal(!openModal);
 
     const handleValidateCode = () => console.log('validating');
@@ -49,11 +63,22 @@ export const useModalPremium = () => {
         setModalTitle,
         loading,
         setLoading,
-        handleValidateCode
+        handleValidateCode, 
+        
     }
 }
 
-export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, handleValidateCode }: ModalPremiumType) => {
+export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, handleValidateCode, isExpired }: ModalPremiumType) => {
+    const [ planMode, setPlanMode ] = useState<string>( 'monthly' );
+    const theme = useTheme();
+
+    const handleChangeMode = (
+        event: React.MouseEvent<HTMLElement>,
+        newMode: string,
+      ) => {
+          setPlanMode(newMode);
+      };
+  
 
     return (
         <Modal
@@ -108,6 +133,21 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                     >
                         Por sólo
                     </Typography>
+                    {
+                        planMode === 'annual' && (
+                            <Typography
+                                align="center"
+                                sx={{
+                                    color: theme.palette.text.secondary,
+                                    textDecoration: 'line-through'
+                                }}
+                                variant="body2"
+                            >
+                                $576/año
+                            </Typography>
+                        )
+                    }
+
                     <Typography
                         align="center"
                         color="primary"
@@ -115,55 +155,104 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                         id="modal-modal-description"
                         sx={{ mb: 3 }}
                     >
-                        $48/mes
+                        {
+                            planMode === 'annual' ?
+                            '$288/año' : '$48/mes'
+                        }
                     </Typography>
-                    <Grid spacing={1} container>
-                        <Grid
-                            xs={12}
-                            item
+                    <ToggleButtonGroup
+                        sx={{ position: 'relative', mb: 2 }}
+                        color="primary"
+                        value={ planMode }
+                        exclusive
+                        onChange={ handleChangeMode }
+                        fullWidth
+                        size="small"
+                    >
+                        <ToggleButton
+                            sx={{
+                                textTransform: 'none'
+                            }}
+                            value="monthly"
                         >
-                            <StyledButton
-                                variant="contained"
-                                color="secondary"
-                                fullWidth
-                                startIcon={<img src={Premium} style={{ width: 12 }} alt="img-icon" />}
-                            >
-                                ¡Probar gratis por 7 días!
-                            </StyledButton>
-                        </Grid>
-                        <Grid
-                            xs={12}
-                            item
+                            Mensual
+                        </ToggleButton>
+                        <ToggleButton
+                            sx={{
+                                textTransform: 'none'
+                            }}
+                            
+                            value="annual"
                         >
-                            <TextField
-                                fullWidth
-                                label="Código de descuento"
-                                InputProps={{
-                                    endAdornment: loading ? <CircularProgress size={ 12 }/> :
-                                    <StyledButton
-                                        onClick={ handleValidateCode }
-                                        variant="contained"
-                                        color="primary"
-                                        size="small"
-                                        startIcon={ <Check/> }
-                                    >
-                                        Validar
-                                    </StyledButton>
-                                }}
+                            Anual
+                        </ToggleButton>
+                        <Chip
+                            sx={{
+                                position: 'absolute',
+                                top: -10,
+                                right: -10
+                            }}
+                            size="small"
+                            label="-50% off"
+                        />
+                    </ToggleButtonGroup>
+                    {
+                        isExpired ? (
+                            <PaypalButtonComponent
+                                amount={ planMode === 'annual' ? '288' : '48' }
+                                subscriptionType={ planMode }
                             />
-                        </Grid>
-                        <Grid
-                            xs={12}
-                            item
-                        >
-                            <StyledButton
-                                fullWidth
-                                onClick={handleModal}
-                            >
-                                Tal vez luego
-                            </StyledButton>
-                        </Grid>
-                    </Grid>
+                        ) : (
+                            <Grid spacing={1} container>
+                                <Grid
+                                    xs={12}
+                                    item
+                                >
+                                    <StyledButton
+                                        variant="contained"
+                                        color="secondary"
+                                        fullWidth
+                                        startIcon={<img src={Premium} style={{ width: 12 }} alt="img-icon" />}
+                                    >
+                                        ¡Probar gratis por 7 días!
+                                    </StyledButton>
+                                </Grid>
+                                <Grid
+                                    xs={12}
+                                    item
+                                >
+                                    <TextField
+                                        fullWidth
+                                        label="Código de descuento"
+                                        InputProps={{
+                                            endAdornment: loading ? <CircularProgress size={ 12 }/> :
+                                            <StyledButton
+                                                onClick={ handleValidateCode }
+                                                variant="contained"
+                                                color="primary"
+                                                size="small"
+                                                startIcon={ <Check/> }
+                                            >
+                                                Validar
+                                            </StyledButton>
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid
+                                    xs={12}
+                                    item
+                                >
+                                    <StyledButton
+                                        fullWidth
+                                        onClick={handleModal}
+                                    >
+                                        Tal vez luego
+                                    </StyledButton>
+                                </Grid>
+                            </Grid>
+                        )
+                    }
+
                 </Box>
             </Box>
         </Modal>
