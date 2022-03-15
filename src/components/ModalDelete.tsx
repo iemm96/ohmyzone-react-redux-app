@@ -29,7 +29,8 @@ export const useModalDelete = ( resource:string ) => {
 
     const handleDelete = async () => {
         if(uid) {
-            await deleteRecord( resource, uid )
+            await deleteRecord( resource, uid );
+            
             setOpenModal(false); //Close modal if is open
         }
     }

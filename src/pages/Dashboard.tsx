@@ -10,13 +10,13 @@ import Premium from '../assets/icons/premium.svg';
 import { ModalPremium, useModalPremium } from '../components/ModalPremium';
 import { clearSelectedZone } from '../actions/zones';
 import { clearSelectedTheme } from '../actions/themes';
+import { showModalPremium } from '../actions/ui';
 
 const Dashboard = () => {
     const { uid, plan } = useSelector( (state:any) => state.auth );
     const [ userZones, setUserZones ] = useState<any>([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { handleModal, openModal } = useModalPremium();
 
     useEffect(() => {
         dispatch( clearSelectedTheme() )
@@ -46,11 +46,6 @@ const Dashboard = () => {
         <Paper
             elevation={ 0 }
         >
-            <ModalPremium
-                handleModal={ handleModal }
-                openModal={ openModal }
-                modalTitle={ "Es momento de ser un Zoner Pro para crear Zones ilimitados" }
-            />
             <Container maxWidth="md">
                 <Grid justifyContent="right" container>
                     <Grid item>
@@ -59,7 +54,13 @@ const Dashboard = () => {
                             variant="contained"
                             color="secondary"
                             endIcon={ <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                            onClick={  plan === 'free' ? () => handleModal() : () => navigate('/zones/new/1') }
+                            onClick={  plan === 'free' ? () => dispatch( showModalPremium("¡Es momento de ser un Zoner pro, para crear Zones ilimitados!") ) : 
+
+                            plan === 'expired' ? 
+                            () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear Zones ilimitados!" ) )
+                            :
+                            () => navigate('/zones/new/1') 
+                        }
                         >
                             Crear nuevo Zone
                         </StyledButton>
@@ -71,6 +72,7 @@ const Dashboard = () => {
                             <SavedZone
                                 data={ item }
                                 getZones={ getRecords }
+                                isLocked={ plan === 'expired' }
                             />
                         </Grid>
                     )) }

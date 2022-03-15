@@ -1,9 +1,9 @@
 import { CircularProgress, Grid } from '@mui/material';
 import StyledButton from '../styled/StyledButton';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { Check, ChevronLeft, ChevronRight } from '@mui/icons-material';
 
-const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading?: boolean, next?:any }) => {
+const FormNavigationButtons = ({ prev, loading, next, fullForm }:{ prev?:string, loading?: boolean, next?:any, fullForm?:boolean }) => {
     const navigate = useNavigate();
 
     return (
@@ -19,19 +19,35 @@ const FormNavigationButtons = ({ prev, loading, next }:{ prev?:string, loading?:
                 }}
                 item
             >
-                <StyledButton
-                    variant="contained"
-                    fullWidth
-                    type={ next ? 'button' : 'submit' }
-                    disabled={ loading }
-                    startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
-                    onClick={ next ? next : undefined }
-                    endIcon={ <ChevronRight/> }
-                >
-                    Guardar y continuar
-                </StyledButton>
+                {
+                    fullForm ? (
+                        <StyledButton
+                            variant="contained"
+                            fullWidth
+                            type={ next ? 'button' : 'submit' }
+                            disabled={ loading }
+                            startIcon={ loading ? <CircularProgress size={ 12 } color="inherit"/> : <Check/> }
+                            onClick={ next ? next : undefined }
+                        >
+                            Guardar cambios
+                        </StyledButton>
+                    ) : (
+                        <StyledButton
+                            variant="contained"
+                            fullWidth
+                            type={ next ? 'button' : 'submit' }
+                            disabled={ loading }
+                            startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
+                            onClick={ next ? next : undefined }
+                            endIcon={ <ChevronRight/> }
+                        >
+                            Guardar y continuar
+                        </StyledButton>
+                    )
+                }
+
             </Grid>
-            { prev && 
+            { ( prev && !fullForm ) &&
                 <Grid 
                     sx={{
                         order: {
