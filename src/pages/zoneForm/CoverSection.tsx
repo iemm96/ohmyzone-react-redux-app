@@ -63,7 +63,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
             if( zone.theme ) {
                 dispatch( updateTheme({
                     ...zone.theme.palette,
-                    backgroundImageUrl: zone.theme.backgroundImageUrl
+                    backgroundImageUrl: zone?.theme?.backgroundImage?.url
                 }) );
             }
         }
@@ -84,7 +84,6 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const submitForm = async ( data:any ) => {
         setLoading( true );
         
-        data.username = createdUsername;
         data.title = fullName;
 
         let zoneUid:string = '';
@@ -108,11 +107,11 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
             } ) );
 
             zoneUid = zone.uid;
+
             if(image) {
                 await updateRecord('zones', {
                     profileImage: image.uid
-                },
-                    zoneUid
+                }, zoneUid
                 );
             }
         }
@@ -171,25 +170,46 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
                         </Grid>
                         {
                             fullForm && (
-                                <Grid xs={12} item>
-                                    <Controller
-                                        name="subtitle"
-                                        control={ control }
-                                        defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
-                                        render={ ({ field: { value, onChange } }) => (
-                                            <TextField
-                                                onChange={ onChange }
-                                                fullWidth
-                                                value={ value }
-                                                label="Subtítulo" 
-                                            />
-                                        ) }
-                                    />
-                                </Grid>
+                                <>
+                                    <Grid xs={12} item>
+                                        <Controller
+                                            name="subtitle"
+                                            control={ control }
+                                            defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
+                                            render={ ({ field: { value, onChange } }) => (
+                                                <TextField
+                                                    onChange={ onChange }
+                                                    fullWidth
+                                                    value={ value }
+                                                    label="Subtítulo" 
+                                                />
+                                            ) }
+                                        />
+                                    </Grid>
+                                    <Grid xs={12} item>
+                                        <Controller
+                                            name="description"
+                                            control={ control }
+                                            defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
+                                            render={ ({ field: { value, onChange } }) => (
+                                                <TextField
+                                                    multiline
+                                                    rows={ 2 }
+                                                    onChange={ onChange }
+                                                    fullWidth
+                                                    value={ value }
+                                                    label="Mi bio"
+                                                    placeholder="Descríbete a tí o a tu negocio" 
+                                                />
+                                            ) }
+                                        />
+                                    </Grid>
+                                </>
+                                
                             )
                         }
                     </Grid>
-                    <Grid container>
+                    <Grid sx={{ mt: 2 }} container>
                         <Grid xs={12} item>
                             <UsernameCreator
                                 control={ control }
@@ -201,32 +221,10 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
                             />
                         </Grid>
                     </Grid>
-                    <Grid sx={{ mt: 2 }} container>
-                        {
-                            fullForm && (
-                                <Grid xs={12} item>
-                                    <Controller
-                                        name="description"
-                                        control={ control }
-                                        defaultValue={ zone?.subtitle ? zone.subtitle : undefined }
-                                        render={ ({ field: { value, onChange } }) => (
-                                            <TextField
-                                                multiline
-                                                rows={ 2 }
-                                                onChange={ onChange }
-                                                fullWidth
-                                                value={ value }
-                                                label="Mi bio"
-                                                placeholder="Descríbete a tí o a tu negocio" 
-                                            />
-                                        ) }
-                                    />
-                                </Grid>
-                            )
-                        }
-                    </Grid>
+    
                     <Box sx={{ mt: 8, mb: 4 }}>
                         <FormNavigationButtons
+                            fullForm={ !!fullForm }
                             prev={ `/dashboard` }
                             loading={ loading }
                         />
