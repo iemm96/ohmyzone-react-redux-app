@@ -1,50 +1,62 @@
-import * as React from 'react';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Box from '@mui/material/Box';
-import { AccountBox, ColorLens, Home, Link } from '@mui/icons-material';
 import { BottomNavigationComponent, useBottomNavigationComponent } from '../components/BottomNavigationComponent';
 import withTheme from '../components/WithTheme';
 import PreviewSection from './zoneForm/PreviewSection';
 import CoverSection from './zoneForm/CoverSection';
-import { Container } from '@mui/material';
+import { Container, useTheme, useMediaQuery, Grid } from '@mui/material';
 import { LinksSection } from './zoneForm/LinksSection';
 import ThemeSection from './zoneForm/ThemeSection';
+import ZonePhonePreview from '../components/ZonePhonePreview';
 
 const ZoneDashboard = () => {
+    const theme = useTheme();
     const  { currentNav, setCurrentNav } = useBottomNavigationComponent();
+    const mediaQuery = useMediaQuery(theme.breakpoints.up('md'));
 
     return(
         <Box>
             <Container>
-                {
-                    currentNav === 0 && (
-                        <>
-                            <PreviewSection/>
-                        </>
-                    )
-                }
-                {
-                    currentNav === 1 && (
-                        <>
-                            <CoverSection fullForm/>
-                        </>
-                    )
-                }
-                {
-                    currentNav === 2 && (
-                        <>
-                            <LinksSection/>
-                        </>
-                    )
-                }
-                {
-                    currentNav === 3 && (
-                        <>
-                            <ThemeSection/>
-                        </>
-                    )
-                }
+                <Grid container>
+                    <Grid  xs={ 12 } md={ 6 } item>
+                        {
+                            currentNav === 0 && (
+                                <>
+                                    <PreviewSection/>
+                                </>
+                            )
+                        }
+                        {
+                            currentNav === 1 && (
+                                <>
+                                    <CoverSection fullForm/>
+                                </>
+                            )
+                        }
+                        {
+                            currentNav === 2 && (
+                                <>
+                                    <LinksSection/>
+                                </>
+                            )
+                        }
+                        {
+                            currentNav === 3 && (
+                                <>
+                                    <ThemeSection/>
+                                </>
+                            )
+                        }
+                        
+                    </Grid>
+                    {
+                        mediaQuery && (
+                            <Grid md={ 6 } item>
+                                <ZonePhonePreview/>
+                            </Grid>
+                        )
+                    }
+                </Grid>
+                
             </Container>
             
             <BottomNavigationComponent
