@@ -8,7 +8,6 @@ import { Tiktok } from 'styled-icons/boxicons-logos';
 const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageUrl?:string }) => {
     const theme = useTheme();
 
-    console.log( backgroundImageUrl )
     const StyledBackgroundContainer = styled('div')(({theme}) => ({
         backgroundImage: `url(${ backgroundImageUrl })`,
         backgroundRepeat: 'no-repeat',
@@ -70,7 +69,11 @@ const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageU
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography align="center" variant="h5">{ data.title ? data.title : 'Título de tu Zone' }</Typography>
+                            <Typography 
+                            sx={{
+                                color: theme.palette.text.primary
+                            }}
+                            align="center" variant="h5">{ data.title ? data.title : 'Título de tu Zone' }</Typography>
                         </Grid>
                         { data.subtitle &&
                         <Grid item xs={12}>

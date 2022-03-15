@@ -8,8 +8,6 @@ import axios from 'axios';
 import { postRecord } from '../actions/postRecord';
 import { ModalCropper } from './ModalCropper';
 import { resizeImage } from '../actions/resizeImage';
-import { updateZone } from '../actions/zones';
-import { useDispatch, useSelector } from 'react-redux';
 
 type UploadFilePropsType = {
     accept?: string;
@@ -70,13 +68,11 @@ const fileToDataUri = (file:any) => new Promise((resolve) => {
 })
 
 export const useUploader = ( useCropper = false,  initialState = null ) => {
-    const state = useSelector( (state:any) => state );
     const [ dataUri, setDataUri ] = React.useState<null | string>(initialState);
     const [ temporalDataUri, setTemporalDataUri ] = React.useState<null | string>( initialState );
     const [ imageSrc, setImageSrc ] = React.useState<null | string>(initialState);
     const [ file, setFile ] = React.useState<any | string>(initialState);
     const [ openModal, setOpenModal ] = React.useState<boolean>( false );
-    const dispatch = useDispatch();
 
     const [cropper, setCropper] = React.useState<any>();
     const handleModal = () => {
@@ -88,11 +84,6 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
         if (typeof cropper !== "undefined") {
             const croppedImageUri = cropper.getCroppedCanvas().toDataURL();
             setDataUri( croppedImageUri );
-            dispatch( updateZone({
-                ...state.zone,
-                profileImage: croppedImageUri
-            }) );
-
             handleModal();
         }
     };
@@ -131,8 +122,9 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
         
           if( useCropper ) {
             handleModal();
-            setFile(file); 
           }
+
+          setFile(file); 
     }
 
     const uploadToServer = async ( zone:string, cloudinaryFolder?:string ) => {
@@ -175,10 +167,6 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
     const handleDelete = async () => {
         setDataUri(null);
         setImageSrc(null);
-        dispatch( updateZone({
-            ...state.zone,
-            profileImage: null
-        }) );
     }
 
     return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper,setDataUri  }

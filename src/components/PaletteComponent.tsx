@@ -18,6 +18,7 @@ const boxColorStyles = {
 }
 
 const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:number}) => {
+    const state = useSelector( (state:any) => state );
     const [ editMode, setEditMode ] = useState<boolean>( false );
     const [ colorPickerWindow, setColorPickerWindow ] = useState<any>( false )
     const theme = useTheme();
@@ -56,6 +57,7 @@ const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:num
         const reff:any = arrayRef[index];
         reff?.current.updatePalette();
         dispatch( updateTheme({
+            ...state.theme,
             ...currentPalette,
             //backgroundImageUrl: largeImageURL
         }));

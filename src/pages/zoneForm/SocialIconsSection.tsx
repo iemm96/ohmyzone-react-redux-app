@@ -115,13 +115,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
                                         
                                         setContactOptions({ ...contactOptions, facebook: e.target.checked });
-                                        dispatch( updateZone({
-                                            ...zone,
-                                            socialLinks: {
-                                                ...contactOptions,
-                                                facebook: e.target.checked
-                                            }
-                                        }));
+                                        
 
                                         clearErrors('facebook');
                                     } }
@@ -138,7 +132,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.facebook }
                                             placeholder="Nombre de usuario de tu Facebook"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        facebook: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (
@@ -182,7 +185,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.instagram }
                                             placeholder="Nombre de usuario de tu instagram"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        instagram: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (
@@ -225,7 +237,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.phone }
                                             placeholder="Tu teléfono"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        phone: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (
@@ -269,7 +290,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.whatsapp }
                                             placeholder="Tu WhatsApp"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        whatsapp: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (
@@ -314,7 +344,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.email }
                                             placeholder="Tu Email"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        email: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (
@@ -339,7 +378,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             ...zone,
                                             socialLinks: {
                                                 ...contactOptions,
-                                                tiktok: e.target.checked
+                                                tiktok: e.target.checked ? zone.socialLinks.tiktok : false
                                             }
                                         }));
 
@@ -359,7 +398,16 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                                             disabled={ !contactOptions.tiktok }
                                             placeholder="Nombre de usuario de tu Tiktok"
                                             fullWidth
-                                            onChange={ onChange }
+                                            onChange={ (e) => {
+                                                onChange(e);
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        tiktok: e.target.value
+                                                    }
+                                                }));
+                                            } }
                                             value={ value }
                                             InputProps={{
                                                 startAdornment: (

@@ -1,17 +1,49 @@
 import Box from '@mui/material/Box';
 import ColorSelector from './ColorSelector';
 import { UploadFile, useUploader } from './UploadFile';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchRecord } from '../actions/fetchRecord';
-const CustomThemeCreator = () => {
+import { updateTheme } from '../actions/themes';
+const CustomThemeCreator = forwardRef((props:any,ref:any) => {
     const { theme, zone } = useSelector( ( state:any ) => state );
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader( true );
+    const dispatch = useDispatch();
+    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader();
     
     const [ imagesToColorsArray, setImagesToColorsArray ] = useState<any>([]);
+
+    useEffect(() => {
+
+        dispatch( updateTheme({
+            ...theme,
+            backgroundImageUrl: dataUri
+        }) );
+
+    },[dataUri]);
+
     useEffect(() => {
         getZone();
     },[]);
+
+    useImperativeHandle(ref,() => ({
+        uploadImageToServer: () => {
+            return uploadToServer( zone.uid )
+            
+            /*
+            if( 
+                data
+
+            ) {
+                dispatch( updateTheme({
+                    ...data,
+                    backgroundImageUrl: props.src
+                }
+                    ) );
+            }*/
+
+    
+        }})
+    );
 
     const getZone = async ( ) => {
         const zoneResult = await fetchRecord( 'zones', zone.uid );
@@ -46,12 +78,6 @@ const CustomThemeCreator = () => {
                 handleDelete={ handleDelete }
                 title="Sube una imagen de fondo"
                 height={ 200 }
-                useCropper
-                handleModal={ handleModal }
-                setCropper={ setCropper }
-                getCropData={ getCropData }
-                temporalDataUri={ temporalDataUri }
-                openModal={ openModal }
             />
             <Box
                 sx={{
@@ -62,6 +88,6 @@ const CustomThemeCreator = () => {
             </Box>
         </Box>
     )
-}
+})
 
 export default CustomThemeCreator;

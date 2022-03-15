@@ -1,7 +1,7 @@
 import { Container, Paper, useTheme, Typography } from '@mui/material';
 
 import { PixabaySelector, usePixabaySelector } from '../../components/PixabaySelector';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,6 +24,8 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
     const navigate = useNavigate();
     const state = useSelector( (state:any) => state );
     const theme = useTheme();
+    const ref = useRef<any>(null);
+
     const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange } = usePixabaySelector();
     const [ loading, setLoading ] = useState<boolean>(false);
     
@@ -58,23 +60,30 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
 
     const submitTheme = async () => {
         const theme = state.theme;
-        setLoading( true );
+        setLoading( false );
         //Saves palette
         const { palette } = await postRecord( 'palettes', {
             ...theme,
+            backgroundImageUrl: null,
             zone: state.zone.uid
         } );
 
-        //fetch image from pixabay
-        const imageDownloaded:any = await fetchFile( state.theme.backgroundImageUrl );
-
+        let image:any = null;
         const formData = new FormData();
-        formData.append( 'zone', state.zone.uid );
-        formData.append( 'file', imageDownloaded );
 
-        //Save image to cloudinary
-        const { image } = await postRecord( 'images', formData );
-    
+        if( themeMode === 'search' ) {
+            //fetch image from pixabay
+            const imageDownloaded:any = await fetchFile( state.theme.backgroundImageUrl );
+            formData.append( 'file', imageDownloaded );
+            formData.append( 'zone', state.zone.uid );
+        
+            //Save image to cloudinary
+            image = await postRecord( 'images', formData );
+        } else {
+            console.log( 'uploading Image' );
+            image = await ref.current.uploadImageToServer();
+        }
+
         if( palette ) {
             const { theme } = await postRecord( 'themes', {
                 palette: palette.uid,
@@ -159,7 +168,7 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
                                 </Typography>
                             </Box>
                         ) : (
-                            <CustomThemeCreator/>
+                            <CustomThemeCreator ref={ref}/>
                         )
                     }
                     <Box sx={{

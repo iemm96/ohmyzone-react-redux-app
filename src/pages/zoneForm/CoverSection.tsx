@@ -32,6 +32,20 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const [ loading, setLoading ] = useState<boolean>(false);
 
     useEffect(() => {
+        if(dataUri) {
+            dispatch( updateZone({
+                ...zone,
+                profileImage: dataUri
+            }));
+        }else{
+            dispatch( updateZone({
+                ...zone,
+                profileImage: null
+            }));
+        }
+    },[dataUri]);
+
+    useEffect(() => {
         
         if( Object.keys(zone).length === 0 ) {
             getZone();
