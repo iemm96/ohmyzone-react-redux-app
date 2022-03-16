@@ -34,7 +34,7 @@ const PreviewSection = () => {
             <ModalZonePublished
                 handleModal={ handleModal }
                 openModal={ openModal }
-                zoneUrl={ `${ REACT_APP_PREVIEW_HOST }${ zone.username }` }
+                zoneUrl={ `${ REACT_APP_PREVIEW_HOST }/${ zone.username }` }
             />
             <Box
                 sx={{
