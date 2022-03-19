@@ -10,9 +10,9 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { startLogin } from '../actions/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Divider, ThemeProvider } from '@mui/material';
+import { Box, CircularProgress, Divider, ThemeProvider } from '@mui/material';
 import GoogleIcon from '../icons/GoogleIcon';
 import { ChevronLeft } from '@mui/icons-material';
 import { postRecord } from '../actions/postRecord';
@@ -23,6 +23,7 @@ const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [ loading, setLoading ] = useState<boolean>( false );
     
     const onSuccessGoogleAuth = (response:any) => {
         console.log(response);
@@ -47,26 +48,24 @@ const RegisterForm = () => {
     },[uid])
 
     const onSubmit = async (data: any) => {
-        
+        setLoading( true );
         const result = await postRecord('users', {
             ...data,
             role: 'USER'
         });
 
         if( !result.success ) {
-
+            setLoading( false );
             setError( result.error.response.data.errors[0].param, {
                 type: 'manual',
                 message: result.error.response.data.errors[0].msg
             } )
             return;
         }
-
+        setLoading( false );
         dispatch( startLogin( result.user.email, data.password ) );
         
     };
-
-
 
     return(
         <>
@@ -194,7 +193,8 @@ const RegisterForm = () => {
                                 </Grid>
                             </motion.div>
                             <motion.div variants={ inputTransition }>
-                                <Button 
+                                <Button
+                                    disabled={ loading }
                                     fullWidth
                                     sx={{
                                         padding: '14px 0',
@@ -202,9 +202,10 @@ const RegisterForm = () => {
                                         textTransform: 'none',                                
                                     }}
                                     variant="contained"
-                                    onClick={ handleSubmit(onSubmit) }
+                                    startIcon={ loading && <CircularProgress  sx={{ color:'white' }} size={ 12 } /> }
+                                    onClick={ handleSubmit( onSubmit ) }
                                 >
-                                    ¡Crear mi cuenta!
+                                    { loading ? 'Creando tu cuenta...' : '¡Crear mi cuenta!' }
                                 </Button>
                             </motion.div>
                         </motion.span>
