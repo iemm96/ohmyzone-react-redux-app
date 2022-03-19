@@ -16,12 +16,12 @@ const ZoneDashboard = () => {
     return(
         <Box>
             <Container>
-                <Grid container>
+                <Grid container justifyContent="center">
                     <Grid  xs={ 12 } md={ 6 } item>
                         {
                             currentNav === 0 && (
                                 <>
-                                    <PreviewSection/>
+                                    <PreviewSection fullForm/>
                                 </>
                             )
                         }
@@ -35,7 +35,7 @@ const ZoneDashboard = () => {
                         {
                             currentNav === 2 && (
                                 <>
-                                    <LinksSection/>
+                                    <LinksSection fullForm/>
                                 </>
                             )
                         }
@@ -49,7 +49,7 @@ const ZoneDashboard = () => {
                         
                     </Grid>
                     {
-                        mediaQuery && (
+                        (mediaQuery && currentNav !== 0 ) && (
                             <Grid md={ 6 } item>
                                 <ZonePhonePreview/>
                             </Grid>

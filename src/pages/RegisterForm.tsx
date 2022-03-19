@@ -12,17 +12,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startLogin } from '../actions/auth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Divider } from '@mui/material';
+import { Box, Divider, ThemeProvider } from '@mui/material';
 import GoogleIcon from '../icons/GoogleIcon';
 import { ChevronLeft } from '@mui/icons-material';
 import { postRecord } from '../actions/postRecord';
+import { defaultTheme } from '../themes/index';
+import { useGoogleLogin } from 'react-google-login';
 
 const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
     const navigate = useNavigate();
     const dispatch = useDispatch();
     
-    const { handleSubmit, control, formState: {errors}, } = useForm();
+    const onSuccessGoogleAuth = (response:any) => {
+        console.log(response);
+    }
+
+    const { signIn, loaded } = useGoogleLogin({
+        onSuccess: onSuccessGoogleAuth,
+        onFailure: (success:any) => console.log(success),
+        clientId: '51283412566-703e59685t625eglv3je33km1mjp3adv.apps.googleusercontent.com',
+    });
+    
+    const { handleSubmit, control, formState: {errors}, setError } = useForm();
+
+    useEffect(() => {
+        console.log(loaded)
+    },[loaded])
 
     useEffect(() => {
         if( uid ) {
@@ -32,14 +48,25 @@ const RegisterForm = () => {
 
     const onSubmit = async (data: any) => {
         
-        const { user } = await postRecord('users', {
+        const result = await postRecord('users', {
             ...data,
             role: 'USER'
         });
 
-        dispatch( startLogin( user.email, data.password ) );
+        if( !result.success ) {
+
+            setError( result.error.response.data.errors[0].param, {
+                type: 'manual',
+                message: result.error.response.data.errors[0].msg
+            } )
+            return;
+        }
+
+        dispatch( startLogin( result.user.email, data.password ) );
         
     };
+
+
 
     return(
         <>
@@ -70,175 +97,175 @@ const RegisterForm = () => {
               src={Logo} style={{
               height: 120
             }}/>
-          </motion.div> 
-          <Container maxWidth="sm">
-            <form>        
-                <motion.div initial='initial' animate='animate' exit='exit'>
-                    <motion.span variants={ enteringFormTransition }>
-                        <motion.div variants={ inputTransition }>
-                            <Grid mt={5} mb={2} container>
-                                <Grid xs={ 12 } item>
-                                    <Controller
-                                        name={ "name" }
-                                        control={ control }
-                                        rules={{
-                                            required: 'El nombre es requerido.',
-                                        }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextField
-                                                InputProps={{
-                                                    disableUnderline: true
-                                                }}
-                                                sx={ inputLoginStyles } 
-                                                fullWidth
-                                                variant="filled"
-                                                onChange={ onChange }
-                                                value={ value }
-                                                label="Tu nombre" 
-                                            />
-                                        )}
-                                    />
-                                    {errors.name && <Typography variant="caption" sx={{color:'red'}}>{ errors.name.message }</Typography>}
+          </motion.div>
+          <ThemeProvider theme={ defaultTheme }>
+            <Container maxWidth="sm">
+                <form>        
+                    <motion.div initial='initial' animate='animate' exit='exit'>
+                        <motion.span variants={ enteringFormTransition }>
+                            <motion.div variants={ inputTransition }>
+                                <Grid mt={5} mb={2} container>
+                                    <Grid xs={ 12 } item>
+                                        <Controller
+                                            name={ "name" }
+                                            control={ control }
+                                            rules={{
+                                                required: 'El nombre es requerido.',
+                                            }}
+                                            render={({ field: { onChange, value } }) => (
+                                                <TextField
+                                                    InputProps={{
+                                                        disableUnderline: true
+                                                    }}
+                                                    sx={ inputLoginStyles } 
+                                                    fullWidth
+                                                    variant="filled"
+                                                    onChange={ onChange }
+                                                    value={ value }
+                                                    label="Tu nombre" 
+                                                />
+                                            )}
+                                        />
+                                        {errors.name && <Typography variant="caption" sx={{color:'red'}}>{ errors.name.message }</Typography>}
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </motion.div>
-                        <motion.div variants={ inputTransition }>
-                            <Grid mb={2} container>
-                                <Grid xs={ 12 } item>
-                                    <Controller
-                                        name={ "email" }
-                                        control={ control }
-                                        rules={{
-                                            required: 'El correo es requerido.',
-                                            pattern: {
-                                                value: /^\S+@\S+$/i,
-                                                message: 'El correo no es válido.'
-                                            }
-                                        }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextField
-                                                InputProps={{
-                                                    disableUnderline: true
-                                                }}
-                                                sx={inputLoginStyles} 
-                                                fullWidth
-                                                variant="filled"
-                                                onChange={onChange}
-                                                value={value}
-                                                label="Tu email" 
-                                            />
-                                        )}
-                                    />
-                                    {errors.email && <Typography variant="caption" sx={{color:'red'}}>{ errors.email.message }</Typography>}
+                            </motion.div>
+                            <motion.div variants={ inputTransition }>
+                                <Grid mb={2} container>
+                                    <Grid xs={ 12 } item>
+                                        <Controller
+                                            name={ "email" }
+                                            control={ control }
+                                            rules={{
+                                                required: 'El correo es requerido.',
+                                                pattern: {
+                                                    value: /^\S+@\S+$/i,
+                                                    message: 'El correo no es válido.'
+                                                }
+                                            }}
+                                            render={({ field: { onChange, value } }) => (
+                                                <TextField
+                                                    InputProps={{
+                                                        disableUnderline: true
+                                                    }}
+                                                    sx={inputLoginStyles} 
+                                                    fullWidth
+                                                    variant="filled"
+                                                    onChange={onChange}
+                                                    value={value}
+                                                    label="Tu email" 
+                                                />
+                                            )}
+                                        />
+                                        {errors.email && <Typography variant="caption" sx={{color:'red'}}>{ errors.email.message }</Typography>}
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </motion.div>
-                        <motion.div variants={ inputTransition }>
-                            <Grid mb={2}>
-                                <Grid item>
-                                    <Controller
-                                        name={ "password" }
-                                        control={ control }
-                                        rules={{
-                                            required: 'La contraseña es requerida.',
-                                            minLength: {
-                                                value: 6,
-                                                message: 'La contraseña debe tener al menos 6 carácteres.'
-                                            }
-                                        }}
-                                        render={({ field: { onChange, value } }) => (
-                                            <TextField 
-                                                InputProps={{
-                                                    disableUnderline: true,
-                                                    type: "password"
-                                                }}
-                                                sx={inputLoginStyles} 
-                                                fullWidth
-                                                variant="filled"
-                                                onChange={onChange}
-                                                value={value}
-                                                label="Ingresa una contraseña" 
-                                            />
-                                        )}
-                                    />
-                                    {errors.password && <Typography variant="caption" sx={{color:'red'}}>{ errors.password.message }</Typography>}
+                            </motion.div>
+                            <motion.div variants={ inputTransition }>
+                                <Grid mb={2}>
+                                    <Grid item>
+                                        <Controller
+                                            name={ "password" }
+                                            control={ control }
+                                            rules={{
+                                                required: 'La contraseña es requerida.',
+                                                minLength: {
+                                                    value: 6,
+                                                    message: 'La contraseña debe tener al menos 6 carácteres.'
+                                                }
+                                            }}
+                                            render={({ field: { onChange, value } }) => (
+                                                <TextField 
+                                                    InputProps={{
+                                                        disableUnderline: true,
+                                                        type: "password"
+                                                    }}
+                                                    sx={inputLoginStyles} 
+                                                    fullWidth
+                                                    variant="filled"
+                                                    onChange={onChange}
+                                                    value={value}
+                                                    label="Ingresa una contraseña" 
+                                                />
+                                            )}
+                                        />
+                                        {errors.password && <Typography variant="caption" sx={{color:'red'}}>{ errors.password.message }</Typography>}
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            </motion.div>
+                            <motion.div variants={ inputTransition }>
+                                <Button 
+                                    fullWidth
+                                    sx={{
+                                        padding: '14px 0',
+                                        borderRadius: 3.5,
+                                        textTransform: 'none',                                
+                                    }}
+                                    variant="contained"
+                                    onClick={ handleSubmit(onSubmit) }
+                                >
+                                    ¡Crear mi cuenta!
+                                </Button>
+                            </motion.div>
+                        </motion.span>
                         </motion.div>
-                        <motion.div variants={ inputTransition }>
-                            <Button 
-                                fullWidth
-                                sx={{
-                                    backgroundColor: '#4664F6',
-                                    color: 'white',
-                                    padding: '14px 0',
-                                    borderRadius: 3.5,
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                        backgroundColor: 'black'
-                                    }
-                                }} 
-                                onClick={ handleSubmit(onSubmit) }
-                            >
-                                ¡Crear mi cuenta!
-                            </Button>
-                        </motion.div>
-                    </motion.span>
-                    </motion.div>
-                </form>
-                <Box sx={{
-                    backgroundColor: 'white',
-                    bottom: 16,
-                    width: '100%'
-                    }}>
-                    <Grid mt={12} mb={4}>
-                        <Divider sx={{
-                        mb:1,
-                        "&.MuiDivider-root": {
-                            "&::before": {
-                            borderTop: "thin solid #AAAFB6"
-                            },
-                            "&::after": {
-                            borderTop: "thin solid #AAAFB6"
-                            }
-                        },
-                        "& .MuiDivider-wrapper": {
-                            fontSize: 12,
-                            color: '#AAAFB6'
-                        }
+                    </form>
+                    <Box sx={{
+                        backgroundColor: 'white',
+                        bottom: 16,
+                        width: '100%'
                         }}>
-                            O bien
-                        </Divider>
-                        <Grid item xs={12}>
-                        <Button 
-                            sx={{
-                            width: '100%',
-                            backgroundColor: 'white',
-                            border: '1px solid #4664F6',
-                            color: '#4664F6',
-                            padding: '14px 0',
-                            borderRadius: 3.5,
-                            textTransform: 'none'
-                            }}
-                            startIcon={<GoogleIcon/>}
-                            >
-                            Accede con Google
-                        </Button>
+                        <Grid mt={12} mb={4}>
+                            <Divider sx={{
+                            mb:1,
+                            "&.MuiDivider-root": {
+                                "&::before": {
+                                borderTop: "thin solid #AAAFB6"
+                                },
+                                "&::after": {
+                                borderTop: "thin solid #AAAFB6"
+                                }
+                            },
+                            "& .MuiDivider-wrapper": {
+                                fontSize: 12,
+                                color: '#AAAFB6'
+                            }
+                            }}>
+                                O bien
+                            </Divider>
+                            <Grid item xs={12}>
+                                <Button 
+                                    sx={{
+                                        width: '100%',
+                                        backgroundColor: 'white',
+                                        border: '1px solid #4664F6',
+                                        color: '#4664F6',
+                                        padding: '14px 0',
+                                        borderRadius: 3.5,
+                                        textTransform: 'none'
+                                    }}
+                                    onClick={ signIn }
+                                    startIcon={<GoogleIcon/>}
+                                    >
+                                    Accede con Google
+                                </Button>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid mb={4}>
-                        <Grid item xs={12} justifyContent="center" display="flex">
-                            <Button 
-                                onClick={ () => navigate('/') }
-                                sx={{color: '#4664F6'}}
-                                startIcon={ <ChevronLeft/> }
-                            >
-                                Volver
-                            </Button>
+                        <Grid mb={4}>
+                            <Grid item xs={12} justifyContent="center" display="flex">
+                                <Button 
+                                    onClick={ () => navigate('/') }
+                                    sx={{color: '#4664F6'}}
+                                    startIcon={ <ChevronLeft/> }
+                                >
+                                    Volver
+                                </Button>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Box>
-        </Container>
+                    </Box>
+            </Container>
+          </ThemeProvider>
+
         
         </>
         

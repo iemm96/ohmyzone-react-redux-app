@@ -236,7 +236,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
                         </Grid>
                     </Grid>
     
-                    <Box sx={{ mt: 8, mb: 4 }}>
+                    <Box sx={{ mt: 8, mb: fullForm ? 10 : 4 }}>
                         <FormNavigationButtons
                             fullForm={ !!fullForm }
                             prev={ `/dashboard` }

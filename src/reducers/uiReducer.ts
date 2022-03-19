@@ -7,6 +7,10 @@ export const uiReducer = ( state = { } , action:any ) => {
                 modalPremium: true,
                 titleModalPremium: action?.payload.titleModalPremium
             }
+        case actionTypes.showPublishZoneBar:
+            return {
+                showPublishZoneBar: action?.payload.showPublishZoneBar
+            }
         case actionTypes.clearSelectedZone: 
             return { }
         default:

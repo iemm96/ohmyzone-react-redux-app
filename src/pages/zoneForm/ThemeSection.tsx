@@ -78,12 +78,15 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
             formData.append( 'zone', state.zone.uid );
         
             //Save image to cloudinary
-            image = await postRecord( 'images', formData );
+            const result = await postRecord( 'images', formData );
+            image = result.image;
+            
         } else {
             console.log( 'uploading Image' );
             image = await ref.current.uploadImageToServer();
         }
 
+        console.log( 'image!!!!!!!!!!!!!!!', image );
         if( palette ) {
             const { theme } = await postRecord( 'themes', {
                 palette: palette.uid,

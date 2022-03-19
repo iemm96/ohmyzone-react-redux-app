@@ -10,5 +10,6 @@ export const actionTypes = {
     updateTheme: '[Themes] Update',
     clearSelectedTheme: '[Themes] Clear',
 
-    showModalPremium: '[UI] Show Modal Premium'
+    showModalPremium: '[UI] Show Modal Premium',
+    showPublishZoneBar: '[UI] Show Publish Zone Bar'
 }

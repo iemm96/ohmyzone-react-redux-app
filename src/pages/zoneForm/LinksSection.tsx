@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { fetchRecords } from '../../actions/fetchRecords';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { updateZone } from '../../actions/zones';
 import { ObjectCategoryType } from '../../types/ObjectCategoryType';
 import { fetchRecord } from '../../actions/fetchRecord';
 import CircularProgressComponent from '../../components/CircularProgressComponent';
+import { useTheme } from '@mui/material/styles';
 
 type LinksItemType = {
   title: string;
@@ -34,25 +35,13 @@ type CategoryItemType = {
   links?: Array<LinksItemType> | null;
 }
 
-export const LinksSection = ({prev, next}:{ prev?:number, next?:number }) => {
+export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number, fullForm?:boolean }) => {
   const params = useParams();
   const navigate = useNavigate();
+  const theme = useTheme();
   
   const { zone } = useSelector( (state:any) => state );
   const dispatch = useDispatch();
-  const link:LinksItemType = {
-    title: '',
-    description: '',
-    imgUrl: '',
-    coverImg: '',
-    category: '',
-    whatsapp: false,
-    whatsappMessage: '',
-    buttonText: '',
-    isSaved: false,
-    zone: '',
-  }
-
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
   const [ categoriesAutocomplete, setCategoriesAutocomplete ] = useState<ObjectCategoryType[]>([]);
   const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
@@ -139,20 +128,20 @@ export const LinksSection = ({prev, next}:{ prev?:number, next?:number }) => {
                 transition: { ...transition }
             }}
         >
-            <Typography sx={{ mt: 2 }} variant="subtitle1">Crea tus links personalizados</Typography>
+            <Typography sx={{ mt: 2, color: theme.palette.text.secondary }} variant="subtitle1">Crea tus links personalizados</Typography>
         </motion.div>
     <Box>
       { categories.map( (itemCategory,indexCategory) => (
         itemCategory.links?.length && itemCategory.links?.length > 0 && 
         <Box key={indexCategory}>
-          <Typography sx={{ mb: 1 }} variant="h6"> 
+          <Typography sx={{ mb: 1, color: theme.palette.text.primary }} variant="h6"> 
             { itemCategory.title && itemCategory.title }
           </Typography>
           { itemCategory.links?.map( (itemLink:any, indexLink) => (
             
-            <Box key={indexLink} sx={{ position: 'relative' }}>
-              <SavedLink getLinks={ getLinks } data={ itemLink }/>
-            </Box>
+            <Stack key={indexLink} sx={{ position: 'relative' }}>
+              <SavedLink getLinks={ getLinks } data={ itemLink } defaultCategories={ categoriesAutocomplete }/>
+            </Stack>
             
           ))}
         </Box> 
@@ -175,10 +164,11 @@ export const LinksSection = ({prev, next}:{ prev?:number, next?:number }) => {
         )
       }
 
-      <Box sx={{ mt: 8, mb: 4 }}>
+      <Box sx={{ mt: 8, mb: fullForm ? 10 : 4 }}>
           <FormNavigationButtons
               next={ () => navigate( `/zones/edit/${next}/${ zone.uid }` ) }
               prev={ `/zones/edit/${prev}/${ zone.uid }` }
+              fullForm={ fullForm }
           />
       </Box>
     </Box>

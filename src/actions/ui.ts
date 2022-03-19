@@ -7,6 +7,13 @@ export const showModalPremium = (titleModalPremium?:string) => ({
     }
 });
 
+export const showPublishZoneBar = (show:boolean) => ({
+    type: actionTypes.showPublishZoneBar,
+    payload: {
+        showPublishZoneBar: show
+    }
+});
+
 export const clearSelectedTheme = () => ({
     type: actionTypes.clearSelectedTheme
 })

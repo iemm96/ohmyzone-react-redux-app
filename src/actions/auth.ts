@@ -41,18 +41,24 @@ export const startLogin = ( email:string, password:string ) => {
     }
 
     return async ( dispatch:any ) => {
-        const { data } = await axios.post(
-            `${ REACT_APP_API_HOST }auth/login`,
-            payload
-        );
 
-        localStorage.setItem('token', data.token);
-        dispatch( login(
-            data.user.name,
-            data.user.uid,
-            data.token,
-            data.user.plan,
-        ));
+        try{
+            const { data } = await axios.post(
+                `${ REACT_APP_API_HOST }auth/login`,
+                payload
+            );
+    
+            localStorage.setItem('token', data.token);
+            dispatch( login(
+                data.user.name,
+                data.user.uid,
+                data.token,
+                data.user.plan,
+            ));
+        }catch(e:any){
+            return e.response.data
+        }
+        
     }
 }
 

@@ -8,9 +8,13 @@ import CardMedia from '@mui/material/CardMedia';
 
 import IconButton from '@mui/material/IconButton';
 import { ModalDelete, useModalDelete } from './ModalDelete';
+import { useState } from 'react';
+import { LinkForm } from './LinkForm';
+import { CategoryItemType } from '../types/CategoryItemType';
 
 
-const SavedLink = ({ getLinks, data, disableEdit = false }:{  getLinks?:any, data:any, disableEdit?:boolean, }) => {
+const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[] }) => {
+    const [ editMode, setEditMode ] = useState<boolean>( false );
 
     const {
         openModal,
@@ -38,23 +42,30 @@ const SavedLink = ({ getLinks, data, disableEdit = false }:{  getLinks?:any, dat
                         <Stack
                             sx={{
                             position: 'absolute',
-                            top: -20,
+                            top: -10,
                             right: -10,
-                            zIndex: 100
+                            zIndex: 10
                             }}
                             direction="row"
                             spacing={ 2 }
                         >
                             <IconButton
-                            sx={{
-                                backgroundColor: theme.palette.primary.main
-                            }}
+                                sx={{
+                                    backgroundColor: theme.palette.primary.main,
+                                    width: 48,
+                                    height: 20,
+                                    borderRadius: 2
+                                }}
+                                onClick={ () => setEditMode( !editMode )}
                             >
-                            <Edit/>
+                                <Edit  sx={{ fontSize: 14 }}/>
                             </IconButton>
                             <IconButton
                                 sx={{
-                                    backgroundColor: theme.palette.error.main
+                                    backgroundColor: theme.palette.error.main,
+                                    width: 48,
+                                    height: 20,
+                                    borderRadius: 2
                                 }}
                                 onClick={ () => {
                                     setModalTitle( `¿Seguro que deseas eliminar el link "${ data.title }"?` );
@@ -62,42 +73,55 @@ const SavedLink = ({ getLinks, data, disableEdit = false }:{  getLinks?:any, dat
                                     handleModal();
                                 } }
                             >
-                                <Delete/>
+                                <Delete sx={{ fontSize: 14 }}/>
                             </IconButton>
                         </Stack>
                     </>
                     
             )}
-            <Card
-                elevation={ 6 }
-                sx={{ 
-                    display: 'flex',
-                    mb: 1,
-                    borderRadius: 3,
-                    backgroundColor: theme.palette.background.paper
-                }}
-                >
-            
-                <CardMedia
-                    component="img"
-                    sx={{ width: 151 }}
-                    image={ data.coverImg?.url ? data.coverImg.url : '' }
-                    alt="Cover link"
-                />
-                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <CardContent sx={{ flex: '1 0 auto' }}>
-                    <Typography component="div" variant="h6">
-                        { data.title }
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" component="div">
-                        { data.description }
-                    </Typography>
-                    </CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+            {
+                !editMode ? (
+                    <Card
+                        elevation={ 6 }
+                        sx={{ 
+                            display: 'flex',
+                            mb: 1,
+                            borderRadius: 3,
+                            backgroundColor: theme.palette.background.paper
+                        }}
+                        >
                     
-                    </Box>
-                </Box>
-            </Card>
+                        <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={ data.coverImg?.url ? data.coverImg.url : '' }
+                            alt="Cover link"
+                        />
+                        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                            <Typography component="div" variant="h6">
+                                { data.title }
+                            </Typography>
+                            <Typography variant="subtitle2" color="text.secondary" component="div">
+                                { data.description }
+                            </Typography>
+                            </CardContent>
+                            <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                            
+                            </Box>
+                        </Box>
+                    </Card>
+                ) : (
+                    <LinkForm
+                        defaultCategories={ defaultCategories }
+                        item={ data }
+                        zone={ data.zone }
+                        getLinks={ getLinks }
+                        editingMode={ true }
+                    />
+                )
+            }
+        
         </>
   )
 }

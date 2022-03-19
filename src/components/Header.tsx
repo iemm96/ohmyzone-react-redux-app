@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer, useMediaQuery } from '@mui/material'; 
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer, useMediaQuery, Typography } from '@mui/material'; 
 import { motion } from "framer-motion";
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -11,11 +11,16 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from 'react';
 import StyledButton from '../styled/StyledButton';
 import ZonePhonePreview from './ZonePhonePreview';
+import Box from '@mui/material/Box';
+import StyledSwitch from "../styled/StyledSwitch";
+import { updateZone } from '../actions/zones';
+import { orange } from "@mui/material/colors";
+import { updateRecord } from '../actions/updateRecord';
 
 const Header = () => {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { zone } = useSelector( (state:any) => state )
+    const { zone, ui } = useSelector( (state:any) => state )
     const [ anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [ openDrawer, setOpenDrawer ] = useState<boolean>( false );
     const mediaQuery = useMediaQuery(theme.breakpoints.down('md'));
@@ -35,6 +40,17 @@ const Header = () => {
           navigate('/');
       }
 
+      const handleChangeZoneStatus = async (e:any) => {
+
+        await updateRecord('zones', {
+            currentStatus: e.target.checked ? "isPublished" : "isCompleted",
+        }, zone.uid);
+        dispatch( updateZone({
+            ...zone,
+            currentStatus: e.target.checked ? "isPublished" : "isCompleted"
+        }) );
+
+      }
     return(
         <>
             <AppBar 
@@ -68,7 +84,7 @@ const Header = () => {
                         />
                     </Link>
                     {
-                        mediaQuery && (
+                        (mediaQuery && ui?.showPreviewButton) && (
                             <StyledButton
                                 sx={{
                                     borderRadius: 10
@@ -117,7 +133,39 @@ const Header = () => {
                         </Menu>
                     </div>
                 </Toolbar>
+                {
+                ui.showPublishZoneBar && (
+                    <Box
+                        sx={{ 
+                            width: '100%',
+                            background: zone.currentStatus === "isPublished" ? theme.palette.secondary.dark : orange[800],
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center', 
+                        }}
+                        
+                    >
+                        <Typography
+                            sx={{
+                                ml: 1
+                            }}
+                            variant="caption"
+                        >
+                            { zone.currentStatus === "isPublished" ?  'Tu Zone está publicado' : 'Tu Zone está invisible' }
+                        </Typography>
+                        <StyledSwitch
+                            sx={{
+                                mr: 1
+                            }}
+                            value={ zone.currentStatus  === "isPublished" }
+                            onChange={ handleChangeZoneStatus }
+                        />
+                    </Box>
+                    
+                )
+            }
             </AppBar>
+            
 
             {
                 zone && 

@@ -14,31 +14,14 @@ import { postRecord } from '../actions/postRecord';
 import { fetchRecords } from '../actions/fetchRecords';
 import StyledButton from '../styled/StyledButton';
 import { ModalCategory, useModalCategory } from './ModalCategory';
+import { LinksItemType } from '../types/LinksItemType';
+import { CategoryItemType } from '../types/CategoryItemType';
 
-type LinksItemType = {
-    title: string;
-    description: string;
-    imgUrl: string;
-    coverImg: string;
-    category: any;
-    whatsapp: boolean;
-    whatsappMessage?: string;
-    buttonText: string;
-    isSaved: boolean;
-    file?: any;
-    zone: string;
-}
-
-type CategoryItemType = {
-    inputValue?: string;
-    title: string;
-    links?: Array<LinksItemType> | null;
-}
-  
 const filter = createFilterOptions<CategoryItemType>();
 
 export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode }:{item:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean }) => {
 
+  console.log(item)
     const [ isEditing, setIsEditing ] = useState<boolean>( editingMode );
 
     const link:LinksItemType = {
@@ -57,13 +40,22 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ linksItems, setLinksItems ] = useState<LinksItemType>(link);
     const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
+    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
     const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
     const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
     const { handleModalCategory, openModalCategory, setNewCategory, newCategory } = useModalCategory();
+
     useEffect(() => {
       resetForm();
-    },[])
+    },[]);
+
+    useEffect(() => {
+      setDataUri( item.coverImg?.url )
+      setValue( 'title', item.title );
+      setValue( 'description', item.description );
+      setCategorySelected( item.category?.title );
+    },[item])
+
     useEffect(() => {
       if( newCategory ) {
         setCategorySelected({
@@ -81,7 +73,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
 
     useEffect(() => {
       setIsEditing( editingMode );
-    },[ editingMode ])
+    },[ editingMode ]);
 
     const submitForm = async ( data:any ) => {
 
@@ -177,6 +169,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                       <Controller
                           name="title"
                           control={control}
+                          defaultValue={ item?.title ? item.title : undefined }
                           rules={{
                             required: 'El título es requerido.'
                           }}
@@ -194,6 +187,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                     <Grid xs={ 12 } item>
                       <Controller
                           name={`description`}
+                          defaultValue={ item?.description ? item.description : undefined }
                           control={control}
                           render={({ field: { onChange, value } }) => (
                             <TextField                       
