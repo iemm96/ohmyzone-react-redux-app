@@ -54,7 +54,7 @@ const RegisterForm = () => {
             role: 'USER'
         });
 
-        if( !result.success ) {
+        if( result?.success === false ) {
             setLoading( false );
             setError( result.error.response.data.errors[0].param, {
                 type: 'manual',
