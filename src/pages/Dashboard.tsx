@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import StyledButton from '../styled/StyledButton';
 import { Add } from '@mui/icons-material';
 import Premium from '../assets/icons/premium.svg';
-import { ModalPremium, useModalPremium } from '../components/ModalPremium';
 import { clearSelectedZone } from '../actions/zones';
 import { clearSelectedTheme } from '../actions/themes';
 import { showModalPremium } from '../actions/ui';

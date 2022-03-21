@@ -7,6 +7,7 @@ import { Container, useTheme, useMediaQuery, Grid } from '@mui/material';
 import { LinksSection } from './zoneForm/LinksSection';
 import ThemeSection from './zoneForm/ThemeSection';
 import ZonePhonePreview from '../components/ZonePhonePreview';
+import SocialIconsSection from './zoneForm/SocialIconsSection';
 
 const ZoneDashboard = () => {
     const theme = useTheme();
@@ -35,14 +36,21 @@ const ZoneDashboard = () => {
                         {
                             currentNav === 2 && (
                                 <>
-                                    <LinksSection fullForm/>
+                                    <SocialIconsSection fullForm/>
                                 </>
                             )
                         }
                         {
                             currentNav === 3 && (
                                 <>
-                                    <ThemeSection/>
+                                    <LinksSection fullForm/>
+                                </>
+                            )
+                        }
+                        {
+                            currentNav === 4 && (
+                                <>
+                                    <ThemeSection fullForm/>
                                 </>
                             )
                         }

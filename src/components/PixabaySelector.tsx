@@ -82,13 +82,13 @@ export const PixabaySelector = ({
     arrayRef,
     handleSearchInputChange,
     handleSearch,
-    lockResults
+    isPremium
 }:{
     pixabayResults:any,
     arrayRef:any, 
     handleSearchInputChange?:any,
     handleSearch?:any,
-    lockResults?: boolean,
+    isPremium?: boolean,
 }) => {
 
     return(
@@ -121,7 +121,7 @@ export const PixabaySelector = ({
                         return(
                             <Grid item xs={6} md={3}>
                                 <ThemeCard
-                                    lockResults={ ( index !== 0 && lockResults ) }
+                                    isPremium={ (( index > 3 ) && isPremium ) }
                                     arrayRef={ arrayRef }
                                     largeImageURL={ value.largeImageURL }
                                     urlImage={ value.webformatURL }

@@ -18,7 +18,7 @@ import { fetchFile } from '../../actions/fetchFile';
 import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
 
-const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
+const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, fullForm?:boolean }) => {
     const params = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,7 +36,33 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
       newMode: string,
     ) => {
         console.log( event );
-        setThemeMode(newMode);
+        const premiumFeature:string = "createTheme";
+
+        if( newMode === "create" ) {
+
+            if(!state.zone?.premiumFeatures.find((e:any) => {
+                return e === premiumFeature
+            })) {
+                dispatch( updateZone({
+                    ...state.zone,
+                    premiumFeatures: [ ...state.zone.premiumFeatures, premiumFeature ]  
+                }) )
+                
+            }
+           
+        }else {
+            const index:number = state.zone?.premiumFeatures.indexOf( premiumFeature )
+            if( index !== -1 ) {
+                state.zone?.premiumFeatures.splice( index, 1 );
+
+                dispatch( updateZone({
+                    ...state.zone,
+                    premiumFeatures: state.zone?.premiumFeatures 
+                }) )
+                
+            }
+        }
+        setThemeMode( newMode );
     };
 
     useEffect(() => {
@@ -82,11 +108,9 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
             image = result.image;
             
         } else {
-            console.log( 'uploading Image' );
             image = await ref.current.uploadImageToServer();
         }
 
-        console.log( 'image!!!!!!!!!!!!!!!', image );
         if( palette ) {
             const { theme } = await postRecord( 'themes', {
                 palette: palette.uid,
@@ -164,7 +188,7 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
                                     handleSearch={ handleSearch }
                                     pixabayResults={ pixabayResults }
                                     arrayRef={ arrayRef }
-                                    lockResults={ true }
+                                    isPremium={ true }
                                 />
                                 <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
                                     ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
@@ -175,12 +199,14 @@ const ThemeSection = ({ prev, next }:{ prev?:number, next?:number }) => {
                         )
                     }
                     <Box sx={{
-                        mt: 4
+                        mt: 4,
+                        mb: fullForm ? 10 : 4,
                     }}>
                         <FormNavigationButtons
                             prev={ `/zones/edit/${prev}/${ state.zone.uid }` }
                             next={ submitTheme }
                             loading={ loading }
+                            fullForm={ fullForm }
                         />
                     </Box>
                 </Container>

@@ -157,7 +157,7 @@ const Header = () => {
                             sx={{
                                 mr: 1
                             }}
-                            value={ zone.currentStatus  === "isPublished" }
+                            defaultChecked={  zone.currentStatus === "isPublished" }
                             onChange={ handleChangeZoneStatus }
                         />
                     </Box>

@@ -1,7 +1,7 @@
 import { Box } from "@mui/system";
 import { useTheme } from '@mui/material/styles';
 import { ColorPaletteImage } from "./ColorPaletteImage";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
 import { CardActionArea, IconButton, Paper, Stack, TextField, Typography, InputAdornment } from '@mui/material';
 import { Edit, Check } from '@mui/icons-material';
@@ -9,6 +9,8 @@ import Card from '@mui/material/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateTheme } from '../actions/themes';
 import { ChromePicker } from 'react-color';
+import StyledButton from "../styled/StyledButton";
+import { postRecord } from '../actions/postRecord';
 
 const boxColorStyles = {
     width: 40,
@@ -17,31 +19,52 @@ const boxColorStyles = {
     cursor: 'pointer'
 }
 
-const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:number}) => {
+export const usePaletteComponent = () => {
+    const [ showPaletteComponent, setShowPaletteComponent ] = useState<boolean>( false );
+
+    const handlePaletteComponent = () => {
+        setShowPaletteComponent( !showPaletteComponent )
+    }
+    return {
+        showPaletteComponent,
+        handlePaletteComponent
+    }
+}
+
+type PaleteComponentType = {
+    arrayRef?:any, 
+    item?:any, 
+    key:number, 
+    edit?:boolean,
+    handlePaletteComponent:any,
+    defaultPalette?:any
+}
+
+const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePaletteComponent}:PaleteComponentType) => {
     const state = useSelector( (state:any) => state );
-    const [ editMode, setEditMode ] = useState<boolean>( false );
+    const [ editMode, setEditMode ] = useState<boolean>( edit ? edit : false );
     const [ colorPickerWindow, setColorPickerWindow ] = useState<any>( false )
     const theme = useTheme();
 
     const dispatch = useDispatch();
 
-    const [ editingPalette, setEditingPalette ] = useState<CurrentPaletteType>({
+    const [ editingPalette, setEditingPalette ] = useState<CurrentPaletteType | null >( defaultPalette ? defaultPalette : {
         vibrant: '#4664F6',
         lightVibrant: '#F8FAFF',
         darkVibrant: '#010413',
         muted: '#7AE7C7',
         lightMuted: '#CBF6E9',
         darkMuted: '#03110D'
-    });
+    } );
 
-    const [ currentPalette, setCurrentPalette ] = useState<CurrentPaletteType>({
+    const [ currentPalette, setCurrentPalette ] = useState<CurrentPaletteType | null>( !edit ? {
         vibrant: '#4664F6',
         lightVibrant: '#F8FAFF',
         darkVibrant: '#010413',
         muted: '#7AE7C7',
         lightMuted: '#CBF6E9',
         darkMuted: '#03110D'
-    });
+    } : null );
 
     const handleEditMode = (key:number) => {
         setEditingPalette( currentPalette );
@@ -54,19 +77,35 @@ const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:num
     }
 
     const updateThemeColor = (index:any) => {
-        const reff:any = arrayRef[index];
-        reff?.current.updatePalette();
-        dispatch( updateTheme({
-            ...state.theme,
-            ...currentPalette,
-            //backgroundImageUrl: largeImageURL
-        }));
+
+        if( defaultPalette ) {
+            dispatch( updateTheme({
+                ...state.theme,
+                ...editingPalette,
+            }));
+        }else {
+            const reff:any = arrayRef[index];
+            reff?.current.updatePalette();
+            dispatch( updateTheme({
+                ...state.theme,
+                ...currentPalette,
+            }));
+        }
+
     }
 
-    const colorInput = ( color:string, name:any ) => (
+    const handleSubmit = async () => {
+        await postRecord( 'palettes', {
+            ...currentPalette,
+            zone: state.zone.uid,
+        } );
+
+    }
+
+    const colorInput = ( name:any, label:string, color?:string ) => (
         <Stack spacing={ 2 } direction="row" alignItems="center">
             <Box
-                onClick={ () => setColorPickerWindow( color ) }
+                onClick={ () => color && setColorPickerWindow( color ) }
                 sx={{
                     ...boxColorStyles,
                     backgroundColor: color,
@@ -74,8 +113,9 @@ const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:num
             />
             <TextField
                 fullWidth
+                label={ label }
                 onChange={ (e) => setEditingPalette( (prev:any) => ({ ...prev, [name]: `#${e.target.value.replace('#','')}` })) }
-                defaultValue={ color.replace('#','') }
+                defaultValue={ color && color.replace('#','') }
                 InputProps={{
                     startAdornment: '#',
                     endAdornment: (
@@ -142,15 +182,30 @@ const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:num
                         }}
                     >
                         <Stack spacing={ 2 }>
-                            { colorInput( editingPalette.vibrant, 'vibrant' ) }
-                            { colorInput( editingPalette.lightVibrant, 'lightVibrant' ) }
-                            { colorInput( editingPalette.darkVibrant, 'darkVibrant' ) }
-                            { colorInput( editingPalette.muted, 'muted' ) }
-                            { colorInput( editingPalette.lightMuted, 'lightMuted' ) }
-                            { colorInput( editingPalette.darkMuted, 'darkMuted' ) }
+                            { colorInput( 'vibrant', 'Color de acento', editingPalette?.vibrant  ) }
+                            { colorInput( 'lightVibrant', 'Color secundario',editingPalette?.lightVibrant  ) }
+                            { colorInput( 'darkVibrant', 'Fondo oscuro', editingPalette?.darkVibrant  ) }
+                            { colorInput( 'muted', 'Fondo oscuro', editingPalette?.muted  ) }
+                            { colorInput( 'lightMuted', 'Fondo claro', editingPalette?.lightMuted  ) }
+                            { colorInput( 'darkMuted', '',editingPalette?.darkMuted  ) }
                         </Stack>
-                        
-
+                        <Stack sx={{ mt:2 }} spacing={ 2 } direction="row">
+                            <StyledButton
+                                variant="outlined"
+                                size="medium"
+                                onClick={ () => handleEditMode( key ) }
+                            >
+                                Cancelar
+                            </StyledButton>
+                            <StyledButton
+                                variant="contained"
+                                size="medium"
+                                onClick={ handleSubmit }
+                                startIcon={ <Check/> }
+                            >
+                                Guardar
+                            </StyledButton>
+                        </Stack>
                     </Paper>
                 ) : (
                     <Card
@@ -171,7 +226,53 @@ const PaletteComponent = ({arrayRef, item, key}:{arrayRef:any, item:any, key:num
                                 <Box sx={{
                                     flex: 1
                                 }}>
-                                    <ColorPaletteImage setCurrentPalette={ setCurrentPalette } ref={ arrayRef[ key ] } src={ item.image }/>
+                                    {
+                                        defaultPalette && (
+                                            <Box sx={{padding: '1rem 0'}} display="flex" justifyContent="space-evenly">
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.vibrant
+                }}/>
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.muted
+                }}/>
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.lightMuted
+                }}/>
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.darkVibrant
+                }}/>
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.lightVibrant
+                }}/>
+                <Box sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        backgroundColor: defaultPalette.darkMuted
+                }}/>
+            </Box>
+                                        )
+                                    }
+                                    {
+                                        item?.image && (
+                                            <ColorPaletteImage setCurrentPalette={ setCurrentPalette } ref={ arrayRef[ key ] } src={ item.image }/>
+                                        )
+                                    }
                                 </Box>
 
                             </Stack>

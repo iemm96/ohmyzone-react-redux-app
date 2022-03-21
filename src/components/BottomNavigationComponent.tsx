@@ -2,7 +2,7 @@ import * as React from 'react';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
-import { AccountBox, ColorLens, Home, Link } from '@mui/icons-material';
+import { AccountBox, ColorLens, Home, Interests, Link } from '@mui/icons-material';
 export const useBottomNavigationComponent = () => {
     const [ currentNav, setCurrentNav ] = React.useState(0);
 
@@ -31,6 +31,7 @@ export const BottomNavigationComponent = ( { currentNav, setCurrentNav }:BottomN
             >
                 <BottomNavigationAction label="Inicio" icon={<Home/>} />
                 <BottomNavigationAction label="Portada" icon={<AccountBox />} />
+                <BottomNavigationAction label="Iconos" icon={<Interests/>} />
                 <BottomNavigationAction label="Enlaces" icon={<Link/>} />
                 <BottomNavigationAction label="Temas" icon={<ColorLens/>} />
            

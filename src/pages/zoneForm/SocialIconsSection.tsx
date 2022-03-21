@@ -17,7 +17,7 @@ import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { updateZone } from '../../actions/zones';
 import { fetchRecord } from '../../actions/fetchRecord';
 
-const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
+const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number, fullForm?:boolean } ) => {
     const { zone } = useSelector( (state:any) => state );
     const params = useParams();
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -426,6 +426,7 @@ const SocialIconsSection = ( {prev, next}:{ prev:number, next:number } ) => {
                     </Grid>
                     <Box sx={{ mt:8 }}>
                         <FormNavigationButtons
+                            fullForm={fullForm}
                             loading={ loading }
                             prev={ `/zones/edit/1/${ zone.uid }` }
                         />

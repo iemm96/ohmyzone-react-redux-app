@@ -5,6 +5,7 @@ export const zoneReducer = ( state = { } , action:any ) => {
         case actionTypes.updateZone:
             return {
                 title: action?.payload.title,
+                premiumFeatures: action?.payload?.premiumFeatures,
                 currentStatus: action?.payload.currentStatus,
                 isCompleted: action?.payload.isCompleted,
                 uid: action?.payload.uid,

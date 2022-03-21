@@ -9,6 +9,7 @@ import { ModalPremium, useModalPremium } from './ModalPremium';
 
 const DashboardLayout = () => {
     const { auth } = useSelector( (state:any) => state );
+    console.log(auth)
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { handleModal, openModal, modalTitle } = useModalPremium();
@@ -38,7 +39,7 @@ const DashboardLayout = () => {
                 modalTitle={ modalTitle }
                 handleModal={ handleModal }
                 openModal={ openModal }
-                isExpired={ auth.plan === 'expired' }
+                isExpired={ auth.plan === ( 'expired' || 'free' ) }
             />
             <Box sx={{ mt: 12 }}>
                 <Outlet />                

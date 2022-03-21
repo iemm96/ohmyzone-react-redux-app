@@ -1,32 +1,23 @@
-import { Box } from "@mui/system";
 import { useTheme } from '@mui/material/styles';
-import { ColorPaletteImage } from "./ColorPaletteImage";
 import { useState, useEffect, createRef } from 'react';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
-import { CardActionArea, IconButton, Paper, Stack, Typography } from '@mui/material';
-import { Edit } from "@mui/icons-material";
-import Card from '@mui/material/Card';
+import { Stack, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { updateTheme } from '../actions/themes';
-import PaletteComponent from "./PaletteComponent";
+import PaletteComponent, { usePaletteComponent } from "./PaletteComponent";
+import StyledButton from '../styled/StyledButton';
+import { Add } from '@mui/icons-material';
+import { fetchRecords } from '../actions/fetchRecords';
 
 type ColorSelectorProps = {
     imagesToColorsArray: any;
 }
 const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
     const theme = useTheme();
-    const dispatch = useDispatch();
     const [ arrayRef, setArrayRef ] = useState([]);
-
-    const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>({
-        vibrant: '#4664F6',
-        lightVibrant: '#F8FAFF',
-        darkVibrant: '#010413',
-        muted: '#7AE7C7',
-        lightMuted: '#CBF6E9',
-        darkMuted: '#03110D'
-    });
-
+    const [ newPalette, setNewPalette ] = useState<boolean>( false );
+    const { handlePaletteComponent, showPaletteComponent } = usePaletteComponent();
+    const [ userPalettes, setUserPalettes ] = useState<any>( [] );
+    
     useEffect(() => {
 
         const arr:any = [];
@@ -37,7 +28,14 @@ const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
 
         setArrayRef( arr );
 
+        getPalettes().then()
     },[ ]);
+
+    const getPalettes = async () => {
+        const { palettes } = await fetchRecords('palettes');
+        setUserPalettes( palettes )
+
+    }
 
     return(
         <Stack
@@ -51,18 +49,53 @@ const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
             <Typography
                 variant="caption"
             >
-                Colores
+                Paletas de colores sugeridas
             </Typography>
             {
                 imagesToColorsArray && imagesToColorsArray.map( (item:any, index:number) => (
                     
                     <PaletteComponent
+                        handlePaletteComponent={handlePaletteComponent}
                         arrayRef={ arrayRef }
                         item={ item }
                         key={ index }
                     />
                 ) )
             }
+            <Typography
+                sx={{ mt: 2, mb: 1 }}
+                variant="caption"
+            >
+                Mis paletas de colores
+            </Typography>
+            {
+                ( userPalettes.length > 0 ) && userPalettes.map((item:any, index:number) => (
+                    <PaletteComponent
+                        defaultPalette={ item }
+                        arrayRef={ arrayRef }
+                        handlePaletteComponent={ handlePaletteComponent }
+                        key={ index }
+                    />
+                )) 
+            }
+            {
+                showPaletteComponent && (
+                    <PaletteComponent
+                        handlePaletteComponent={ handlePaletteComponent }
+                        edit
+                        key={0}
+                    />
+                )
+            }
+            <StyledButton
+                variant="contained"
+                color="secondary"
+                size="medium"
+                startIcon={ <Add/> }
+                onClick={ handlePaletteComponent }
+            >
+                Crear paleta de colores
+            </StyledButton>
         </Stack>
     )
 }

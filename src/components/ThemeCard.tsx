@@ -8,12 +8,13 @@ import Premium from '../assets/icons/premium.svg';
 import Box from '@mui/material/Box';
 import { updateTheme } from '../actions/themes';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
+import { updateZone } from '../actions/zones';
 
 
 
 
-const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockResults }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, lockResults?:boolean }) => {
-    const { theme } = useSelector( (state:any) => state );
+const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremium }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, isPremium?:boolean }) => {
+    const { zone } = useSelector( (state:any) => state );
     const dispatch = useDispatch();
 
     const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>({
@@ -28,6 +29,49 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockRes
     const updateThemeColor = (index:any) => {
         const reff:any = arrayRef[index];
         reff?.current.updatePalette();
+        const premiumFeature = "selectedTheme";
+
+        if( isPremium ) {
+            if( zone?.premiumFeatures ) {
+                if(!zone?.premiumFeatures.find((e:any) => {
+                    return e === premiumFeature
+                })) {
+                    dispatch( updateZone({
+                        ...zone,
+                        premiumFeatures: [ ...zone?.premiumFeatures, premiumFeature ]  
+                    }) )
+                    
+                }
+            }else {
+                dispatch( updateZone({
+                    ...zone,
+                    premiumFeatures: [ premiumFeature ]  
+                }) )
+            }
+            
+           
+        }else {
+
+            if( zone?.premiumFeatures ){
+                const index:number = zone?.premiumFeatures.indexOf( premiumFeature )
+                if( index !== -1 ) {
+                    zone?.premiumFeatures.splice( index, 1 );
+    
+                    dispatch( updateZone({
+                        ...zone,
+                        premiumFeatures: zone?.premiumFeatures 
+                    }) )
+                    
+                }
+            }else{
+                dispatch( updateZone({
+                    ...zone,
+                    premiumFeatures: [] 
+                }) )
+            }
+            
+        }
+
         dispatch( updateTheme({
             ...currentPalette,
             backgroundImageUrl: largeImageURL
@@ -43,7 +87,7 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockRes
                 }}
             >
                 {
-                    lockResults && (
+                    isPremium && (
                         <Box sx={{
                             position: 'absolute',
                             zIndex: 10,
@@ -63,7 +107,7 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, lockRes
                     image={ urlImage }
                     alt="image-alt"
                 />
-                <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage }/>    
+                <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage } isPremium={ isPremium }/>    
             </CardActionArea>
         </Card>
     )
