@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import {Stack} from "@mui/material";
+import { Stack, useTheme } from '@mui/material';
 import { deleteRecord } from "../actions/deleteRecord";
 import {useState} from "react";
 import {DeleteForever} from "@mui/icons-material";
@@ -25,12 +25,17 @@ export const useModalDelete = ( resource:string ) => {
     const [ openModal, setOpenModal ] = React.useState(false);
     const [ modalTitle, setModalTitle ] = useState<string>(' ');
     const [ uid, setUid ] = useState<string | null>(null);
+    const [ imageUid, setImageUid ] = useState<string | null>( null ); //Allows to delete some image
     const handleModal = () => setOpenModal(!openModal);
 
     const handleDelete = async () => {
         if(uid) {
             await deleteRecord( resource, uid );
             
+            if( imageUid ) {
+                await deleteRecord( 'images', imageUid );
+            }
+
             setOpenModal(false); //Close modal if is open
         }
     }
@@ -41,7 +46,8 @@ export const useModalDelete = ( resource:string ) => {
         handleDelete,
         modalTitle,
         setModalTitle,
-        setUid
+        setUid,
+        setImageUid
     }
 }
 
@@ -54,6 +60,8 @@ type DeleteModalType = {
 }
 
 export const ModalDelete = ({handleDelete, handleModal, openModal, modalTitle, getRecords }:DeleteModalType) => {
+    const theme = useTheme();
+
     return(
         <Modal
             open={openModal}
@@ -63,18 +71,22 @@ export const ModalDelete = ({handleDelete, handleModal, openModal, modalTitle, g
         >
             <Box sx={style}>
                 <Typography
-                    color="primary"
+                    sx={{
+                        color: theme.palette.text.primary
+                    }}
                     align="center"
                     id="modal-modal-title" 
                     variant="subtitle1">
                     { modalTitle }
                 </Typography>
                 <Typography
+                    sx={{
+                        color: theme.palette.text.primary,
+                        my: 2
+                    }}
                     align="center"
-                    color="primary"
                     variant="subtitle2"
                     id="modal-modal-description" 
-                    sx={{ my: 2 }}
                 >
                     ¡No podrás recuperarlo!
                 </Typography>
