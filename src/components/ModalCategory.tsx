@@ -21,13 +21,21 @@ const style = {
 };
 
 
-export const useModalCategory = ( ) => {
+export const useModalCategory = ( currentCategoriesList:any ) => {
     const [ openModalCategory, setOpenModalCategory ] = React.useState(false);
     const handleModalCategory = () => setOpenModalCategory(!openModalCategory);
     const [ newCategory, setNewCategory ] =  React.useState<string | null>( null );
+    const handleNewCategory = ( value:string ) => {
+
+        const result = currentCategoriesList.find( (element:any) => element.title === value );
+        if( !result ) {
+            setNewCategory( value );
+        }
+        
+    }
 
     return {
-        setNewCategory,
+        handleNewCategory,
         newCategory,
         openModalCategory,
         handleModalCategory,
@@ -37,10 +45,10 @@ export const useModalCategory = ( ) => {
 type ModalCategoryType = {
     handleModalCategory: any;
     openModalCategory: any;
-    setNewCategory: any;
+    handleNewCategory: any;
 }
 
-export const ModalCategory = ({ handleModalCategory, openModalCategory, setNewCategory  }:ModalCategoryType) => {
+export const ModalCategory = ({ handleModalCategory, openModalCategory, handleNewCategory  }:ModalCategoryType) => {
     const [ value, setValue ] = useState<any>( undefined );
 
     return(
@@ -85,7 +93,7 @@ export const ModalCategory = ({ handleModalCategory, openModalCategory, setNewCa
                         color="primary"
                         startIcon={ <Check/> }
                         onClick={ () => {
-                            setNewCategory( value );
+                            handleNewCategory( value );
                             handleModalCategory()
                         }}
                     >
