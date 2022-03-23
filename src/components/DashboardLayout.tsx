@@ -9,7 +9,6 @@ import { ModalPremium, useModalPremium } from './ModalPremium';
 
 const DashboardLayout = () => {
     const { auth } = useSelector( (state:any) => state );
-    console.log(auth)
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { handleModal, openModal, modalTitle } = useModalPremium();

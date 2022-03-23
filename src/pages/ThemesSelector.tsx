@@ -48,8 +48,6 @@ type SearchOptions = {
 const Dashboard = () => {
     const state = useSelector( state => state );
 
-    console.log(state);
-
     const navigate = useNavigate();
     const [ pixabayResults, setPixabayResults ] = useState([]);
     const [ colorsArray, setColorsArray ] = useState<[]>([]);

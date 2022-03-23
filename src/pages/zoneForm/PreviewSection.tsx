@@ -66,7 +66,6 @@ const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
         if( result ) {
             handleModal( );
         }
-        console.log( result );
         
     }
 
