@@ -5,6 +5,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRecord } from '../actions/fetchRecord';
 import { updateTheme } from '../actions/themes';
+
 const CustomThemeCreator = forwardRef((props:any,ref:any) => {
     const { theme, zone } = useSelector( ( state:any ) => state );
     const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const CustomThemeCreator = forwardRef((props:any,ref:any) => {
 
     useImperativeHandle(ref,() => ({
         uploadImageToServer: () => {
-            return uploadToServer( zone.uid )
+            return uploadToServer( zone.uid, `${ zone.username }/themes` )
             
             /*
             if( 

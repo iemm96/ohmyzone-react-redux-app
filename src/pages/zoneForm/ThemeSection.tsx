@@ -17,6 +17,7 @@ import { fetchFile } from '../../actions/fetchFile';
 
 import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
+import ThemesList from '../../components/ThemesList';
 
 const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, fullForm?:boolean }) => {
     const params = useParams();
@@ -26,10 +27,19 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
     const theme = useTheme();
     const ref = useRef<any>(null);
 
-    const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange } = usePixabaySelector();
+    const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange, searchOptions, setSearchOptions, loadingResults } = usePixabaySelector();
     const [ loading, setLoading ] = useState<boolean>(false);
     
-    const [ themeMode, setThemeMode ] = useState<string>( 'search' );
+    const [ themeMode, setThemeMode ] = useState<string>( fullForm ? 'myThemes' : 'search' );
+
+    useEffect(() => {
+        
+        if( Object.keys(state.zone).length === 0 ) {
+            getZone();
+        }else {
+
+        }
+    },[ ]);
 
     const handleChangeMode = (
       event: React.MouseEvent<HTMLElement>,
@@ -38,9 +48,16 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
         console.log( event );
         const premiumFeature:string = "createTheme";
 
+        if( !state.zone?.premiumFeatures ) {
+            dispatch( updateZone({
+                ...state.zone,
+                premiumFeatures: []  
+            }) )
+        }
+
         if( newMode === "create" ) {
 
-            if(!state.zone?.premiumFeatures.find((e:any) => {
+            if( !state.zone?.premiumFeatures.find((e:any) => {
                 return e === premiumFeature
             })) {
                 dispatch( updateZone({
@@ -49,8 +66,9 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                 }) )
                 
             }
+            
            
-        }else {
+        } else {
             const index:number = state.zone?.premiumFeatures.indexOf( premiumFeature )
             if( index !== -1 ) {
                 state.zone?.premiumFeatures.splice( index, 1 );
@@ -65,15 +83,6 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
         setThemeMode( newMode );
     };
 
-    useEffect(() => {
-        
-        if( Object.keys(state.zone).length === 0 ) {
-            getZone();
-        }else {
-
-        }
-    },[]);
-
     const getZone = async () => {
         if(params.zone) {
             const { zone } = await fetchRecord('zones', params.zone);
@@ -87,6 +96,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
     const submitTheme = async () => {
         const theme = state.theme;
         setLoading( false );
+
         //Saves palette
         const { palette } = await postRecord( 'palettes', {
             ...theme,
@@ -101,6 +111,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
             //fetch image from pixabay
             const imageDownloaded:any = await fetchFile( state.theme.backgroundImageUrl );
             formData.append( 'file', imageDownloaded );
+            formData.append( 'folderName', `${ state.zone.username }/themes` );
             formData.append( 'zone', state.zone.uid );
         
             //Save image to cloudinary
@@ -108,13 +119,14 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
             image = result.image;
             
         } else {
-            image = await ref.current.uploadImageToServer();
+            image = await ref.current.uploadImageToServer(); //Upload pixabay image to server
         }
 
         if( palette ) {
             const { theme } = await postRecord( 'themes', {
                 palette: palette.uid,
                 backgroundImage: image.uid,
+                zone: state.zone.uid,
                 user: state.auth.uid
             } );
 
@@ -128,7 +140,10 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                     zoneResult
                 }) );
                 setLoading( false );
-                navigate( `/zones/edit/${ next }/${ state.zone.uid }` );
+
+                if( !fullForm ) {
+                    navigate( `/zones/edit/${ next }/${ state.zone.uid }` );
+                }
             }
             
         }
@@ -161,6 +176,18 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                             onChange={ handleChangeMode }
                             fullWidth
                         >
+                            {
+                                fullForm && (
+                                    <ToggleButton
+                                        sx={{
+                                            textTransform: 'none'
+                                        }}
+                                        value="myThemes"
+                                    >
+                                        Mis temas
+                                    </ToggleButton>
+                                )
+                            }
                             <ToggleButton
                                 sx={{
                                     textTransform: 'none'
@@ -181,20 +208,32 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                         </ToggleButtonGroup>
                     </Box>
                     {
-                        themeMode === 'search' ? (
+                        themeMode === 'myThemes' && (
+                            <ThemesList ref={ref}/>
+                        )
+                    }
+                    {
+                        themeMode === 'search' && (
                             <Box>
                                 <PixabaySelector
                                     handleSearchInputChange={ handleSearchInputChange }
                                     handleSearch={ handleSearch }
                                     pixabayResults={ pixabayResults }
                                     arrayRef={ arrayRef }
-                                    isPremium={ true }
+                                    setSearchOptions={ setSearchOptions }
+                                    searchOptions={ searchOptions }
+                                    loadingResults={ loadingResults }
+                                    fullForm
+                                    isPremium
                                 />
                                 <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
                                     ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
                                 </Typography>
                             </Box>
-                        ) : (
+                        ) 
+                    }
+                    {
+                        themeMode === 'create' && (
                             <CustomThemeCreator ref={ref}/>
                         )
                     }
