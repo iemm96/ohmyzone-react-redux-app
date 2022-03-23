@@ -13,7 +13,7 @@ import { LinkForm } from './LinkForm';
 import { CategoryItemType } from '../types/CategoryItemType';
 
 
-const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[] }) => {
+const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zoneName }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[], zoneName?:string }) => {
     const [ editMode, setEditMode ] = useState<boolean>( false );
 
     const {
@@ -22,7 +22,8 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories }:{ 
         handleDelete,
         modalTitle,
         setModalTitle,
-        setUid
+        setUid,
+        setImageUid,
     } = useModalDelete('links');
 
     const theme = useTheme();
@@ -70,6 +71,7 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories }:{ 
                                 onClick={ () => {
                                     setModalTitle( `¿Seguro que deseas eliminar el link "${ data.title }"?` );
                                     setUid( data.uid );
+                                    setImageUid( data?.coverImg?._id ); //Set uid cover image to delete
                                     handleModal();
                                 } }
                             >
@@ -106,18 +108,17 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories }:{ 
                                 { data.description }
                             </Typography>
                             </CardContent>
-                            <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-                            
-                            </Box>
                         </Box>
                     </Card>
                 ) : (
                     <LinkForm
                         defaultCategories={ defaultCategories }
+                        zoneName={ zoneName }
                         item={ data }
                         zone={ data.zone }
                         getLinks={ getLinks }
                         editingMode={ true }
+                        setEditMode={ setEditMode }
                     />
                 )
             }

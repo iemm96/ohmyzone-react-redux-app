@@ -16,12 +16,13 @@ import StyledButton from '../styled/StyledButton';
 import { ModalCategory, useModalCategory } from './ModalCategory';
 import { LinksItemType } from '../types/LinksItemType';
 import { CategoryItemType } from '../types/CategoryItemType';
+import { deleteRecord } from '../actions/deleteRecord';
+import { updateRecord } from '../actions/updateRecord';
 
 const filter = createFilterOptions<CategoryItemType>();
 
-export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode }:{item:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean }) => {
+export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode, zoneName, setEditMode }:{item?:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean, zoneName?:string, setEditMode?:any }) => {
 
-  console.log(item)
     const [ isEditing, setIsEditing ] = useState<boolean>( editingMode );
 
     const link:LinksItemType = {
@@ -40,21 +41,24 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ linksItems, setLinksItems ] = useState<LinksItemType>(link);
     const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
-    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
+    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setImageServerUid } = useUploader( true );
     const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
     const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
-    const { handleModalCategory, openModalCategory, setNewCategory, newCategory } = useModalCategory();
+    const { handleModalCategory, openModalCategory, handleNewCategory, newCategory } = useModalCategory( defaultCategories );
+    const [ enableWhatsapp, setEnableWhatsapp ] = useState<boolean>( false );
 
     useEffect(() => {
-      resetForm();
-    },[]);
+      if( item ) {
+        setDataUri( item.coverImg?.url )
+        setValue( 'title', item.title );
+        setValue( 'description', item.description );
+        setValue( 'link', item.link );
+        setValue( 'buttonText', item.buttonText );
+        setCategorySelected( { title: item.category?.title } );
+        setEnableWhatsapp( item?.whatsapp );
+      }
 
-    useEffect(() => {
-      setDataUri( item.coverImg?.url )
-      setValue( 'title', item.title );
-      setValue( 'description', item.description );
-      setCategorySelected( item.category?.title );
-    },[item])
+    },[ item ]);
 
     useEffect(() => {
       if( newCategory ) {
@@ -88,45 +92,97 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
           return;
         }
     
-        const image:any = await uploadToServer( zone );
-        
-        data.coverImg = image.uid; //Assing recently created uid image
-        data.isSaved = true;
+        let image:any = null;
+        let result:any = null;
+
+        console.log( 'item ',item )
+        //If item exists then is updating
+        if( item ) {
+
+          //If prev coverImageUrl is different to dataUri then consider that image was updated
+          if( item.coverImg?.url !== dataUri ) {
+              await deleteRecord( 'images', item.coverImg?._id ); //delete old image
+              image = await uploadToServer( zone, `${ zoneName }/links` ); //Upload new image
+              data.coverImg = image.uid; //Assing recently created uid image
+          }
+
+          //If category has changed
+          if( categorySelected.title !== item.category?.title ) {
+              const categoryUid = await handleCategory( categorySelected.title );
+
+              if( !categoryUid ) {
+                alert( 'Ocurrió un error al obtener el ID de la categoría.' )
+                return;
+              }
     
-        if(zone) {
-            data.zone = zone;
+              data.category = categoryUid;
+          }
+
+          result = await updateRecord('links', data, item.uid );
+
+
+        }else{
+
+          image = await uploadToServer( zone, `${ zoneName }/links` );
+        
+          data.coverImg = image.uid; //Assing recently created uid image
+          data.isSaved = true;
+      
+          const categoryUid = await handleCategory( categorySelected.title );
+
+          if( !categoryUid ) {
+            alert( 'Ocurrió un error al obtener el ID de la categoría.' )
+            return;
+          }
+
+          data.category = categoryUid;
+          
+          if(zone) {
+              data.zone = zone; //Assing current zone uid
+          }
+  
+  
+          result = await postRecord('links', data);
+          
+
         }
-
-        const { category } = await fetchRecords(`categories/find/${categorySelected.title}/${zone}`);
-
-        if( category ) {
-            data.category = category.uid
-        } else {
-
-            try{
-                const categoryResult = await postRecord('categories', {
-                    title: categorySelected.title,
-                    zone
-                });
-
-                console.log( categoryResult )
-                data.category = categoryResult.category.uid;
-            }catch(e){
-                console.log(e)
-            }
-            
-        }
-
-        const result = await postRecord('links', data);
         
         if(result) {
-          
+            
           setLoading( false );
 
-          resetForm();
-          getLinks();
+          resetForm(); //Reset form
+          getLinks(); //Update links list
         }
         
+    }
+
+    const handleCategory = async (categorySelected:string) => {
+
+          let result:any = false;
+
+          //Check if category exists
+          const { category } = await fetchRecords(`categories/find/${ categorySelected }/${ zone }`); 
+  
+          //If category exists add uid else create new category
+          if( category ) {
+            result = category.uid
+          } else {
+  
+              try{
+                  const categoryResult = await postRecord('categories', {
+                      title: categorySelected,
+                      zone
+                  });
+  
+                  result = categoryResult.category.uid;
+              }catch(e){
+                  console.log(e);
+              }
+              
+          }
+
+          return result;
     }
 
     const resetForm = () => {
@@ -134,7 +190,10 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
         setCategorySelected( null );
         handleDelete(); //Deletes uploaded image preview
         setIsEditing( false );
-        setLinksItems( link );
+        if ( setEditMode ) {
+          setEditMode( false );
+        }
+        //setLinksItems( link );
     }
 
     return(
@@ -142,11 +201,11 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
             <ModalCategory
                 handleModalCategory={ handleModalCategory }
                 openModalCategory={ openModalCategory }
-                setNewCategory={ setNewCategory }
+                handleNewCategory={ handleNewCategory }
             />
             { isEditing && (
               <Paper sx={{ p: 1, borderRadius: 3, mb: 1 }} elevation={ 4 }>
-                <form id={`form-link-${ item.uid }`}>
+                <form id={`form-link`}>
                   <Grid spacing={ 2 } container>
                     <Grid xs={ 12 } item>
                       <UploadFile 
@@ -222,7 +281,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                           />
                         ) : (
                           <Autocomplete
-                            value={categorySelected}
+                            value={categorySelected?.title}
                             onChange={(event, newValue) => {
                           
                               if (typeof newValue === 'string') {
@@ -326,10 +385,19 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                     </Grid>
                     <Grid display="flex" justifyContent="space-between" xs={ 12 } item>
                       <FormGroup>
-                        <FormControlLabel control={<StyledSwitch onChange={ () => {
-                          setLinksItems( { ...linksItems, whatsapp: !linksItems.whatsapp } );
-                          setValue( `whatsappMessage`, `Hola, me interesa tu ${ item.title ? item.title : 'Producto/Servicio' }` );
-                        } }/>} label="Enlace a mi WhatsApp" />
+                        <FormControlLabel 
+                            control={
+                              <StyledSwitch
+                                defaultChecked={ enableWhatsapp }
+                                onChange={ (e) => {
+                                  setEnableWhatsapp( e.target.checked );
+                                  //setLinksItems( { ...linksItems, whatsapp: !linksItems.whatsapp } );
+                                  setValue( `whatsappMessage`, `Hola, me interesa tu ${ item.title ? item.title : 'Producto/Servicio' }` );
+                                } }
+                              />
+                            } 
+                            label="Enlace a mi WhatsApp" 
+                          />
                       </FormGroup>
                       <Tooltip title="Permite que las personas interesadas en este enlace te contacten por WhatsApp" arrow>
                         <IconButton>
@@ -337,12 +405,13 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                         </IconButton>
                       </Tooltip>
                     </Grid>
-                    <Grid sx={{ display: linksItems.whatsapp ? 'inline-flex' : 'none' }} xs={ 12 } item>
+                    <Grid sx={{ display: enableWhatsapp ? 'inline-flex' : 'none' }} xs={ 12 } item>
                       <Controller
                         name={`whatsappMessage`}
                         control={ control }
+                        defaultValue={ item?.whatsappMessage ? item.whatsappMessage : undefined }
                         rules={{
-                          required: linksItems.whatsapp ? 'Agrega un mensaje de WhatsApp' : false
+                          required: enableWhatsapp ? 'Agrega un mensaje de WhatsApp' : false
                         }}
                         render={({ field: { onChange, value } }) => (
                           <TextField                       
@@ -356,12 +425,13 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                         )}
                       />
                     </Grid>
-                    <Grid sx={{ display: !linksItems.whatsapp ? 'inline' : 'none' }} xs={ 12 } item>
+                    <Grid sx={{ display: !enableWhatsapp ? 'inline' : 'none' }} xs={ 12 } item>
                       <Controller
                         name="link"
                         control={ control }
+                        defaultValue={ item?.link ? item.link : undefined }
                         rules={{
-                          required: !linksItems.whatsapp ? 'Debes agregar un enlace.' : false
+                          required: !enableWhatsapp ? 'Debes agregar un enlace.' : false
                         }}
                         render={({ field: { onChange, value } }) => (
                           <TextField                       
@@ -379,6 +449,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode 
                     <Grid xs={ 12 } item>
                       <Controller
                           name={`buttonText`}
+                          defaultValue={ item?.buttonText ? item.buttonText : undefined }
                           control={control}
                           rules={{
                             required: 'Debes agregar un texto para tu botón.'

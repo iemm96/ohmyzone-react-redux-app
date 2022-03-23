@@ -83,7 +83,11 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
       }
 
       const { links } = await fetchRecords( `links/byZone/${ params.zone }` );
+      const { categories } = await fetchRecords( `categories/byZone/${ params.zone }` );
 
+      if( categories ) {
+        setCategoriesAutocomplete( categories );
+      }
       const arrayCategories:any = [];
 
       links.map((item:any) => {
@@ -93,7 +97,6 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
 
       });
   
-      setCategoriesAutocomplete( arrayCategories );
 
       arrayCategories.map((item:any) => {
         const result = links.filter((obj:any) => {
@@ -140,7 +143,7 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
           { itemCategory.links?.map( (itemLink:any, indexLink) => (
             
             <Stack key={indexLink} sx={{ position: 'relative' }}>
-              <SavedLink getLinks={ getLinks } data={ itemLink } defaultCategories={ categoriesAutocomplete }/>
+              <SavedLink getLinks={ getLinks } data={ itemLink } defaultCategories={ categoriesAutocomplete } zoneName={ zone.username }/>
             </Stack>
             
           ))}
@@ -152,11 +155,9 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
             <LinkForm
               getLinks={ getLinks }
               zone={ zone.uid }
+              zoneName={ zone.username }
               defaultCategories={ categoriesAutocomplete }
               editingMode={ ( categories.length === 0 ) }
-              item={ {
-                isSaved: false
-              } }
             />
           </Box>
         ) : (
