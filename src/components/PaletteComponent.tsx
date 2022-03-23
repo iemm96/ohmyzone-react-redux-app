@@ -1,16 +1,18 @@
 import { Box } from "@mui/system";
 import { useTheme } from '@mui/material/styles';
 import { ColorPaletteImage } from "./ColorPaletteImage";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
 import { CardActionArea, IconButton, Paper, Stack, TextField, Typography, InputAdornment } from '@mui/material';
-import { Edit, Check } from '@mui/icons-material';
+import { Edit, Check, Colorize, Circle } from '@mui/icons-material';
 import Card from '@mui/material/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateTheme } from '../actions/themes';
 import { ChromePicker } from 'react-color';
 import StyledButton from "../styled/StyledButton";
 import { postRecord } from '../actions/postRecord';
+import Button from '@mui/material/Button';
+import { Controller, useForm } from 'react-hook-form';
 
 const boxColorStyles = {
     width: 40,
@@ -43,10 +45,12 @@ type PaleteComponentType = {
 const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePaletteComponent}:PaleteComponentType) => {
     const state = useSelector( (state:any) => state );
     const [ editMode, setEditMode ] = useState<boolean>( edit ? edit : false );
-    const [ colorPickerWindow, setColorPickerWindow ] = useState<any>( false )
+    const [ colorPickerWindow, setColorPickerWindow ] = useState<any>( false );
+    const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
     const theme = useTheme();
 
     const dispatch = useDispatch();
+
 
     const [ editingPalette, setEditingPalette ] = useState<CurrentPaletteType | null >( defaultPalette ? defaultPalette : {
         vibrant: '#4664F6',
@@ -65,6 +69,17 @@ const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePale
         lightMuted: '#CBF6E9',
         darkMuted: '#03110D'
     } : null );
+
+    useEffect(() => {
+        dispatch( updateTheme({
+            ...state.theme,
+            ...currentPalette,
+        }));
+    },[ currentPalette ]);
+
+    useEffect(() => {
+        console.log(editingPalette)
+    },[editingPalette])
 
     const handleEditMode = (key:number) => {
         setEditingPalette( currentPalette );
@@ -94,7 +109,9 @@ const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePale
 
     }
 
-    const handleSubmit = async () => {
+    const onSubmit = async (data:any) => {
+        console.log(data)
+        return
         await postRecord( 'palettes', {
             ...currentPalette,
             zone: state.zone.uid,
@@ -104,31 +121,67 @@ const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePale
 
     const colorInput = ( name:any, label:string, color?:string ) => (
         <Stack spacing={ 2 } direction="row" alignItems="center">
-            <Box
-                onClick={ () => color && setColorPickerWindow( color ) }
+            <Button
+                onClick={ () => {
+                    if(color) {
+                        setColorPickerWindow( color )
+                    }else {
+                        setColorPickerWindow( '#000000' )
+                    }}}
                 sx={{
                     ...boxColorStyles,
-                    backgroundColor: color,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
                 }}
+                variant="outlined"
+                startIcon={ <Circle sx={{ color }}/> }
+                endIcon={ <Colorize/> }
             />
-            <TextField
-                fullWidth
-                label={ label }
-                onChange={ (e) => setEditingPalette( (prev:any) => ({ ...prev, [name]: `#${e.target.value.replace('#','')}` })) }
-                defaultValue={ color && color.replace('#','') }
-                InputProps={{
-                    startAdornment: '#',
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                onClick={ () => setCurrentPalette( editingPalette ) }
-                            >
-                                <Check/>
-                            </IconButton>
-                        </InputAdornment>
-                    ),
+            <Box>
+            <Controller
+                name={ name }
+                control={control}
+                defaultValue={ item?.title ? item.title : undefined }
+                rules={{
+                  required: 'Este color es requerido.',
+                  maxLength: {
+                      message: 'Asegúrate de color un color hex válido',
+                      value: 6
+                  }
                 }}
+                render={({ field: { onChange, value } }) => (
+                    <TextField
+                        fullWidth
+                        label={ label }
+                        value={ value }
+                        onChange={ (e) => {
+                            onChange(e);
+                            setEditingPalette( (prev:any) => ({ ...prev, [name]: `#${e.target.value.replace('#','')}` }));
+                        } }
+                        defaultValue={ color && color.replace('#','') }
+                        InputProps={{
+                            startAdornment: '#',
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <StyledButton
+                                        onClick={ () => setCurrentPalette( editingPalette ) }
+                                        variant="contained"
+                                        color="secondary"
+                                        startIcon={ <Check/> }
+                                        size="small"
+                                    >
+                                        Aplicar
+                                    </StyledButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                )}
             />
+            { errors[ name ] && <Typography variant="caption" sx={{color:'red'}}>{ errors[name].message }</Typography> }
+            </Box>
+            
 
         </Stack>
     )
@@ -181,26 +234,31 @@ const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePale
                             p: 2
                         }}
                     >
-                        <Stack spacing={ 2 }>
-                            { colorInput( 'vibrant', 'Color de acento', editingPalette?.vibrant  ) }
-                            { colorInput( 'lightVibrant', 'Color secundario',editingPalette?.lightVibrant  ) }
-                            { colorInput( 'darkVibrant', 'Fondo oscuro', editingPalette?.darkVibrant  ) }
-                            { colorInput( 'muted', 'Fondo oscuro', editingPalette?.muted  ) }
-                            { colorInput( 'lightMuted', 'Fondo claro', editingPalette?.lightMuted  ) }
-                            { colorInput( 'darkMuted', '',editingPalette?.darkMuted  ) }
-                        </Stack>
-                        <Stack sx={{ mt:2 }} spacing={ 2 } direction="row">
+                            <form id="form-colors" onSubmit={ handleSubmit( onSubmit ) }>
+                                <Stack spacing={ 2 }>
+                                    { colorInput( 'vibrant', 'Color de acento', editingPalette?.vibrant  ) }
+                                    { colorInput( 'lightVibrant', 'Color secundario',editingPalette?.lightVibrant  ) }
+                                    { colorInput( 'darkVibrant', 'Fondo oscuro', editingPalette?.darkVibrant  ) }
+                                    { colorInput( 'muted', 'Fondo oscuro', editingPalette?.muted  ) }
+                                    { colorInput( 'lightMuted', 'Fondo claro', editingPalette?.lightMuted  ) }
+                                    { colorInput( 'darkMuted', '',editingPalette?.darkMuted  ) }
+                                </Stack>
+
+                            </form>
+     
+                        <Stack justifyContent="right" sx={{ mt:2 }} spacing={ 2 } direction="row">
                             <StyledButton
                                 variant="outlined"
                                 size="medium"
-                                onClick={ () => handleEditMode( key ) }
+                                onClick={ handlePaletteComponent }
                             >
                                 Cancelar
                             </StyledButton>
                             <StyledButton
                                 variant="contained"
                                 size="medium"
-                                onClick={ handleSubmit }
+                                type="submit"
+                                form="form-colors"
                                 startIcon={ <Check/> }
                             >
                                 Guardar
@@ -229,43 +287,43 @@ const PaletteComponent = ({arrayRef, item, key, edit, defaultPalette, handlePale
                                     {
                                         defaultPalette && (
                                             <Box sx={{padding: '1rem 0'}} display="flex" justifyContent="space-evenly">
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.vibrant
-                }}/>
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.muted
-                }}/>
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.lightMuted
-                }}/>
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.darkVibrant
-                }}/>
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.lightVibrant
-                }}/>
-                <Box sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: defaultPalette.darkMuted
-                }}/>
-            </Box>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.vibrant
+                                                }}/>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.muted
+                                                }}/>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.lightMuted
+                                                }}/>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.darkVibrant
+                                                }}/>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.lightVibrant
+                                                }}/>
+                                                <Box sx={{
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        backgroundColor: defaultPalette.darkMuted
+                                                }}/>
+                                            </Box>
                                         )
                                     }
                                     {

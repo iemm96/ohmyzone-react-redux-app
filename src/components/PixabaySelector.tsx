@@ -1,8 +1,10 @@
 import { useState, useEffect, createRef } from 'react';
 import axios from 'axios';
-import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Grid, IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import ThemeCard from './ThemeCard';
-import { Search } from '@mui/icons-material';
+import { ChevronLeft, Search, ChevronRight } from '@mui/icons-material';
+import StyledButton from '../styled/StyledButton';
+import CircularProgressComponent from './CircularProgressComponent';
 
 type SearchOptions = {
     query: String,
@@ -13,14 +15,17 @@ type SearchOptions = {
     perPage: number,
     page: number
 }
+const ___DEFAULT_QUERY_SEARCH__ = 'primavera';
+
 
 export const usePixabaySelector = () => {
     const [ pixabayResults, setPixabayResults ] = useState([]);
     const [ totalResults, setTotalResults ] = useState<number>(1);
     const [ arrayRef, setArrayRef ] = useState([]);
     const [ querySearch, setQuerySearch ] = useState<any>( null );
-    const [ searchOptions, setSearchOptions] = useState<SearchOptions>({
-        query: 'Planeta',
+    const [ loadingResults, setLoadingResults ] = useState<boolean>( false );
+    const [ searchOptions, setSearchOptions ] = useState<SearchOptions>({
+        query: ___DEFAULT_QUERY_SEARCH__,
         lang: 'es',
         imageType: undefined,
         colors: '',
@@ -47,7 +52,7 @@ export const usePixabaySelector = () => {
     }
 
     const retrievePixabayImages = async () => {
-
+        setLoadingResults( true );
         setPixabayResults([]);
 
         const fullPath = `${ pixabay_api }${searchOptions.lang && '&lang=' + searchOptions.lang}${searchOptions.query && '&q=' + searchOptions.query}${searchOptions.colors !== undefined && searchOptions.colors !== false && '&colors=' + searchOptions.colors}${searchOptions.category !== undefined && '&category=' + searchOptions.category}${searchOptions.imageType !== undefined && '&image_type=' + searchOptions.imageType}${searchOptions.perPage && '&per_page=' + searchOptions.perPage}${searchOptions.page && '&page=' + searchOptions.page}`
@@ -63,12 +68,15 @@ export const usePixabaySelector = () => {
             setTotalResults(Math.round(result.data.totalHits/searchOptions.perPage))
             setArrayRef(arr)
             setPixabayResults(result.data.hits);
-            
+            setLoadingResults( false );
         }
     }
 
     return {
+        searchOptions,
+        loadingResults,
         handleSearch,
+        setSearchOptions,
         handleSearchInputChange,
         pixabayResults,
         arrayRef
@@ -78,17 +86,25 @@ export const usePixabaySelector = () => {
 
 
 export const PixabaySelector = ({
+    searchOptions,
+    loadingResults,
     pixabayResults,
     arrayRef,
     handleSearchInputChange,
     handleSearch,
-    isPremium
+    setSearchOptions,
+    isPremium,
+    fullForm
 }:{
+    searchOptions:any,
+    loadingResults: boolean,
+    setSearchOptions: any,
     pixabayResults:any,
     arrayRef:any, 
     handleSearchInputChange?:any,
     handleSearch?:any,
     isPremium?: boolean,
+    fullForm?: boolean
 }) => {
 
     return(
@@ -98,6 +114,7 @@ export const PixabaySelector = ({
                     <TextField
                         fullWidth
                         label="Busca entre miles de temas..."
+                        defaultValue={ ___DEFAULT_QUERY_SEARCH__ }
                         onChange={ handleSearchInputChange }
                         placeholder="Naturaleza, paisajes, animales, negocios..."
                         InputProps={{
@@ -114,24 +131,60 @@ export const PixabaySelector = ({
                     />
                 </Grid>
             </Grid>
-            <Grid sx={{ mt: 2 }} spacing={ 2 } container>
-                {
-                    pixabayResults.map((value:any, index:number) => {
+            {
+                loadingResults ? <CircularProgressComponent/> : (
+                    <Grid sx={{ mt: 2 }} spacing={ 2 } container>
+                        {
+                            pixabayResults.map((value:any, index:number) => {
+                                
+                                return(
+                                    <Grid item xs={6} md={3}>
+                                        <ThemeCard
+                                            isPremium={ (( index > 3 ) && isPremium ) }
+                                            arrayRef={ arrayRef }
+                                            largeImageURL={ value.largeImageURL }
+                                            urlImage={ value.previewURL }
+                                            darkMode={ false }
+                                            index={ index }
+                                        />
+                                    </Grid>
+                            )})
+                        }
+                    </Grid>
+                )
+            }
+            
+            {
+                fullForm && (
+                    <Stack sx={{ my: 3 }} justifyContent="center" spacing={ 2 } direction="row">
+                        {
+                            ( searchOptions.page > 1 ) && (
+                                <StyledButton
+                                    onClick={ () => setSearchOptions({
+                                        ...searchOptions,
+                                        page: searchOptions.page - 1
+                                    }) }
+                                    color="secondary"
+                                    startIcon={ <ChevronLeft/> }
+                                >
+                                    Página anterior
+                                </StyledButton>
+                            )
+                        }
                         
-                        return(
-                            <Grid item xs={6} md={3}>
-                                <ThemeCard
-                                    isPremium={ (( index > 3 ) && isPremium ) }
-                                    arrayRef={ arrayRef }
-                                    largeImageURL={ value.largeImageURL }
-                                    urlImage={ value.webformatURL }
-                                    darkMode={ false }
-                                    index={ index }
-                                />
-                            </Grid>
-                    )})
-                }
-            </Grid>
+                        <StyledButton
+                            onClick={ () => setSearchOptions({
+                                ...searchOptions,
+                                page: searchOptions.page + 1
+                            }) }
+                            color="secondary"
+                            endIcon={ <ChevronRight/> }
+                        >
+                            Página siguiente
+                        </StyledButton>
+                    </Stack>
+                )
+            }
         </>
 
     )

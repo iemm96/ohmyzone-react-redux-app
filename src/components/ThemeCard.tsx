@@ -9,11 +9,12 @@ import Box from '@mui/material/Box';
 import { updateTheme } from '../actions/themes';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
 import { updateZone } from '../actions/zones';
+import PaletteColorsPreview from './common/PaletteColorsPreview';
 
 
 
 
-const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremium }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, isPremium?:boolean }) => {
+const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremium, defaultPalette }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, isPremium?:boolean, defaultPalette?:any }) => {
     const { zone } = useSelector( (state:any) => state );
     const dispatch = useDispatch();
 
@@ -107,7 +108,12 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremi
                     image={ urlImage }
                     alt="image-alt"
                 />
-                <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage } isPremium={ isPremium }/>    
+                {
+                    defaultPalette ?
+                    <PaletteColorsPreview data={ defaultPalette }/>
+                    :
+                    <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage } isPremium={ isPremium }/>    
+                }
             </CardActionArea>
         </Card>
     )
