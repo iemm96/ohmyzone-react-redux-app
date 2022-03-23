@@ -8,6 +8,7 @@ import axios from 'axios';
 import { postRecord } from '../actions/postRecord';
 import { ModalCropper } from './ModalCropper';
 import { resizeImage } from '../actions/resizeImage';
+import { deleteRecord } from '../actions/deleteRecord';
 
 type UploadFilePropsType = {
     accept?: string;
@@ -69,6 +70,8 @@ const fileToDataUri = (file:any) => new Promise((resolve) => {
 
 export const useUploader = ( useCropper = false,  initialState = null ) => {
     const [ dataUri, setDataUri ] = React.useState<null | string>(initialState);
+    const [ imageServerUid, setImageServerUid ] = React.useState<null | string>( null );
+    const [ imageHasChanged, setImageHasChanged ] = React.useState<boolean>( false );
     const [ temporalDataUri, setTemporalDataUri ] = React.useState<null | string>( initialState );
     const [ imageSrc, setImageSrc ] = React.useState<null | string>(initialState);
     const [ file, setFile ] = React.useState<any | string>(initialState);
@@ -165,11 +168,16 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
     }
 
     const handleDelete = async () => {
+
+        if( imageServerUid ) {
+            await deleteRecord( `images`, imageServerUid );
+        }
+        setImageHasChanged( true );
         setDataUri(null);
         setImageSrc(null);
     }
 
-    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper,setDataUri  }
+    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper,setDataUri, imageServerUid, setImageServerUid, imageHasChanged, setImageHasChanged  }
 };
 
 
