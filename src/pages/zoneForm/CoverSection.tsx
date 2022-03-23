@@ -25,8 +25,8 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const navigate = useNavigate();
     const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
 
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader( true );
-    const { handleSubmit, setValue, control, formState: { errors } } = useForm();
+    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri, setImageServerUid, imageHasChanged} = useUploader( true );
+    const { handleSubmit, setValue, control, formState: { errors }, setError } = useForm();
     
     const [ fullName, setFullName ] = useState<string | undefined>(undefined);
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -51,6 +51,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
             getZone();
         }else {
             setDataUri( zone.profileImage );
+            setImageServerUid( zone?.profileImageUid ); //This will prepare delete function in useUploader hook to delete image from cloudinary
             setCreatedUsername( zone.username );
             setIsFormReady( true );
         }
@@ -63,6 +64,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
             if(zone.profileImage.url) {
                 setDataUri(zone.profileImage.url);
+                setImageServerUid( zone?.profileImage._id );
             }
 
             setValue( 'title', zone.title );
@@ -85,6 +87,20 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
         setIsFormReady( true );
     }
 
+    const validateIfZoneExists = async ( username:string ) => {
+        let result:boolean = false;
+        //Validate that name doesn't exists
+        const { zone } = await fetchRecord( 'zones/byName', username );
+        if( zone ) {
+            setError('username',{
+                type: 'manual',
+                message: 'Ups! este nombre de usuario ya fue tomado, elige otro.'
+            })
+            result = true;
+        }
+
+        return result;
+    }
     const handleChangeName = (e:any) => {
         
         dispatch( updateZone({
@@ -99,25 +115,61 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
         setLoading( true );
         
         data.title = fullName;
+        data.user = auth.uid;
 
         let zoneUid:string = '';
 
         if( params.zone ) {
             
+            let image:any = null;
+
+            //If the user changes the username
+            if( zone.username !== data.username ) {
+                //Validate that name doesn't exists
+                if( await validateIfZoneExists( data.username ) ) {
+                    setLoading( false );
+                    return;
+                }
+            }
+
+            if( imageHasChanged ) {
+                image = await uploadToServer( zone.uid, `${ zone.username }/profile` ); //Uploads image to server with the id of the Zone recently created
+                data.profileImage = image.uid;
+            }
+
             const { zoneResult } = await updateRecord( 'zones', data, params.zone ); //Updates Zone
         
+            if( imageHasChanged ) {
+                zoneResult.profileImage = image.url;
+                zoneResult.profileImageUid = image.uid;
+
+            }else{
+                zoneResult.profileImage = zone.profileImage; //Keep old image url
+                zoneResult.profileImageUid = zone.profileImageUid; //keep old image uid
+            }
+
             zoneUid = zoneResult.uid;
 
+            dispatch( updateZone( {
+                ...zoneResult
+            } ) );
+
         }else {
-            data.user = auth.uid;
+
+            //Validate that name doesn't exists
+            if( await validateIfZoneExists( data.username ) ) {
+                setLoading( false );
+                return;
+            }
 
             const { zone } = await postRecord( 'zones', data ); //Creates Zone
 
-            const image = await uploadToServer( zone.uid, zone.username ); //Uploads image to server with the id of the Zone recently created
+            const image = await uploadToServer( zone.uid, `${ zone.username }/profile` ); //Uploads image to server with the id of the Zone recently created
 
             dispatch( updateZone( {
                 ...zone,
-                profileImage: image.url
+                profileImage: image.url,
+                profileImageUid: image.uid
             } ) );
 
             zoneUid = zone.uid;
