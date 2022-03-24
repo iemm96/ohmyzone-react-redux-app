@@ -31,6 +31,8 @@ const ThemesList = ({ref}:{ref:any}) => {
                             darkMode={ false }
                             index={ index }
                             defaultPalette={ theme.palette }
+                            item={ theme }
+                            getThemes={ getThemes }
                         />
                     </Grid>
                     

@@ -1,5 +1,5 @@
 import Card from '@mui/material/Card';
-import { CardActionArea } from '@mui/material';
+import { CardActionArea, useTheme } from '@mui/material';
 import CardMedia from '@mui/material/CardMedia';
 import {ColorPaletteImage} from "./ColorPaletteImage";
 import { useState } from 'react';
@@ -10,13 +10,24 @@ import { updateTheme } from '../actions/themes';
 import { CurrentPaletteType } from '../types/CurrentPaletteType';
 import { updateZone } from '../actions/zones';
 import PaletteColorsPreview from './common/PaletteColorsPreview';
+import IconButton from '@mui/material/IconButton';
+import { Delete } from '@mui/icons-material';
+import { ModalDelete, useModalDelete } from './ModalDelete';
 
-
-
-
-const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremium, defaultPalette }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, isPremium?:boolean, defaultPalette?:any }) => {
+const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremium, defaultPalette, item, getThemes }:{ largeImageURL:string, arrayRef:any, urlImage:string, darkMode:boolean, index:number, isPremium?:boolean, defaultPalette?:any, item?:any, getThemes?:any }) => {
     const { zone } = useSelector( (state:any) => state );
     const dispatch = useDispatch();
+    const theme = useTheme();
+
+    const {
+        openModal,
+        handleModal,
+        handleDelete,
+        modalTitle,
+        setModalTitle,
+        setUid,
+        setImageUid,
+    } = useModalDelete('themes');
 
     const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>({
         vibrant: '#4664F6',
@@ -80,42 +91,76 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremi
     }
 
     return(
-
-        <Card sx={{ maxWidth: 345, borderRadius: 4, backgroundColor: darkMode ? currentPalette.lightVibrant : currentPalette.darkVibrant }} key={index}>
-            <CardActionArea 
-                onClick={() => {
-                    updateThemeColor(index);
-                }}
-            >
+        <>
+            <ModalDelete
+                handleDelete={ handleDelete }
+                handleModal={ handleModal }
+                modalTitle={ modalTitle }
+                getRecords={ getThemes }
+                openModal={ openModal }
+            />
+            <Card sx={{ position: 'relative', maxWidth: 345, borderRadius: 4, backgroundColor: darkMode ? currentPalette.lightVibrant : currentPalette.darkVibrant }} key={index}>
                 {
-                    isPremium && (
-                        <Box sx={{
-                            position: 'absolute',
-                            zIndex: 10,
-                            top: 4,
-                            right: 4,
-                            backgroundColor: 'rgba(0,0,0,0.4)',
-                            borderRadius: 4,
-                            px: 1.5,
-                        }}>
-                           <img src={ Premium } style={{ width: 16 }} alt="img-icon" />
-                        </Box>
+                    item && (
+                        <IconButton
+                            sx={{
+                                backgroundColor: theme.palette.error.main,
+                                width: 48,
+                                height: 20,
+                                borderRadius: 2,
+                                position: 'absolute',
+                                top: 4,
+                                right: 4,
+                                zIndex: 2,
+                            }}
+                            onClick={ () => {
+                                setModalTitle( `¿Seguro que deseas eliminar este tema?` );
+                                setUid( item.uid );
+                                setImageUid( item?.backgroundImage?._id ); //Set uid cover image to delete
+                                handleModal();
+                            } }
+                        >
+                            <Delete sx={{ fontSize: 14 }}/>
+                        </IconButton>
                     )
                 }
-                <CardMedia
-                    component="img"
-                    height="140"
-                    image={ urlImage }
-                    alt="image-alt"
-                />
-                {
-                    defaultPalette ?
-                    <PaletteColorsPreview data={ defaultPalette }/>
-                    :
-                    <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage } isPremium={ isPremium }/>    
-                }
-            </CardActionArea>
-        </Card>
+                
+                <CardActionArea 
+                    onClick={() => {
+                        updateThemeColor(index);
+                    }}
+                >
+                    {
+                        isPremium && (
+                            <Box sx={{
+                                position: 'absolute',
+                                zIndex: 10,
+                                top: 4,
+                                right: 4,
+                                backgroundColor: 'rgba(0,0,0,0.4)',
+                                borderRadius: 4,
+                                px: 1.5,
+                            }}>
+                            <img src={ Premium } style={{ width: 16 }} alt="img-icon" />
+                            </Box>
+                        )
+                    }
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={ urlImage }
+                        alt="image-alt"
+                    />
+                    {
+                        defaultPalette ?
+                        <PaletteColorsPreview data={ defaultPalette }/>
+                        :
+                        <ColorPaletteImage setCurrentPalette={ setCurrentPalette } darkMode={darkMode} ref={arrayRef[index]} src={ urlImage } isPremium={ isPremium }/>    
+                    }
+                </CardActionArea>
+            </Card>
+        </>
+
     )
 }
 
