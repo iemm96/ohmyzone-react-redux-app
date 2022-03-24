@@ -107,6 +107,7 @@ export const PixabaySelector = ({
     fullForm?: boolean
 }) => {
 
+    console.log( fullForm )
     return(
         <>
             <Grid container>
@@ -156,7 +157,7 @@ export const PixabaySelector = ({
             
             {
                 fullForm && (
-                    <Stack sx={{ my: 3 }} justifyContent="center" spacing={ 2 } direction="row">
+                    <Stack sx={{ mt: 3, mb: 4 }} justifyContent="center" spacing={ 2 } direction="row">
                         {
                             ( searchOptions.page > 1 ) && (
                                 <StyledButton
@@ -165,6 +166,8 @@ export const PixabaySelector = ({
                                         page: searchOptions.page - 1
                                     }) }
                                     color="secondary"
+                                    variant="contained"
+                                    size="medium"
                                     startIcon={ <ChevronLeft/> }
                                 >
                                     Página anterior
@@ -177,6 +180,8 @@ export const PixabaySelector = ({
                                 ...searchOptions,
                                 page: searchOptions.page + 1
                             }) }
+                            variant="contained"
+                            size="medium"
                             color="secondary"
                             endIcon={ <ChevronRight/> }
                         >

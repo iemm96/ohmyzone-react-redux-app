@@ -18,28 +18,56 @@ import { fetchFile } from '../../actions/fetchFile';
 import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
 import ThemesList from '../../components/ThemesList';
+import { current } from '@reduxjs/toolkit';
+import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
 
 const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, fullForm?:boolean }) => {
     const params = useParams();
+    
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const state = useSelector( (state:any) => state );
     const theme = useTheme();
+
+
     const ref = useRef<any>(null);
+
+    const { buttonSaveProperties, setButtonSaveProperties } = useFormNavigationButtons();
 
     const { arrayRef, pixabayResults, handleSearch, handleSearchInputChange, searchOptions, setSearchOptions, loadingResults } = usePixabaySelector();
     const [ loading, setLoading ] = useState<boolean>(false);
-    
     const [ themeMode, setThemeMode ] = useState<string>( fullForm ? 'myThemes' : 'search' );
+
+    const [ currentThemeState, setCurrentThemeState ] = useState<any>( null );
 
     useEffect(() => {
         
+        setCurrentThemeState( state.theme );
+
         if( Object.keys(state.zone).length === 0 ) {
             getZone();
-        }else {
-
         }
+
+        if( fullForm ) {
+            setButtonSaveProperties((prev:any) => ({
+                ...prev,
+                text: 'Guardar cambios',
+                isVisible: false,
+            }));
+        }
+
     },[ ]);
+
+    useEffect(() => {
+        //Detects if the state theme changes and shows the button
+        if( state.theme !== currentThemeState ) {
+            setButtonSaveProperties((prev:any) => ({
+                ...prev,
+                isVisible: true,
+            }))
+        }
+    },[ state.theme ])
 
     const handleChangeMode = (
       event: React.MouseEvent<HTMLElement>,
@@ -95,7 +123,12 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
     const submitTheme = async () => {
         const theme = state.theme;
-        setLoading( false );
+        setButtonSaveProperties((prev:any) => ({
+            ...prev,
+            text: 'Guardando cambios',
+            isDisabled: true,
+            isLoading: true
+        }));
 
         //Saves palette
         const { palette } = await postRecord( 'palettes', {
@@ -139,10 +172,31 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                     ...state.zone,
                     zoneResult
                 }) );
-                setLoading( false );
+                
 
                 if( !fullForm ) {
+                    setLoading( false );
                     navigate( `/zones/edit/${ next }/${ state.zone.uid }` );
+                }else {
+                    
+                    setButtonSaveProperties((prev:any) => ({
+                        ...prev,
+                        text: 'Cambios guardados correctamente',
+                        isDisabled: true,
+                        isLoading: false,
+                        color: 'success'
+                    }));
+
+                    setTimeout(() => {
+                        setButtonSaveProperties((prev:any) => ({
+                            ...prev,
+                            text: 'Guardar cambios',
+                            isDisabled: false,
+                            isLoading: false,
+                            isVisible: false,
+                            color: 'primary',
+                        }));
+                    },4500);
                 }
             }
             
@@ -223,12 +277,17 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                                     setSearchOptions={ setSearchOptions }
                                     searchOptions={ searchOptions }
                                     loadingResults={ loadingResults }
-                                    fullForm
+                                    fullForm={ fullForm }
                                     isPremium
                                 />
-                                <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
-                                    ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
-                                </Typography>
+                                {
+                                    !fullForm && (
+                                        <Typography align="center" sx={{ mt: 2, color: theme.palette.text.secondary  }} variant="caption">
+                                            ¿No encuentras un tema de tu agrado? podrás personalizarlo más adelante...
+                                        </Typography>
+                                    )
+                                }
+                                
                             </Box>
                         ) 
                     }
@@ -241,12 +300,17 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                         mt: 4,
                         mb: fullForm ? 10 : 4,
                     }}>
-                        <FormNavigationButtons
-                            prev={ `/zones/edit/${prev}/${ state.zone.uid }` }
-                            next={ submitTheme }
-                            loading={ loading }
-                            fullForm={ fullForm }
-                        />
+                        {
+                            <FormNavigationButtons
+                                prev={ `/zones/edit/${prev}/${ state.zone.uid }` }
+                                next={ submitTheme }
+                                loading={ loading }
+                                fullForm={ fullForm }
+                                buttonSaveProperties={ buttonSaveProperties }
+                            />
+
+                        }
+                        
                     </Box>
                 </Container>
                 

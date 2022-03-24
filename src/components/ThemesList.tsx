@@ -23,7 +23,7 @@ const ThemesList = ({ref}:{ref:any}) => {
         <Grid spacing={ 2 } container>
             {
                 themes.map( (theme:any, index:number) => (
-                    <Grid xs={ 3 } item>
+                    <Grid xs={ 6 } md={ 3 } item>
                         <ThemeCard
                             largeImageURL={ theme?.backgroundImage?.url }
                             arrayRef={ [ ] }
