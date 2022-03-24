@@ -2,15 +2,35 @@ import { CircularProgress, Grid } from '@mui/material';
 import StyledButton from '../styled/StyledButton';
 import { useNavigate } from 'react-router-dom';
 import { Check, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { useState } from 'react';
 
-const FormNavigationButtons = ({ prev, loading, next, fullForm }:{ prev?:string, loading?: boolean, next?:any, fullForm?:boolean }) => {
+export const useFormNavigationButtons = ( defaultState?:{
+    color: 'primary',
+    text: undefined,
+    isDisabled: false,
+    isLoading: false,
+    isVisible: true,
+} ) => {
+    const [ buttonSaveProperties, setButtonSaveProperties ] = useState(defaultState);
+
+    const handleResetButtonSave = () => {
+        setButtonSaveProperties( defaultState );
+    }
+    return {
+        handleResetButtonSave,
+        buttonSaveProperties,
+        setButtonSaveProperties
+    }
+}
+
+const FormNavigationButtons = ({ prev, loading, next, fullForm, buttonSaveProperties }:{ prev?:string, loading?: boolean, next?:any, fullForm?:boolean, buttonSaveProperties?:any }) => {
     const navigate = useNavigate();
 
     return (
         <Grid sx={{ justifyContent: 'center' }} spacing={ 2 } container>
             <Grid 
                 xs={ 12 }
-                md={ 6 }
+                md={ fullForm ? 12 : 6 }
                 sx={{
                     order: {
                         xs: 1,
@@ -22,22 +42,26 @@ const FormNavigationButtons = ({ prev, loading, next, fullForm }:{ prev?:string,
                 {
                     fullForm ? (
                         <StyledButton
+                            sx={{
+                                display: buttonSaveProperties?.isVisible ? 'flex' : 'none'
+                            }}
                             variant="contained"
+                            color={ buttonSaveProperties?.color }
                             fullWidth
                             type={ next ? 'button' : 'submit' }
-                            disabled={ loading }
-                            startIcon={ loading ? <CircularProgress size={ 12 } color="inherit"/> : <Check/> }
+                            disabled={ buttonSaveProperties?.isDisabled }
+                            startIcon={ buttonSaveProperties?.isLoading ? <CircularProgress size={ 12 } color="inherit"/> : <Check/> }
                             onClick={ next ? next : undefined }
                         >
-                            Guardar cambios
+                            { buttonSaveProperties ? buttonSaveProperties?.text : 'Guardar cambios' }
                         </StyledButton>
                     ) : (
                         <StyledButton
                             variant="contained"
                             fullWidth
                             type={ next ? 'button' : 'submit' }
-                            disabled={ loading }
-                            startIcon={ loading && <CircularProgress size={ 12 } color="inherit"/> }
+                            disabled={ buttonSaveProperties ? buttonSaveProperties?.isLoading : loading }
+                            startIcon={ buttonSaveProperties?.isLoading && <CircularProgress size={ 12 } color="inherit"/> }
                             onClick={ next ? next : undefined }
                             endIcon={ <ChevronRight/> }
                         >
