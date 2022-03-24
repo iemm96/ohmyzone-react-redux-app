@@ -14,7 +14,7 @@ type DefaultThemeType = {
 }
 
 const Theme = (props:any) => {
-    const { vibrant, lightMuted, darkMuted, muted, darkVibrant } = useSelector( (state:any) => state.theme );
+    const { vibrant, lightVibrant, lightMuted, darkMuted, muted, darkVibrant, mode: modeState } = useSelector( (state:any) => state.theme );
 
     const { children } = props;
     const [ mode, setMode ] = useState<PaletteMode>( 'dark' );
@@ -30,8 +30,20 @@ const Theme = (props:any) => {
     };
 
     useEffect(() => {
+        setMode( modeState ? modeState : 'dark' );
+        setTheme(createTheme(getDesignTokens(modeState)));
+
+        if( modeState === 'light') {
+            document.body.style.backgroundColor = lightVibrant ? lightVibrant : defaultTheme.paperLight;
+        }else {
+            document.body.style.backgroundColor = darkVibrant ? darkVibrant : defaultTheme.paperDark;
+        }
+
+    },[ modeState, lightVibrant, darkVibrant ]);
+    
+    useEffect(() => {
         setTheme(createTheme(getDesignTokens(mode)));
-    },[ vibrant ]);
+    },[ lightMuted, darkMuted, muted, darkVibrant, lightVibrant, vibrant ]);
 
 
     useEffect(() => {
@@ -53,21 +65,20 @@ const Theme = (props:any) => {
                         main: vibrant ? vibrant : defaultTheme.primaryMainLight
                     },
                     secondary: {
-                        main: lightMuted ? lightMuted : defaultTheme.secondaryMain,
+                        main: muted ? muted : defaultTheme.secondaryMain,
                     },
                     background: {
-                        default: darkMuted ? darkMuted : defaultTheme.backgroundLight,
-                        paper: defaultTheme.paperLight,
+                        default: lightMuted ? lightMuted : defaultTheme.backgroundLight,
+                        paper: lightVibrant ? lightVibrant : defaultTheme.paperLight,
                     },
                 }
               : {
-                    // palette values for light mode
+                    // palette values for dark mode
                     primary: {
                         main: vibrant ? vibrant : defaultTheme.primaryMainDark
                     },
                     secondary: {
-                        main: lightMuted ? lightMuted : defaultTheme.secondaryMain,
-                        dark: muted ? muted : defaultTheme.secondaryMain,
+                        main: muted ? muted : defaultTheme.secondaryMain,
                     },
                     background: {
                         default: darkMuted ? darkMuted : defaultTheme.backgroundDark,
