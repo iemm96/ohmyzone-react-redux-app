@@ -41,7 +41,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ linksItems, setLinksItems ] = useState<LinksItemType>(link);
     const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
-    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setImageServerUid } = useUploader( true );
+    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
     const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
     const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
     const { handleModalCategory, openModalCategory, handleNewCategory, newCategory } = useModalCategory( defaultCategories );
@@ -65,6 +65,13 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
         setCategorySelected({
           title: newCategory,
         });
+
+        //Add new category if categories array lenght is equal to 0
+        if( categories.length === 0 ) {
+          categories.push({
+            title: newCategory
+          })
+        }
       }
       
     },[ newCategory ]);
