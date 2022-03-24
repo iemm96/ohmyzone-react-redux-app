@@ -1,8 +1,6 @@
 import { useTheme } from '@mui/material/styles';
 import { useState, useEffect, createRef } from 'react';
-import { CurrentPaletteType } from '../types/CurrentPaletteType';
 import { Stack, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
 import PaletteComponent, { usePaletteComponent } from "./PaletteComponent";
 import StyledButton from '../styled/StyledButton';
 import { Add } from '@mui/icons-material';
@@ -10,12 +8,13 @@ import { fetchRecords } from '../actions/fetchRecords';
 
 type ColorSelectorProps = {
     imagesToColorsArray: any;
+    zone: string;
 }
-const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
+const ColorSelector = ({  imagesToColorsArray, zone }:ColorSelectorProps) => {
     const theme = useTheme();
     const [ arrayRef, setArrayRef ] = useState([]);
     const [ newPalette, setNewPalette ] = useState<boolean>( false );
-    const { handlePaletteComponent, showPaletteComponent } = usePaletteComponent();
+    const { showPaletteComponent, handlePaletteComponent, mode, setMode } = usePaletteComponent();
     const [ userPalettes, setUserPalettes ] = useState<any>( [] );
     
     useEffect(() => {
@@ -32,7 +31,7 @@ const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
     },[ ]);
 
     const getPalettes = async () => {
-        const { palettes } = await fetchRecords('palettes');
+        const { palettes } = await fetchRecords( `palettes/byZone/${ zone }` );
         setUserPalettes( palettes )
 
     }
@@ -52,13 +51,17 @@ const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
                 Paletas de colores sugeridas
             </Typography>
             {
-                imagesToColorsArray && imagesToColorsArray.map( (item:any, index:number) => (
+                imagesToColorsArray && imagesToColorsArray.map( (image:any, index:number) => (
                     
                     <PaletteComponent
-                        handlePaletteComponent={handlePaletteComponent}
+                        mode={ mode }
+                        setMode={ setMode }
                         arrayRef={ arrayRef }
-                        item={ item }
+                        imageToProcess={ image }
+                        getPalettes={ getPalettes }
                         key={ index }
+                        enableDelete={ false }
+                        handlePaletteComponent={ handlePaletteComponent }
                     />
                 ) )
             }
@@ -71,31 +74,48 @@ const ColorSelector = ({  imagesToColorsArray }:ColorSelectorProps) => {
             {
                 ( userPalettes.length > 0 ) && userPalettes.map((item:any, index:number) => (
                     <PaletteComponent
+                        mode={ mode }
+                        setMode={ setMode }
                         defaultPalette={ item }
                         arrayRef={ arrayRef }
-                        handlePaletteComponent={ handlePaletteComponent }
                         key={ index }
+                        getPalettes={ getPalettes }
+                        enableDelete
+                        handlePaletteComponent={ handlePaletteComponent }
                     />
                 )) 
             }
             {
-                showPaletteComponent && (
+                newPalette && (
                     <PaletteComponent
-                        handlePaletteComponent={ handlePaletteComponent }
-                        edit
+                        mode={ mode }
+                        setMode={ setMode }
                         key={0}
+                        edit
+                        getPalettes={ getPalettes }
+                        enableDelete
+                        handlePaletteComponent={ handlePaletteComponent }
+                        setNewPalette={ setNewPalette }
                     />
+                ) 
+            }
+            {
+                !showPaletteComponent && (
+                    <StyledButton
+                        variant="contained"
+                        color="secondary"
+                        size="medium"
+                        startIcon={ <Add/> }
+                        onClick={ () => { 
+                            handlePaletteComponent()
+                            setNewPalette( true ) 
+                        } }
+                    >
+                        Crear paleta de colores
+                    </StyledButton>
                 )
             }
-            <StyledButton
-                variant="contained"
-                color="secondary"
-                size="medium"
-                startIcon={ <Add/> }
-                onClick={ handlePaletteComponent }
-            >
-                Crear paleta de colores
-            </StyledButton>
+
         </Stack>
     )
 }

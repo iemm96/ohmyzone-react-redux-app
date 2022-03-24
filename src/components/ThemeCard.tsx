@@ -29,7 +29,7 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremi
         setImageUid,
     } = useModalDelete('themes');
 
-    const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>({
+    const [currentPalette, setCurrentPalette] = useState<CurrentPaletteType>( defaultPalette ? defaultPalette : {
         vibrant: '#4664F6',
         lightVibrant: '#F8FAFF',
         darkVibrant: '#010413',
@@ -86,7 +86,8 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremi
 
         dispatch( updateTheme({
             ...currentPalette,
-            backgroundImageUrl: largeImageURL
+            backgroundImageUrl: largeImageURL,
+            mode: 'dark'
         }));
     }
 
