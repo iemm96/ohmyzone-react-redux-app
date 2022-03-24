@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { startLogin } from '../actions/auth';
+import { startLogin, login } from '../actions/auth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Divider, ThemeProvider } from '@mui/material';
@@ -18,6 +18,9 @@ import { ChevronLeft } from '@mui/icons-material';
 import { postRecord } from '../actions/postRecord';
 import { defaultTheme } from '../themes/index';
 import { useGoogleLogin } from 'react-google-login';
+import axios from 'axios';
+
+const { REACT_APP_GOOGLE_CLIENT, REACT_APP_API_HOST } = process.env;
 
 const RegisterForm = () => {
     const { uid } = useSelector( (state:any) => state.auth )
@@ -25,14 +28,33 @@ const RegisterForm = () => {
     const dispatch = useDispatch();
     const [ loading, setLoading ] = useState<boolean>( false );
     
-    const onSuccessGoogleAuth = (response:any) => {
-        console.log(response);
+    const onSuccessGoogleAuth = async (response:any) => {
+        try{
+            const { data } = await axios.post(
+                `${ REACT_APP_API_HOST }auth/google`,
+                response.tokenObj
+            );
+    
+            localStorage.setItem('token', data.token);
+
+            console.log(  data );
+
+            dispatch( login(
+                data.user.name,
+                data.user.uid,
+                data.token,
+                'free',
+                data.picture,
+            ));
+        }catch(e:any){
+            return e?.response?.data
+        }
     }
 
     const { signIn, loaded } = useGoogleLogin({
         onSuccess: onSuccessGoogleAuth,
         onFailure: (success:any) => console.log(success),
-        clientId: '51283412566-703e59685t625eglv3je33km1mjp3adv.apps.googleusercontent.com',
+        clientId: REACT_APP_GOOGLE_CLIENT ? REACT_APP_GOOGLE_CLIENT : '',
     });
     
     const { handleSubmit, control, formState: {errors}, setError } = useForm();

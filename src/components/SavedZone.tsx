@@ -73,7 +73,14 @@ const SavedZone = ({ getZones, data, isLocked }:{  getZones?:any, data:any, isLo
                     borderRadius: 3,
                     cursor: 'pointer'
                 }} 
-                onClick={ isLocked ? () => dispatch( showModalPremium("¡Continúa editando tus Zones siendo Zoner Pro!") ) : () => navigate( `/zones/${ data.uid }`) }>
+                onClick={ isLocked ? 
+                    () => dispatch( showModalPremium("¡Continúa editando tus Zones siendo Zoner Pro!") )
+                    : 
+                    data.currentStatus === 'isEditing' ?  
+                        () => navigate( `/zones/edit/1/${ data.uid }`)
+                        : 
+                        () => navigate( `/zones/${ data.uid }`) 
+                }>
                 {
                     isLocked && (
                         <Box

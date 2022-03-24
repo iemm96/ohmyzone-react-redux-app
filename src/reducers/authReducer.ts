@@ -8,6 +8,7 @@ export const authReducer = ( state = { } , action:any ) => {
                 uid: action?.payload.uid,
                 token: action?.payload.token,
                 plan: action?.payload.plan,
+                img: action?.payload.img
             }
         case actionTypes.logout:
             return { }

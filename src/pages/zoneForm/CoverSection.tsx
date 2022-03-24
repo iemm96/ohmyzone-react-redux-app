@@ -15,6 +15,7 @@ import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { updateTheme } from '../../actions/themes';
 import { red } from '@mui/material/colors';
 import { postRecord } from '../../actions/postRecord';
+import { showPreviewButton } from '../../actions/ui';
 
 const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const params = useParams();
@@ -47,6 +48,9 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
     useEffect(() => {
         
+        dispatch( 
+            showPreviewButton( true )
+        );
         if( Object.keys(zone).length === 0 ) {
             getZone();
         }else {

@@ -11,6 +11,10 @@ export const uiReducer = ( state = { } , action:any ) => {
             return {
                 showPublishZoneBar: action?.payload.showPublishZoneBar
             }
+        case actionTypes.showPreviewButton:
+            return {
+                showPreviewButton: action?.payload.showPreviewButton
+            }
         case actionTypes.clearSelectedZone: 
             return { }
         default:

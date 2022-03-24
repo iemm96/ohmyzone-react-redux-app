@@ -21,7 +21,7 @@ export const startValidateJWT = ( jwt:string ) => {
             );
 
             if(data.user) {
-                return dispatch( login(data.user.name, data.user.uid, jwt, data.user.plan ));
+                return dispatch( login(data.user.name, data.user.uid, jwt, data.user.plan, data.user?.img ));
             }else{
                 dispatch( logout );
                 return false;
@@ -54,6 +54,7 @@ export const startLogin = ( email:string, password:string ) => {
                 data.user.uid,
                 data.token,
                 data.user.plan,
+                data.img
             ));
         }catch(e:any){
             return e.response.data
@@ -80,13 +81,14 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, uid:string, token:string, plan:string ) => ({
+export const login = ( name:string, uid:string, token:string, plan:string, img?:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
         uid,
         token,
-        plan
+        plan,
+        img
     }
 });
 

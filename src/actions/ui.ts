@@ -16,4 +16,11 @@ export const showPublishZoneBar = (show:boolean) => ({
 
 export const clearSelectedTheme = () => ({
     type: actionTypes.clearSelectedTheme
-})
+});
+
+export const showPreviewButton = (show:boolean) => ({
+    type: actionTypes.showPreviewButton,
+    payload: {
+        showPreviewButton: show
+    }
+});

@@ -20,6 +20,7 @@ import CustomThemeCreator from '../../components/CustomThemeCreator';
 import ThemesList from '../../components/ThemesList';
 import { current } from '@reduxjs/toolkit';
 import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
+import { showPreviewButton } from '../../actions/ui';
 
 const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, fullForm?:boolean }) => {
     const params = useParams();
@@ -43,6 +44,10 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
     useEffect(() => {
         
+        dispatch( 
+            showPreviewButton( true )
+        );
+
         setCurrentThemeState( state.theme );
 
         if( Object.keys(state.zone).length === 0 ) {

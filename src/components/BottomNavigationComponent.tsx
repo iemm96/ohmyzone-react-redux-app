@@ -31,7 +31,7 @@ export const BottomNavigationComponent = ( { currentNav, setCurrentNav }:BottomN
             >
                 <BottomNavigationAction label="Inicio" icon={<Home/>} />
                 <BottomNavigationAction label="Portada" icon={<AccountBox />} />
-                <BottomNavigationAction label="Iconos" icon={<Interests/>} />
+                <BottomNavigationAction label="Botones" icon={<Interests/>} />
                 <BottomNavigationAction label="Enlaces" icon={<Link/>} />
                 <BottomNavigationAction label="Temas" icon={<ColorLens/>} />
            

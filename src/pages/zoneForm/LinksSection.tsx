@@ -14,6 +14,7 @@ import { ObjectCategoryType } from '../../types/ObjectCategoryType';
 import { fetchRecord } from '../../actions/fetchRecord';
 import CircularProgressComponent from '../../components/CircularProgressComponent';
 import { useTheme } from '@mui/material/styles';
+import { showPreviewButton } from '../../actions/ui';
 
 type LinksItemType = {
   title: string;
@@ -54,6 +55,9 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
   },[ categories ]);
   
   useEffect(() => {
+    dispatch( 
+      showPreviewButton( true )
+    );
     getLinks();
   },[  ]);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer, useMediaQuery, Typography } from '@mui/material'; 
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Drawer, useMediaQuery, Typography, Avatar } from '@mui/material'; 
 import { motion } from "framer-motion";
 import Logo from "./../assets/logo.svg";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -20,7 +20,7 @@ import { updateRecord } from '../actions/updateRecord';
 const Header = () => {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { zone, ui } = useSelector( (state:any) => state )
+    const { zone, ui, auth } = useSelector( (state:any) => state )
     const [ anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [ openDrawer, setOpenDrawer ] = useState<boolean>( false );
     const mediaQuery = useMediaQuery(theme.breakpoints.down('md'));
@@ -111,7 +111,18 @@ const Header = () => {
                                 p:0
                             }}
                         >
-                            <AccountCircle />
+                            {
+                                auth.img ? 
+                                <Avatar
+                                    sx={{
+                                        height: 30,
+                                        width: 30
+                                    }}
+                                    src={ auth.img }
+                                /> : (
+                                    <AccountCircle />
+                                )
+                            }
                         </IconButton>
                         <Menu
                             id="menu-appbar"

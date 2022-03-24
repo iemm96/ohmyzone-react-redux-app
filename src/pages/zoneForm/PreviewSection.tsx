@@ -10,7 +10,7 @@ import { updateRecord } from '../../actions/updateRecord';
 import ModalZonePublished, { useModalPublished } from '../../components/ModalZonePublished';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { showPublishZoneBar } from '../../actions/ui';
+import { showPublishZoneBar, showPreviewButton } from '../../actions/ui';
 import { fetchRecord } from '../../actions/fetchRecord';
 import { updateZone } from '../../actions/zones';
 import { updateTheme } from '../../actions/themes';
@@ -25,7 +25,9 @@ const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-
+        dispatch( 
+            showPreviewButton( false )
+        );
         if( Object.keys(zone).length === 0 ) {
             getZone();
         }else {

@@ -58,7 +58,7 @@ const Dashboard = () => {
                             plan === 'expired' ? 
                             () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear Zones ilimitados!" ) )
                             :
-                            () => navigate('/zones/new/1') 
+                            () => navigate('/zones/new/1')
                         }
                         >
                             Crear nuevo Zone

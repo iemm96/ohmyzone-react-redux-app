@@ -16,6 +16,7 @@ import Box from '@mui/material/Box';
 import FormNavigationButtons from '../../components/FormNavigationButtons';
 import { updateZone } from '../../actions/zones';
 import { fetchRecord } from '../../actions/fetchRecord';
+import { showPreviewButton } from '../../actions/ui';
 
 const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number, fullForm?:boolean } ) => {
     const { zone } = useSelector( (state:any) => state );
@@ -40,6 +41,10 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
     });
 
     useEffect(() => {
+        dispatch( 
+            showPreviewButton( true )
+        );
+
         if( Object.keys(zone).length === 0 ) {
             getZone();
         }else{
