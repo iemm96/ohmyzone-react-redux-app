@@ -25,6 +25,7 @@ export const useModalCategory = ( currentCategoriesList:any ) => {
     const [ openModalCategory, setOpenModalCategory ] = React.useState(false);
     const handleModalCategory = () => setOpenModalCategory(!openModalCategory);
     const [ newCategory, setNewCategory ] =  React.useState<string | null>( null );
+    
     const handleNewCategory = ( value:string ) => {
 
         const result = currentCategoriesList.find( (element:any) => element.title === value );

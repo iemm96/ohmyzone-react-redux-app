@@ -1,4 +1,4 @@
-import { Box, TextField, Typography, InputAdornment } from '@mui/material';
+import { Box, TextField, Typography, InputAdornment, useTheme } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { Controller, Control } from 'react-hook-form';
 import { red } from '@mui/material/colors';
@@ -21,7 +21,8 @@ export const useUsernameCreator = () => {
 }
 
 export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername, control, errors, setValue }:UserNameCreatorType) => {
-    
+    const theme = useTheme();
+
     useEffect(() => {
         if(createdUsername) {
             setValue( 'username', createdUsername );
@@ -70,7 +71,7 @@ export const UsernameCreator = ({ fullName, createdUsername, setCreatedUsername,
                 )}
             />
             { errors.username ? <Typography variant="caption" sx={{ color: red[200] }}>{errors.username.message}</Typography> 
-            : <Typography variant="caption" sx={{ opacity: 0.5 }}>Podrás cambiarlo en cualquier momento.</Typography> }
+            : <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Podrás cambiarlo en cualquier momento.</Typography> }
             
         </Box>
         

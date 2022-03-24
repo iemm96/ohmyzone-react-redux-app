@@ -88,7 +88,7 @@ export const ModalDelete = ({handleDelete, handleModal, openModal, modalTitle, g
                     variant="subtitle2"
                     id="modal-modal-description" 
                 >
-                    ¡No podrás recuperarlo!
+                    ¡Esta acción no se puede deshacer!
                 </Typography>
                 <Stack sx={{ justifyContent: 'space-between' }} direction="row">
                     <StyledButton

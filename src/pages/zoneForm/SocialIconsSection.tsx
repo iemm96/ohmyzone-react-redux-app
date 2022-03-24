@@ -19,6 +19,8 @@ import { fetchRecord } from '../../actions/fetchRecord';
 
 const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number, fullForm?:boolean } ) => {
     const { zone } = useSelector( (state:any) => state );
+    const theme = useTheme();
+
     const params = useParams();
     const [ loading, setLoading ] = useState<boolean>(false);
 
@@ -27,7 +29,6 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
 
     const { control, handleSubmit, formState: { errors }, clearErrors, setValue } = useForm();
     const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
-    const theme = useTheme();
 
     const [ contactOptions, setContactOptions ] = useState<ContactOptionsType>({
         facebook: false,
@@ -102,7 +103,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                 transition: { ...transition }
             }}
         >
-            <Typography sx={{ mt: 2, mb: 1 }} variant="subtitle1">Botones de contacto</Typography>
+            <Typography sx={{ mt: 2, mb: 1, color: theme.palette.text.secondary }} variant="subtitle1">Botones de contacto</Typography>
         </motion.div>
         {
             isFormReady ? 
@@ -424,7 +425,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             { errors.tiktok && <Typography variant="caption" sx={{color:'red'}}>{errors.tiktok.message }</Typography>}
                         </Grid>
                     </Grid>
-                    <Box sx={{ mt:8 }}>
+                    <Box sx={{ mt: 8, mb: fullForm ? 10 : 4 }}>
                         <FormNavigationButtons
                             fullForm={fullForm}
                             loading={ loading }

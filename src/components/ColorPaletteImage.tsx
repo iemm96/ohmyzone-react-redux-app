@@ -2,8 +2,6 @@ import React, { useImperativeHandle } from 'react'
 import { Box } from '@mui/system';
 import { usePalette } from 'react-palette';
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { updateTheme } from '../actions/themes';
 
 export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
     const { data, loading } = usePalette(props.src);
@@ -31,20 +29,6 @@ export const ColorPaletteImage = React.forwardRef((props:any,ref:any) => {
                 lightMuted: data.lightMuted,
                 darkMuted: data.darkMuted
             });
-            
-            /*
-            if( 
-                data
-
-            ) {
-                dispatch( updateTheme({
-                    ...data,
-                    backgroundImageUrl: props.src
-                }
-                    ) );
-            }*/
-
-    
         }})
     );
     

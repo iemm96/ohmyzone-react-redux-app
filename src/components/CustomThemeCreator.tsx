@@ -29,20 +29,6 @@ const CustomThemeCreator = forwardRef((props:any,ref:any) => {
     useImperativeHandle(ref,() => ({
         uploadImageToServer: () => {
             return uploadToServer( zone.uid, `${ zone.username }/themes` )
-            
-            /*
-            if( 
-                data
-
-            ) {
-                dispatch( updateTheme({
-                    ...data,
-                    backgroundImageUrl: props.src
-                }
-                    ) );
-            }*/
-
-    
         }})
     );
 
@@ -85,7 +71,7 @@ const CustomThemeCreator = forwardRef((props:any,ref:any) => {
                     mt: 2
                 }}
             >
-                <ColorSelector imagesToColorsArray={ imagesToColorsArray }/>
+                <ColorSelector imagesToColorsArray={ imagesToColorsArray } zone={ zone.uid } />
             </Box>
         </Box>
     )
