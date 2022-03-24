@@ -10,7 +10,8 @@ export const themeReducer = ( state = { } , action:any ) => {
                 muted: action?.payload?.data.muted,
                 lightMuted: action?.payload?.data.lightMuted,
                 darkMuted: action?.payload?.data.darkMuted,
-                backgroundImageUrl: action?.payload?.data.backgroundImageUrl
+                backgroundImageUrl: action?.payload?.data.backgroundImageUrl,
+                mode:  action?.payload?.data.mode
             }
         case actionTypes.clearSelectedTheme:
             return { }
