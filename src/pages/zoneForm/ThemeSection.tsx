@@ -18,7 +18,6 @@ import { fetchFile } from '../../actions/fetchFile';
 import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
 import ThemesList from '../../components/ThemesList';
-import { current } from '@reduxjs/toolkit';
 import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
 import { showPreviewButton } from '../../actions/ui';
 

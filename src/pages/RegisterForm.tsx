@@ -37,13 +37,11 @@ const RegisterForm = () => {
     
             localStorage.setItem('token', data.token);
 
-            console.log(  data );
-
             dispatch( login(
                 data.user.name,
                 data.user.uid,
                 data.token,
-                'free',
+                data.user?.subscription,
                 data.picture,
             ));
         }catch(e:any){

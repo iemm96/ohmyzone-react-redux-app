@@ -9,7 +9,7 @@ import { updateTheme } from '../actions/themes';
 const CustomThemeCreator = forwardRef((props:any,ref:any) => {
     const { theme, zone } = useSelector( ( state:any ) => state );
     const dispatch = useDispatch();
-    const { dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri, setDataUri } = useUploader();
+    const { dataUri, onChange, handleDelete, uploadToServer } = useUploader();
     
     const [ imagesToColorsArray, setImagesToColorsArray ] = useState<any>([]);
 

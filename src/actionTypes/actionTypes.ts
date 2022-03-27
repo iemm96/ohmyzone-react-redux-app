@@ -13,5 +13,8 @@ export const actionTypes = {
     showModalPremium: '[UI] Show Modal Premium',
     showPublishZoneBar: '[UI] Show Publish Zone Bar',
 
-    showPreviewButton: '[UI] Show preview button'
+    showPreviewButton: '[UI] Show preview button',
+
+    updateSubscription: '[Subscription] Update',
+    clearSubscription: '[Subscription] Clear'
 }

@@ -12,7 +12,7 @@ import { clearSelectedTheme } from '../actions/themes';
 import { showModalPremium } from '../actions/ui';
 
 const Dashboard = () => {
-    const { uid, plan } = useSelector( (state:any) => state.auth );
+    const { auth, subscription } = useSelector( (state:any) => state );
     const [ userZones, setUserZones ] = useState<any>([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -21,12 +21,12 @@ const Dashboard = () => {
         dispatch( clearSelectedTheme() )
         dispatch( clearSelectedZone() );
         getRecords().then();
-    }, [ uid ]);
+    }, [ auth.uid ]);
 
     const getRecords = async () => {
 
-        if( uid ) {
-            const { zones } = await fetchRecords( `zones/byUser/${ uid }` );
+        if( auth.uid ) {
+            const { zones } = await fetchRecords( `zones/byUser/${ auth.uid }` );
 
             if( zones ) {
 
@@ -53,10 +53,10 @@ const Dashboard = () => {
                             variant="contained"
                             color="secondary"
                             endIcon={ <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                            onClick={  plan === 'free' ? () => dispatch( showModalPremium("¡Es momento de ser un Zoner pro, para crear Zones ilimitados!") ) : 
+                            onClick={  subscription?.current === 'free' ? () => dispatch( showModalPremium("¡Es momento de ser un Zoner pro, para crear un nuevo Zone!") ) : 
 
-                            plan === 'expired' ? 
-                            () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear Zones ilimitados!" ) )
+                            subscription?.current === 'expired' ? 
+                            () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" ) )
                             :
                             () => navigate('/zones/new/1')
                         }
@@ -71,11 +71,10 @@ const Dashboard = () => {
                             <SavedZone
                                 data={ item }
                                 getZones={ getRecords }
-                                isLocked={ plan === 'expired' }
+                                isLocked={ subscription?.current === 'expired' }
                             />
                         </Grid>
                     )) }
-                    
                 </Grid>
             </Container>
         </Paper>

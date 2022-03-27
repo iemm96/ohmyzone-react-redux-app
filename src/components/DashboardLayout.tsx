@@ -8,10 +8,16 @@ import { Box } from "@mui/system";
 import { ModalPremium, useModalPremium } from './ModalPremium';
 
 const DashboardLayout = () => {
-    const { auth } = useSelector( (state:any) => state );
+    const { ui } = useSelector( (state:any) => state );
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { handleModal, openModal, modalTitle } = useModalPremium();
+    const { handleModal, openModal, modalTitle, handleStartFreeTrial, subscription, auth  } = useModalPremium();
+
+    useEffect(() => {
+        if( ui?.showModalPremium ) {
+            handleModal();
+        }
+    },[ ui?.showModalPremium ])
 
     useEffect( ( ) => {
         validateJWT().then();
@@ -21,10 +27,17 @@ const DashboardLayout = () => {
         
         let token:string | null = localStorage.getItem('token');
 
-        if(token) {
+        if( token ) {
             const result = await dispatch( startValidateJWT(token) );
+
+            console.log( result );
+            /*
+            dispatch( updateSubscription({
+                current: 
+            }));*/
+
             if(!result) {
-                navigate('/');    
+                //navigate('/');    
             }
         }else{
             navigate('/');
@@ -34,12 +47,14 @@ const DashboardLayout = () => {
     return(
         <>
             <Header/>
-            <ModalPremium
-                modalTitle={ modalTitle }
-                handleModal={ handleModal }
-                openModal={ openModal }
-                isExpired={ auth.plan === ( 'expired' || 'free' ) }
-            />
+                <ModalPremium
+                    subscription={ subscription }
+                    modalTitle={ modalTitle }
+                    handleModal={ handleModal }
+                    openModal={ openModal }
+                    handleStartFreeTrial={ handleStartFreeTrial }
+                    auth={ auth }
+                />
             <Box sx={{ mt: 12 }}>
                 <Outlet />                
             </Box>

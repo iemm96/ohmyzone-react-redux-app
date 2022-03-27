@@ -5,7 +5,6 @@ import ZoneForm from '../pages/zoneForm/ZoneForm';
 import RegisterForm from '../pages/RegisterForm';
 import Login from "../pages/Login";
 import DashboardLayout from "../components/DashboardLayout";
-import ZoneComponent from '../components/ZoneComponent';
 import ZoneDashboard from "../pages/ZoneDashboard";
 
 const AppRoutes = () => {

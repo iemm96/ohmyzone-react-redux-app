@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { actionTypes } from '../actionTypes/actionTypes';
+import { updateSubscription } from './subscriptions';
 export const startGoogleLogin = () => {
     return (dispatch:any) => {
         
@@ -21,9 +22,11 @@ export const startValidateJWT = ( jwt:string ) => {
             );
 
             if(data.user) {
-                return dispatch( login(data.user.name, data.user.uid, jwt, data.user.plan, data.user?.img ));
+                dispatch( login(data.user.name, data.user.uid, jwt, data.user?.subscription, data.user?.img ));
+                dispatch( updateSubscription( data.user?.subscription ) );
+                return data.user;
             }else{
-                dispatch( logout );
+                //dispatch( logout );
                 return false;
             }
         }catch(e){
@@ -49,11 +52,12 @@ export const startLogin = ( email:string, password:string ) => {
             );
     
             localStorage.setItem('token', data.token);
+            
             dispatch( login(
                 data.user.name,
                 data.user.uid,
                 data.token,
-                data.user.plan,
+                data.user?.subscription,
                 data.img
             ));
         }catch(e:any){
@@ -81,13 +85,13 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, uid:string, token:string, plan:string, img?:string ) => ({
+export const login = ( name:string, uid:string, token:string, subscription:string, img?:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
         uid,
         token,
-        plan,
+        subscription,
         img
     }
 });

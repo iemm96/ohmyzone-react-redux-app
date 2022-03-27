@@ -35,7 +35,7 @@ const Login = () => {
 
           const result:any = await dispatch( startLogin( data.email, data.password ) );
         
-          if(result.type) {
+          if(result?.type) {
             setError( result.type , {
               type: "manual",
               message: result.msg,
