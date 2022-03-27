@@ -148,7 +148,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                 </Box>
                 <Box sx={{ p: 3, pb: 2 }}>
                 {
-                   ( subscription.current === "proWithFreeTrial" || subscription.current === "proproMonthly" || subscription.current === "proAnnual") && (
+                   ( subscription.current === "proWithFreeTrial" || subscription.current === "proMonthly" || subscription.current === "proAnnual") && (
                         <>
                             <Typography
                                 align="center"

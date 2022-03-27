@@ -78,7 +78,7 @@ const Login = () => {
             }}/>
           </motion.div>
           <ThemeProvider theme={ defaultTheme }>
-            <Container maxWidth="sm">
+            <Container maxWidth="xs">
               <form>        
                 <motion.div initial='initial' animate='animate' exit='exit'>
                   <motion.span variants={enteringFormTransition}>
