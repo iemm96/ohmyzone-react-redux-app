@@ -9,7 +9,7 @@ import { Add } from '@mui/icons-material';
 import Premium from '../assets/icons/premium.svg';
 import { clearSelectedZone } from '../actions/zones';
 import { clearSelectedTheme } from '../actions/themes';
-import { showModalPremium } from '../actions/ui';
+import { showModalPremium, updateUi } from '../actions/ui';
 
 const Dashboard = () => {
     const { auth, subscription, plan } = useSelector( (state:any) => state );
@@ -47,23 +47,31 @@ const Dashboard = () => {
             elevation={ 0 }
         >
             <Container maxWidth="md">
-                <Grid justifyContent="right" container>
-                    <Grid item>
-                        <StyledButton
-                            startIcon={ <Add/> }
-                            variant="contained"
-                            color="secondary"
-                            endIcon={ !plan?.isPremium && <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                            onClick={  !plan.isPremium ?
-                            () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" ) )
-                            :
-                            () => navigate('/zones/new/1')
-                        }
-                        >
-                            Crear nuevo Zone
-                        </StyledButton>
-                    </Grid>
-                </Grid>
+                {
+                    auth.zonesCounter <= plan?.maxZones && (
+                        <Grid justifyContent="right" container>
+                            <Grid item>
+                                <StyledButton
+                                    startIcon={ <Add/> }
+                                    variant="contained"
+                                    color="secondary"
+                                    endIcon={ !plan?.isPremium && <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
+                                    onClick={  !plan.isPremium ?
+                                    () => dispatch( updateUi({
+                                        modalPremium: true,
+                                        titleModalPremium: "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" 
+                                    }))
+                                    :
+                                    () => navigate('/zones/new/1')
+                                }
+                                >
+                                    Crear nuevo Zone
+                                </StyledButton>
+                            </Grid>
+                        </Grid>
+                    )
+                }
+                
                 <Grid sx={{ mt: 2 }} spacing={ 2 } container>
                     { userZones.length > 0 && userZones.map((item:any,index:number) => (
                         <Grid key={ index } xs={ 12 } item>
@@ -76,7 +84,7 @@ const Dashboard = () => {
                     )) }
                 </Grid>
                 {
-                    ( plan?.maxZones >= auth.zonesCounter ) && (
+                    ( auth.zonesCounter >= plan?.maxZones  ) && (
                         <Typography
                             sx={{
                                 mt: 2,
@@ -85,7 +93,7 @@ const Dashboard = () => {
                         >
                             Haz alcanzado el número máximo de Zones disponibles para tu cuenta
                         </Typography>
-                )
+                    )
                 }
                 
             </Container>

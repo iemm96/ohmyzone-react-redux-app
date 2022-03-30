@@ -30,7 +30,6 @@ const DashboardLayout = () => {
         if( token ) {
             const result = await dispatch( startValidateJWT(token) );
 
-            console.log( result );
             /*
             dispatch( updateSubscription({
                 current: 

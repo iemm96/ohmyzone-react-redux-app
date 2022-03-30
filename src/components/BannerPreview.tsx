@@ -140,7 +140,7 @@ const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageU
                                 <IconButton
                                 sx={{
                                     backgroundColor: theme.palette.primary.main
-                                }} aria-label="mail">
+                                }} aria-label="tiktok">
                                     <Tiktok size={24}/>
                                 </IconButton>
                             </Grid>

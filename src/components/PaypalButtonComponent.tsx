@@ -19,8 +19,6 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
             // Capture the funds from the transaction
             return actions.subscription.get().then( async function(details:any) {
   
-              console.log('data paypal ', data);
-
               const { transaction } = await postRecord( 'transactions', {
                 orderIdPaypal: data.orderID,
                 subscriptionIdPaypal: data.subscriptionID,

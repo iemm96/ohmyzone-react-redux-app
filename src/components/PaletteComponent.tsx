@@ -133,7 +133,6 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
         }else {
             const reff:any = arrayRef[index];
             reff?.current.updatePalette();
-        console.log( currentPalette );
 
             dispatch( updateTheme({
                 ...state.theme,

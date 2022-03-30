@@ -107,7 +107,6 @@ export const PixabaySelector = ({
     fullForm?: boolean
 }) => {
 
-    console.log( fullForm )
     return(
         <>
             <Grid container>

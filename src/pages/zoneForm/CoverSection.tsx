@@ -16,12 +16,14 @@ import { updateTheme } from '../../actions/themes';
 import { red } from '@mui/material/colors';
 import { postRecord } from '../../actions/postRecord';
 import { showPreviewButton } from '../../actions/ui';
+import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
 
 const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     const params = useParams();
     const { auth, zone } = useSelector( (state:any) => state );
     const { createdUsername, setCreatedUsername } = useUsernameCreator();
-
+    const [ savedZone, setSavedZone ] = useState<any>( null );
+    const { buttonSaveProperties, setButtonSaveProperties } = useFormNavigationButtons();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
@@ -54,12 +56,24 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
         if( Object.keys(zone).length === 0 ) {
             getZone();
         }else {
+            setSavedZone( zone );
             setDataUri( zone.profileImage );
             setImageServerUid( zone?.profileImageUid ); //This will prepare delete function in useUploader hook to delete image from cloudinary
             setCreatedUsername( zone.username );
             setIsFormReady( true );
         }
     },[]);
+
+    //Check if there are changes to apply (Only works in full form mode)
+    useEffect(() => {
+        if( zone !== savedZone && fullForm ) {
+            setButtonSaveProperties((prev:any) => ({
+                ...prev,
+                text: 'Guardar cambios',
+                isVisible: true,
+            }));
+        }
+    },[ zone ])
 
     const getZone = async () => {
         if(params.zone) {
@@ -116,8 +130,14 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     }
 
     const submitForm = async ( data:any ) => {
-        setLoading( true );
         
+        setButtonSaveProperties((prev:any) => ({
+            ...prev,
+            text: 'Guardando cambios',
+            isDisabled: true,
+            isLoading: true
+        }));
+
         data.title = fullName;
         data.user = auth.uid;
 
@@ -188,7 +208,28 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
         setLoading( false );
 
-        navigate( `/zones/edit/2/${zoneUid}` );
+        if( !fullForm ) {
+            navigate( `/zones/edit/2/${zoneUid}` );
+        }else {
+            setButtonSaveProperties((prev:any) => ({
+                ...prev,
+                text: 'Cambios guardados correctamente',
+                isDisabled: true,
+                isLoading: false,
+                color: 'success'
+            }));
+
+            setTimeout(() => {
+                setButtonSaveProperties((prev:any) => ({
+                    ...prev,
+                    text: 'Guardar cambios',
+                    isDisabled: false,
+                    isLoading: false,
+                    isVisible: false,
+                    color: 'primary',
+                }));
+            },4500);
+        }
     }
 
     return(
@@ -294,9 +335,10 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
     
                     <Box sx={{ mt: 8, mb: fullForm ? 10 : 4 }}>
                         <FormNavigationButtons
-                            fullForm={ !!fullForm }
+                            fullForm={ fullForm }
                             prev={ `/dashboard` }
                             loading={ loading }
+                            buttonSaveProperties={ buttonSaveProperties }
                         />
                     </Box>
                 </form>

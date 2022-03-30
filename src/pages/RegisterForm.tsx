@@ -56,11 +56,7 @@ const RegisterForm = () => {
     });
     
     const { handleSubmit, control, formState: {errors}, setError } = useForm();
-
-    useEffect(() => {
-        console.log(loaded)
-    },[loaded])
-
+    
     useEffect(() => {
         if( uid ) {
             navigate( '/dashboard' );

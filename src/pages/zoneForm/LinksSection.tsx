@@ -160,6 +160,7 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
               getLinks={ getLinks }
               zone={ zone.uid }
               zoneName={ zone.username }
+              userWhatsapp={ zone?.socialLinks?.whatsapp }
               defaultCategories={ categoriesAutocomplete }
               editingMode={ ( categories.length === 0 ) }
             />

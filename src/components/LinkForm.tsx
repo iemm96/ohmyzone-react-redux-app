@@ -21,7 +21,7 @@ import { updateRecord } from '../actions/updateRecord';
 
 const filter = createFilterOptions<CategoryItemType>();
 
-export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode, zoneName, setEditMode }:{item?:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean, zoneName?:string, setEditMode?:any }) => {
+export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode, zoneName, setEditMode, userWhatsapp }:{item?:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean, zoneName?:string, setEditMode?:any, userWhatsapp?:string }) => {
 
     const [ isEditing, setIsEditing ] = useState<boolean>( editingMode );
 
@@ -102,7 +102,6 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
         let image:any = null;
         let result:any = null;
 
-        console.log( 'item ',item )
         //If item exists then is updating
         if( item ) {
 
@@ -146,6 +145,12 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
           
           if(zone) {
               data.zone = zone; //Assing current zone uid
+          }
+
+          //Add whatsapp number to data
+          if(enableWhatsapp && userWhatsapp) {
+            data.whatsapp = true;
+            data.whatsappNumber = userWhatsapp;
           }
   
   
@@ -309,7 +314,6 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                                 });
                               } else {
                                 const arrayLinksItems:any = linksItems;
-                                console.log('onChange select ', newValue?.title);
                                 arrayLinksItems.category = newValue?.title ? newValue?.title : '';
                                 setCategorySelected({
                                   title: newValue?.title ? newValue?.title : '',
@@ -399,7 +403,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                                 onChange={ (e) => {
                                   setEnableWhatsapp( e.target.checked );
                                   //setLinksItems( { ...linksItems, whatsapp: !linksItems.whatsapp } );
-                                  setValue( `whatsappMessage`, `Hola, me interesa tu ${ item.title ? item.title : 'Producto/Servicio' }` );
+                                  setValue( `whatsappMessage`, `Hola, me interesa tu ${ item?.title ? item.title : 'Producto/Servicio' }` );
                                 } }
                               />
                             } 
