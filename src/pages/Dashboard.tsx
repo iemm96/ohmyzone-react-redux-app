@@ -1,4 +1,4 @@
-import { Container, Grid, Paper } from '@mui/material';
+import { Container, Grid, Paper, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { fetchRecords } from '../actions/fetchRecords';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,10 +12,11 @@ import { clearSelectedTheme } from '../actions/themes';
 import { showModalPremium } from '../actions/ui';
 
 const Dashboard = () => {
-    const { auth, subscription } = useSelector( (state:any) => state );
+    const { auth, subscription, plan } = useSelector( (state:any) => state );
     const [ userZones, setUserZones ] = useState<any>([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const theme = useTheme();
 
     useEffect(() => {
         dispatch( clearSelectedTheme() )
@@ -52,10 +53,8 @@ const Dashboard = () => {
                             startIcon={ <Add/> }
                             variant="contained"
                             color="secondary"
-                            endIcon={ <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                            onClick={  subscription?.current === 'free' ? () => dispatch( showModalPremium("¡Es momento de ser un Zoner pro, para crear un nuevo Zone!") ) : 
-
-                            subscription?.current === 'expired' ? 
+                            endIcon={ !plan?.isPremium && <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
+                            onClick={  !plan.isPremium ?
                             () => dispatch( showModalPremium( "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" ) )
                             :
                             () => navigate('/zones/new/1')
@@ -71,11 +70,24 @@ const Dashboard = () => {
                             <SavedZone
                                 data={ item }
                                 getZones={ getRecords }
-                                isLocked={ subscription?.current === 'expired' }
+                                isLocked={ subscription?.isExpired }
                             />
                         </Grid>
                     )) }
                 </Grid>
+                {
+                    ( plan?.maxZones >= auth.zonesCounter ) && (
+                        <Typography
+                            sx={{
+                                mt: 2,
+                                color: theme.palette.text.secondary
+                            }}
+                        >
+                            Haz alcanzado el número máximo de Zones disponibles para tu cuenta
+                        </Typography>
+                )
+                }
+                
             </Container>
         </Paper>
     )

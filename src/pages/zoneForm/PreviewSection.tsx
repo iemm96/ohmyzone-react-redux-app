@@ -9,18 +9,20 @@ import { ChevronLeft, Check } from '@mui/icons-material';
 import { updateRecord } from '../../actions/updateRecord';
 import ModalZonePublished, { useModalPublished } from '../../components/ModalZonePublished';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { showPublishZoneBar, showPreviewButton } from '../../actions/ui';
+import { useEffect, useState } from 'react';
+import { showPublishZoneBar, showPreviewButton, updateUi, showModalPremium } from '../../actions/ui';
 import { fetchRecord } from '../../actions/fetchRecord';
 import { updateZone } from '../../actions/zones';
 import { updateTheme } from '../../actions/themes';
+import Premium from '../../assets/icons/premium.svg';
 
 const { REACT_APP_PREVIEW_HOST } = process.env;
 
 const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
     const params = useParams();
-    const { zone, auth } = useSelector( (state:any) => state );
+    const { zone, auth, plan } = useSelector( (state:any) => state );
     const dispatch = useDispatch();
+    const [ preventPublishZone, setPreventPublishZone ] = useState<boolean>( false );
     const { handleModal, openModal } = useModalPublished();
     const navigate = useNavigate();
 
@@ -28,12 +30,29 @@ const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
         dispatch( 
             showPreviewButton( false )
         );
+
+        //Validate is current plan supports premium features
+        validatePremiumPlan();
+
         if( Object.keys(zone).length === 0 ) {
             getZone();
         }else {
 
         }
-    },[]);
+    },[ ]);
+
+    useEffect(() => {
+        //Validate is current plan supports premium features
+        validatePremiumPlan();
+    },[ plan ]);
+
+    const validatePremiumPlan = () => {
+        if( zone?.premiumFeatures && !plan.isPremium ) {
+            setPreventPublishZone( zone?.premiumFeatures.length > 0 );
+        }else{
+            setPreventPublishZone( false );
+        }
+    }
 
     const getZone = async () => {
         if(params.zone) {
@@ -95,8 +114,20 @@ const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
                             <StyledButton
                                 variant="contained"
                                 fullWidth
-                                onClick={ onSaveAndPublish }
+                                onClick={ () => {
+                                    if( preventPublishZone ) {
+                                        dispatch( updateUi({
+                                            modalPremium: true,
+                                            titleModalPremium: "¡Comienza tu prueba gratuita como Zoner Pro!"
+                                        }) );
+
+                                    }else {
+                                        onSaveAndPublish()
+                                    }
+                                }}
                                 startIcon={
+                                    preventPublishZone ? 
+                                    <img src={ Premium } style={{ width: 16 }} alt="img-icon" /> :
                                     <Check/>
                                 }
                             >

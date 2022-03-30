@@ -5,14 +5,14 @@ import { updateSubscription } from '../actions/subscriptions';
 import { subscribe } from "../actions/subscribe";
 import { add } from 'date-fns';
 
-const PaypalButtonComponent = ({subscriptionType, user }:{subscriptionType:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", user:string}) => {
+const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", user:string}) => {
     const dispatch = useDispatch();
 
     return (
       <PayPalButton
         createSubscription={(data:any, actions:any) => {
             return actions.subscription.create({
-              plan_id: subscriptionType === 'proAnnual' ? 'P-9MV67954VP388794WMIXHMEQ' : 'P-2HT01121J34452333MIXHLJI'
+              plan_id: planName === 'proAnnual' ? 'P-9MV67954VP388794WMIXHMEQ' : 'P-2HT01121J34452333MIXHLJI'
             });
           }}
         onApprove={(data:any, actions:any) => {
@@ -24,16 +24,16 @@ const PaypalButtonComponent = ({subscriptionType, user }:{subscriptionType:"free
               const { transaction } = await postRecord( 'transactions', {
                 orderIdPaypal: data.orderID,
                 subscriptionIdPaypal: data.subscriptionID,
-                subscriptionType,
+                planName,
                 user
               } );
 
               let monthsToAdd:number = 0;
-              if( subscriptionType === 'proAnnual' ) {
+              if( planName === 'proAnnual' ) {
                 monthsToAdd = 12
               }
 
-              if( subscriptionType === 'proMonthly' ) {
+              if( planName === 'proMonthly' ) {
                 monthsToAdd = 1
               }
 
@@ -43,7 +43,7 @@ const PaypalButtonComponent = ({subscriptionType, user }:{subscriptionType:"free
 
               const resultSubscribe = await subscribe(
                 user,
-                subscriptionType,
+                planName,
                 dateModified,
                 transaction.uid, 
               );

@@ -2,9 +2,9 @@ import { actionTypes } from '../actionTypes/actionTypes';
 
 export const uiReducer = ( state = { } , action:any ) => {
     switch( action.type ) {
-        case actionTypes.showModalPremium:
+        case actionTypes.updateUi:
             return {
-                modalPremium: true,
+                modalPremium: action.payload?.modalPremium,
                 titleModalPremium: action?.payload.titleModalPremium
             }
         case actionTypes.showPublishZoneBar:

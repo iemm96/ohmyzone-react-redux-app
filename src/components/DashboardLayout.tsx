@@ -11,7 +11,7 @@ const DashboardLayout = () => {
     const { ui } = useSelector( (state:any) => state );
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { handleModal, openModal, modalTitle, handleStartFreeTrial, subscription, auth  } = useModalPremium();
+    const { handleModal, openModal, modalTitle, handleStartFreeTrial, plan, auth , subscription } = useModalPremium();
 
     useEffect(() => {
         if( ui?.showModalPremium ) {
@@ -49,6 +49,7 @@ const DashboardLayout = () => {
             <Header/>
                 <ModalPremium
                     subscription={ subscription }
+                    plan={ plan }
                     modalTitle={ modalTitle }
                     handleModal={ handleModal }
                     openModal={ openModal }

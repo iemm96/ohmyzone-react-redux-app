@@ -16,5 +16,10 @@ export const actionTypes = {
     showPreviewButton: '[UI] Show preview button',
 
     updateSubscription: '[Subscription] Update',
-    clearSubscription: '[Subscription] Clear'
+    clearSubscription: '[Subscription] Clear',
+
+    updatePlan: '[Plan] Update',
+    clearPlan: '[Plan] Clear',
+
+    updateUi: '[UI] Update UI'
 }

@@ -19,6 +19,8 @@ import { subscribe } from '../actions/subscribe';
 
 import { format,add } from 'date-fns';
 import es from 'date-fns/locale/es';
+import { updateSubscription } from '../actions/subscriptions';
+import { updatePlan } from '../actions/plans';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -33,6 +35,7 @@ const style = {
 
 type ModalPremiumType = {
     subscription: any;
+    plan: any;
     auth:any;
     handleModal: any;
     openModal: any;
@@ -41,12 +44,11 @@ type ModalPremiumType = {
     setLoading?: any;
     handleValidateCode?: any;
     handleStartFreeTrial?:any;
-    
 }
 
 
 export const useModalPremium = () => {
-    const { ui, auth, subscription } = useSelector( (state:any) => state );
+    const { ui, auth, plan, subscription } = useSelector( (state:any) => state );
     const [openModal, setOpenModal] = React.useState(false);
     const [ modalTitle, setModalTitle ] = useState<string>(' ');
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -72,7 +74,8 @@ export const useModalPremium = () => {
 
               if( auth?.uid ) {
                 const result = await subscribe( auth.uid, "proWithFreeTrial", dateModified);
-                console.log(result);
+                dispatch( updateSubscription( result.subscription ) );
+                dispatch( updatePlan( result.plan ) );
 
               }
 
@@ -90,12 +93,13 @@ export const useModalPremium = () => {
         loading,
         setLoading,
         handleValidateCode, 
-        subscription,
-        auth
+        plan,
+        auth,
+        subscription
     }
 }
 
-export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, handleValidateCode, auth, subscription }: ModalPremiumType) => {
+export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, handleValidateCode, auth, plan, subscription, handleStartFreeTrial }: ModalPremiumType) => {
     const [ planMode, setPlanMode ] = useState<"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime">( 'proMonthly' );
     const theme = useTheme();
 
@@ -148,7 +152,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                 </Box>
                 <Box sx={{ p: 3, pb: 2 }}>
                 {
-                   ( subscription.current === "proWithFreeTrial" || subscription.current === "proMonthly" || subscription.current === "proAnnual") && (
+                   ( plan.name === "proWithFreeTrial" || plan.name === "proMonthly" || plan.name === "proAnnual") && (
                         <>
                             <Typography
                                 align="center"
@@ -162,7 +166,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 sx={{ mt: 3, color: theme.palette.text.primary }}
                             >
                                 {
-                                    subscription.current === "proWithFreeTrial" ? 
+                                    plan.name === "proWithFreeTrial" ? 
                                     (`Tu prueba gratuita termina el día ${ 
                                         format( new Date( subscription.activeUntil ), 'dd/MMMM/yyyy', { locale: es } ) 
                                     }`) : (
@@ -173,7 +177,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 }
                             </Typography>
                             {
-                                subscription.current === ("proAnnual" || "proproMonthly" ) && (
+                                plan.name === ("proAnnual" || "proproMonthly" ) && (
                                     <>
                                         <Typography
                                             align="center"
@@ -204,7 +208,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                     )
                 }
                 {
-                    ( subscription.current === "free" || subscription.current === "expired" ) && (
+                    ( plan.name === "free" || plan.name === "expired" ) && (
                         <>
                             <Typography
                                 color="primary"
@@ -283,26 +287,32 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 />
                             </ToggleButtonGroup>
                             {
-                                subscription.current === "expired" ? (
+                                plan.name === "expired" ? (
                                     <PaypalButtonComponent
                                         user={ auth.uid }
-                                        subscriptionType={ planMode }
+                                        planName={ planMode }
                                     />
                                 ) : (
                                     <Grid spacing={1} container>
-                                    <Grid
-                                        xs={12}
-                                        item
-                                    >
-                                        <StyledButton
-                                            variant="contained"
-                                            color="secondary"
-                                            fullWidth
-                                            startIcon={<img src={Premium} style={{ width: 12 }} alt="img-icon" />}
-                                        >
-                                            ¡Probar gratis por 7 días!
-                                        </StyledButton>
-                                    </Grid>
+                                        {
+                                            handleStartFreeTrial && (
+                                                <Grid
+                                                    xs={12}
+                                                    item
+                                                >
+                                                    <StyledButton
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        fullWidth
+                                                        startIcon={<img src={Premium} style={{ width: 12 }} alt="img-icon" />}
+                                                        onClick={ handleStartFreeTrial }
+                                                    >
+                                                        ¡Probar gratis por 7 días!
+                                                    </StyledButton>
+                                                </Grid>
+                                            )
+                                        }
+                                        
                                     <Grid
                                         xs={12}
                                         item

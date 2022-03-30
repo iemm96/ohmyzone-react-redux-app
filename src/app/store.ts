@@ -6,6 +6,7 @@ import { zoneReducer } from '../reducers/zoneReducer';
 import { themeReducer } from '../reducers/themeReducer';
 import { uiReducer } from '../reducers/uiReducer';
 import { subscriptionReducer } from '../reducers/subscriptionReducer';
+import { planReducer } from '../reducers/planReducer';
 
 declare global {
   interface Window {
@@ -24,6 +25,7 @@ const composeEnhancers =
   theme: themeReducer,
   ui: uiReducer,
   zone: zoneReducer,
+  plan: planReducer
 })
 
 export const store = createStore(

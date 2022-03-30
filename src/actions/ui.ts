@@ -7,6 +7,11 @@ export const showModalPremium = (titleModalPremium?:string) => ({
     }
 });
 
+export const updateUi = (payload:any) => ({
+    type: actionTypes.updateUi,
+    payload
+});
+
 export const showPublishZoneBar = (show:boolean) => ({
     type: actionTypes.showPublishZoneBar,
     payload: {

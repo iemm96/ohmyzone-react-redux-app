@@ -2,7 +2,7 @@ import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
 
 const { REACT_APP_API_HOST } = process.env;
 
-export const subscribe = async ( user:string, subscriptionType:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", activeUntil:Date, transactionUid?:string  ) => {
+export const subscribe = async ( user:string, planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", activeUntil:Date, transactionUid?:string  ) => {
 
     const authToken = localStorage.getItem('token');
 
@@ -20,7 +20,7 @@ export const subscribe = async ( user:string, subscriptionType:"free" | "expired
         method: 'POST',
         headers: headers,
         data: {
-            subscriptionType,
+            planName,
             user,
             activeUntil,
             transactionUid

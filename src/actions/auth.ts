@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { actionTypes } from '../actionTypes/actionTypes';
 import { updateSubscription } from './subscriptions';
+import { updatePlan } from './plans';
 export const startGoogleLogin = () => {
     return (dispatch:any) => {
         
@@ -22,8 +23,9 @@ export const startValidateJWT = ( jwt:string ) => {
             );
 
             if(data.user) {
-                dispatch( login(data.user.name, data.user.uid, jwt, data.user?.subscription, data.user?.img ));
+                dispatch( login(data.user.name, data.user.uid, jwt, data.user.zonesCounter, data.user?.subscription, data.user?.img ));
                 dispatch( updateSubscription( data.user?.subscription ) );
+                dispatch( updatePlan( data.user?.subscription?.plan ) );
                 return data.user;
             }else{
                 //dispatch( logout );
@@ -85,12 +87,13 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, uid:string, token:string, subscription:string, img?:string ) => ({
+export const login = ( name:string, uid:string, token:string, zonesCounter:string, subscription:string, img?:string ) => ({
     type: actionTypes.login,
     payload: {
         name,
         uid,
         token,
+        zonesCounter,
         subscription,
         img
     }
