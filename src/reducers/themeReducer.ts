@@ -4,6 +4,7 @@ export const themeReducer = ( state = { } , action:any ) => {
     switch( action.type ) {
         case actionTypes.updateTheme:
             return {
+                uid: action?.payload?.data.uid,
                 vibrant: action?.payload?.data.vibrant,
                 lightVibrant: action?.payload?.data.lightVibrant,
                 darkVibrant: action?.payload?.data.darkVibrant,

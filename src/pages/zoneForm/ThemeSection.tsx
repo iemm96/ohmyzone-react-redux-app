@@ -65,13 +65,22 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
     useEffect(() => {
         //Detects if the state theme changes and shows the button
-        if( state.theme !== currentThemeState ) {
+        if( state.theme !== currentThemeState && themeMode !== 'myThemes' ) {
             setButtonSaveProperties((prev:any) => ({
                 ...prev,
                 isVisible: true,
             }))
         }
-    },[ state.theme ])
+    },[ state.theme ]);
+
+    useEffect(() => {
+        if( themeMode === 'myThemes' ) {
+            setButtonSaveProperties((prev:any) => ({
+                ...prev,
+                isVisible: false,
+            }))
+        }
+    },[ themeMode ])
 
     const handleChangeMode = (
       event: React.MouseEvent<HTMLElement>,

@@ -13,12 +13,10 @@ import { startLogin, login } from '../actions/auth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, CircularProgress, Divider, ThemeProvider } from '@mui/material';
-import GoogleIcon from '../icons/GoogleIcon';
 import { ChevronLeft } from '@mui/icons-material';
 import { postRecord } from '../actions/postRecord';
 import { defaultTheme } from '../themes/index';
-import { useGoogleLogin } from 'react-google-login';
-import axios from 'axios';
+import { GoogleButton, useGoogleButton } from '../components/common/GoogleButton';
 
 const { REACT_APP_GOOGLE_CLIENT, REACT_APP_API_HOST } = process.env;
 
@@ -27,33 +25,11 @@ const RegisterForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [ loading, setLoading ] = useState<boolean>( false );
-    
-    const onSuccessGoogleAuth = async (response:any) => {
-        try{
-            const { data } = await axios.post(
-                `${ REACT_APP_API_HOST }auth/google`,
-                response.tokenObj
-            );
-    
-            localStorage.setItem('token', data.token);
-
-            dispatch( login(
-                data.user.name,
-                data.user.uid,
-                data.token,
-                data.user?.subscription,
-                data.picture,
-            ));
-        }catch(e:any){
-            return e?.response?.data
-        }
-    }
-
-    const { signIn, loaded } = useGoogleLogin({
-        onSuccess: onSuccessGoogleAuth,
-        onFailure: (success:any) => console.log(success),
-        clientId: REACT_APP_GOOGLE_CLIENT ? REACT_APP_GOOGLE_CLIENT : '',
+    const { signIn, loadingGoogle, setLoadingGoogle } = useGoogleButton({
+        api_host: REACT_APP_API_HOST ? REACT_APP_API_HOST : '',
+        googleClient: REACT_APP_GOOGLE_CLIENT ? REACT_APP_GOOGLE_CLIENT : ''
     });
+
     
     const { handleSubmit, control, formState: {errors}, setError } = useForm();
     
@@ -61,7 +37,7 @@ const RegisterForm = () => {
         if( uid ) {
             navigate( '/dashboard' );
         }
-    },[uid])
+    },[ uid ]);
 
     const onSubmit = async (data: any) => {
         setLoading( true );
@@ -80,7 +56,6 @@ const RegisterForm = () => {
         }
         setLoading( false );
         dispatch( startLogin( result.user.email, data.password ) );
-        
     };
 
     return(
@@ -251,21 +226,7 @@ const RegisterForm = () => {
                                 O bien
                             </Divider>
                             <Grid item xs={12}>
-                                <Button 
-                                    sx={{
-                                        width: '100%',
-                                        backgroundColor: 'white',
-                                        border: '1px solid #4664F6',
-                                        color: '#4664F6',
-                                        padding: '14px 0',
-                                        borderRadius: 3.5,
-                                        textTransform: 'none'
-                                    }}
-                                    onClick={ signIn }
-                                    startIcon={<GoogleIcon/>}
-                                    >
-                                    Accede con Google
-                                </Button>
+                                <GoogleButton signIn={ signIn } loadingGoogle={ loadingGoogle } setLoadingGoogle={ setLoadingGoogle } />
                             </Grid>
                         </Grid>
                         <Grid mb={4}>

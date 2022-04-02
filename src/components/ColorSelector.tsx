@@ -80,6 +80,7 @@ const ColorSelector = ({  imagesToColorsArray, zone }:ColorSelectorProps) => {
                         arrayRef={ arrayRef }
                         key={ index }
                         getPalettes={ getPalettes }
+                        setNewPalette={ setNewPalette }
                         enableDelete
                         handlePaletteComponent={ handlePaletteComponent }
                     />

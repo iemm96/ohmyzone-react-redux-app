@@ -62,16 +62,19 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
 
     useEffect(() => {
       if( newCategory ) {
+        //Add new category if categories array
+        setCategories(prev => ([
+          ...prev,
+          {
+            title: newCategory
+          }
+        ]));
+
+        console.log( 'new category ', newCategory )
         setCategorySelected({
           title: newCategory,
         });
 
-        //Add new category if categories array lenght is equal to 0
-        if( categories.length === 0 ) {
-          categories.push({
-            title: newCategory
-          })
-        }
       }
       
     },[ newCategory ]);
@@ -200,12 +203,12 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
     const resetForm = () => {
         reset()
         setCategorySelected( null );
+        setEnableWhatsapp( false );
         handleDelete(); //Deletes uploaded image preview
         setIsEditing( false );
         if ( setEditMode ) {
           setEditMode( false );
         }
-        //setLinksItems( link );
     }
 
     return(
@@ -293,9 +296,11 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                           />
                         ) : (
                           <Autocomplete
-                            value={categorySelected?.title}
+                            value={ categorySelected?.title }
+                            defaultValue={ categorySelected?.title }
                             onChange={(event, newValue) => {
                           
+                              console.log('cayendo aqui ',newValue)
                               if (typeof newValue === 'string') {
                             
                                 setCategorySelected({

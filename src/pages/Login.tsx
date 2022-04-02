@@ -8,9 +8,11 @@ import { startLogin } from '../actions/auth';
 import { useEffect, useState } from 'react';
 import { transition, enteringFormTransition, inputTransition } from '../constants/transitions';
 import { inputLoginStyles } from '../styles/inputLoginStyles';
-import GoogleIcon from '../icons/GoogleIcon';
 import { ThemeProvider } from '@emotion/react';
 import { defaultTheme } from '../themes/index';
+import { GoogleButton, useGoogleButton } from '../components/common/GoogleButton';
+
+const { REACT_APP_GOOGLE_CLIENT, REACT_APP_API_HOST } = process.env;
 
 const Login = () => {
     const { name } = useSelector( (state:any ) => state.auth );
@@ -18,6 +20,11 @@ const Login = () => {
     const navigate = useNavigate();
     const { handleSubmit, control, formState: {errors}, setError } = useForm();
     const [ loading, setLoading ] = useState<boolean>(false);
+    const { signIn, loadingGoogle, setLoadingGoogle } = useGoogleButton({
+      api_host: REACT_APP_API_HOST ? REACT_APP_API_HOST : '',
+      googleClient: REACT_APP_GOOGLE_CLIENT ? REACT_APP_GOOGLE_CLIENT : ''
+  });
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -193,20 +200,7 @@ const Login = () => {
                       O bien
                   </Divider>
                   <Grid item xs={12}>
-                    <Button 
-                      sx={{
-                        width: '100%',
-                        backgroundColor: 'white',
-                        border: '1px solid #4664F6',
-                        color: '#4664F6',
-                        padding: '14px 0',
-                        borderRadius: 3.5,
-                        textTransform: 'none'
-                      }}
-                      startIcon={<GoogleIcon/>}
-                      >
-                      Accede con Google
-                    </Button>
+                    <GoogleButton signIn={ signIn } loadingGoogle={ loadingGoogle } setLoadingGoogle={ setLoadingGoogle } />
                   </Grid>
                 </Grid>
                 <Grid mb={4}>

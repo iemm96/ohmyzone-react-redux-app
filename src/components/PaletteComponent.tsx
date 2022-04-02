@@ -117,7 +117,7 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
         
     },[ editingPalette ]);
 
-    const handleEditMode = (key:number) => {
+    const handleEditMode = () => {
         handlePaletteComponent()
         setEditMode( !editMode );
     }
@@ -143,7 +143,6 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
     }
 
     const onSubmit = async (data:any) => {
-        console.log('data ',data)
 
         const paletteData:any = {
             vibrant: `#${ data.vibrant }`,
@@ -154,18 +153,19 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
             darkMuted:  `#${ data.darkMuted }`,
             zone: state.zone.uid,
         }
-        //If is predefined palette and defaultPalette is not present create a palette
-        if( !enableDelete ) {
-            await postRecord( 'palettes', paletteData );
-        }
 
         //If is not predefined palette and defaultPalette is present create a palette
         if( defaultPalette && enableDelete ) {
             await updateRecord( 'palettes', paletteData, defaultPalette.uid );
+        }else{
+            await postRecord( 'palettes', paletteData );
         }
 
+        if( setNewPalette ) {
+            setNewPalette( false )
+        }
         getPalettes();
-        handleEditMode( key );
+        handleEditMode( );
     }
 
     const colorInput = ( name:'darkMuted' | 'vibrant' | 'lightVibrant' | 'darkVibrant' | 'muted' | 'lightMuted',  label:string, show:boolean, color?:string  ) => (
@@ -310,7 +310,7 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
                             height: 20,
                             borderRadius: 2
                         }}
-                        onClick={ () => handleEditMode( key ) }
+                        onClick={ () => handleEditMode() }
                     >
                         { editMode ?  <Close sx={{ fontSize: 14 }}/> : <Edit  sx={{ fontSize: 14 }}/> }
                     </IconButton>
@@ -365,7 +365,7 @@ const PaletteComponent = ({arrayRef, imageToProcess, key, edit, defaultPalette, 
                                             if ( setNewPalette ) {
                                                 setNewPalette( false )
                                             }
-                                            handleEditMode( key ) 
+                                            handleEditMode() 
                                         }}
                                     >
                                         Cancelar

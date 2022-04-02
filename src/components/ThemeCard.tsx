@@ -86,6 +86,7 @@ const ThemeCard = ({ arrayRef, urlImage, darkMode, index, largeImageURL, isPremi
 
         dispatch( updateTheme({
             ...currentPalette,
+            uid: item?.uid,
             backgroundImageUrl: largeImageURL,
             mode: 'dark'
         }));
