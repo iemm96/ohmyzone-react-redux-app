@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from "../actions/auth";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { ArrowDropDown, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from 'react';
 import StyledButton from '../styled/StyledButton';
 import ZonePhonePreview from './ZonePhonePreview';
@@ -111,18 +111,22 @@ const Header = () => {
                                 p:0
                             }}
                         >
-                            {
-                                auth.img ? 
-                                <Avatar
-                                    sx={{
-                                        height: 30,
-                                        width: 30
-                                    }}
-                                    src={ auth.img }
-                                /> : (
-                                    <AccountCircle />
-                                )
-                            }
+                            <>
+                                {
+                                    auth.img ? 
+                                    <Avatar
+                                        sx={{
+                                            height: 30,
+                                            width: 30
+                                        }}
+                                        src={ auth.img }
+                                    /> : (
+                                        <AccountCircle />
+                                    )
+                                }
+                                <ArrowDropDown/>
+                            </>
+                            
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -139,8 +143,19 @@ const Header = () => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <MenuItem onClick={handleClose}>Mi perfil</MenuItem>
-                            <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+                            <MenuItem onClick={() => {
+                                handleClose();
+                                navigate('/profile');
+                            }}>Mi perfil</MenuItem>
+                            <MenuItem onClick={() => {
+                                handleClose();
+                                navigate('/subscription');
+                            }}>Mi subscripción</MenuItem>
+                            <MenuItem 
+                                onClick={handleLogout}
+                            >
+                                Cerrar Sesión
+                            </MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>
