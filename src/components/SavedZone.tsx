@@ -1,4 +1,4 @@
-import { Typography, Stack, useTheme } from '@mui/material';
+import { Typography, Stack, useTheme, Avatar } from '@mui/material';
 
 import { Delete, Lock } from '@mui/icons-material';
 import Box from '@mui/material/Box';
@@ -104,13 +104,19 @@ const SavedZone = ({ getZones, data, isLocked }:{  getZones?:any, data:any, isLo
                         </Box>
                     )
                 }
+                {
+                    data?.profileImage ? (
+                        <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={ data.profileImage?.url ? data.profileImage.url : '' }
+                            alt="profileImage"
+                        />
+                    ) : (
+                        <Avatar sx={{ width: 151, height: 151, borderRadius: '12px 0 0 12px' }}/>
+                    )
+                }
                 
-                <CardMedia
-                    component="img"
-                    sx={{ width: 151 }}
-                    image={ data.profileImage?.url ? data.profileImage.url : '' }
-                    alt="profileImage"
-                />
                 <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <CardContent sx={{ flex: '1 0 auto' }}>
                     <Typography component="div" variant="h6">

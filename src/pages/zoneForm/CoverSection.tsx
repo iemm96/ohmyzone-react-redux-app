@@ -57,7 +57,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
             getZone();
         }else {
             setSavedZone( zone );
-            setDataUri( zone.profileImage );
+            setDataUri( zone?.profileImage );
             setImageServerUid( zone?.profileImageUid ); //This will prepare delete function in useUploader hook to delete image from cloudinary
             setCreatedUsername( zone.username );
             setIsFormReady( true );
@@ -80,7 +80,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
             const { zone } = await fetchRecord('zones', params.zone);
 
-            if(zone.profileImage.url) {
+            if(zone?.profileImage?.url) {
                 setDataUri(zone.profileImage.url);
                 setImageServerUid( zone?.profileImage._id );
             }
@@ -156,6 +156,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
                 }
             }
 
+            //If the user updated the image upload it to server
             if( imageHasChanged ) {
                 image = await uploadToServer( zone.uid, `${ zone.username }/profile` ); //Uploads image to server with the id of the Zone recently created
                 data.profileImage = image.uid;
@@ -163,6 +164,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
             const { zoneResult } = await updateRecord( 'zones', data, params.zone ); //Updates Zone
         
+            //If the user updated the image assing new image to zone result
             if( imageHasChanged ) {
                 zoneResult.profileImage = image.url;
                 zoneResult.profileImageUid = image.uid;
@@ -192,8 +194,8 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
 
             dispatch( updateZone( {
                 ...zone,
-                profileImage: image.url,
-                profileImageUid: image.uid
+                profileImage: image ? image.url : null, 
+                profileImageUid: image ? image.uid : null
             } ) );
 
             zoneUid = zone.uid;
@@ -201,8 +203,7 @@ const CoverSection = ({ fullForm }:{ fullForm?:boolean }) => {
             if(image) {
                 await updateRecord('zones', {
                     profileImage: image.uid
-                }, zoneUid
-                );
+                }, zoneUid );
             }
         }
 

@@ -131,6 +131,11 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
     }
 
     const uploadToServer = async ( zone:string, cloudinaryFolder?:string ) => {
+
+        if( !file ) {
+            return false;
+        }
+        
         const formData = new FormData();
         formData.append( 'zone', zone );
 
