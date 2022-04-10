@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid, Paper, TextField, FormGroup, Tooltip, CircularProgress, Stack, Typography } from '@mui/material';
+import { Grid, Paper, TextField, FormGroup, Tooltip, CircularProgress, Stack, Typography, InputAdornment } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { Controller, useForm } from "react-hook-form";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -41,7 +41,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ linksItems, setLinksItems ] = useState<LinksItemType>(link);
     const { handleSubmit, control, setValue, formState: {errors}, reset } = useForm();
-    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, temporalDataUri } = useUploader( true );
+    const { setDataUri, dataUri, onChange, handleDelete, imageSrc, uploadToServer, openModal, handleModal, getCropData, setCropper, cropper, temporalDataUri } = useUploader( true );
     const [ categorySelected, setCategorySelected ] = useState<CategoryItemType | null>(null);
     const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
     const { handleModalCategory, openModalCategory, handleNewCategory, newCategory } = useModalCategory( defaultCategories );
@@ -101,20 +101,28 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
         if( !zone ) {
           return;
         }
-    
+
+        if( data?.link ) {
+            //Remove http/https if exists in url
+            data.link = data.link.replace(/^https?:\/\//, '');
+        }
+
         let image:any = null;
         let result:any = null;
 
         //If item exists then is updating
         if( item ) {
 
-          //If prev coverImageUrl is different to dataUri then consider that image was updated
-          if( item.coverImg?.url !== dataUri ) {
+                    //If image is setted
+          if( dataUri ) {
+            //If prev coverImageUrl is different to dataUri then consider that image was updated
+            if( item.coverImg?.url !== dataUri ) {
               await deleteRecord( 'images', item.coverImg?._id ); //delete old image
               image = await uploadToServer( zone, `${ zoneName }/links` ); //Upload new image
               data.coverImg = image.uid; //Assing recently created uid image
+            }
           }
-
+            
           //If category has changed
           if( categorySelected.title !== item.category?.title ) {
               const categoryUid = await handleCategory( categorySelected.title );
@@ -129,12 +137,14 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
 
           result = await updateRecord('links', data, item.uid );
 
-
         }else{
 
-          image = await uploadToServer( zone, `${ zoneName }/links` );
+          //If image is setted
+          if( dataUri ) {
+            image = await uploadToServer( zone, `${ zoneName }/links` );
+            data.coverImg = image.uid; //Assing recently created uid image
+          }
         
-          data.coverImg = image.uid; //Assing recently created uid image
           data.isSaved = true;
       
           const categoryUid = await handleCategory( categorySelected.title );
@@ -158,8 +168,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
   
   
           result = await postRecord('links', data);
-          
-
+        
         }
         
         if(result) {
@@ -231,12 +240,13 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                         dataUri={ dataUri }  
                         imageSrc={ imageSrc }
                         openModal={ openModal }
+                        cropper={cropper}
                         getCropData={ getCropData }
                         handleModal={ handleModal }
                         setCropper={ setCropper }
                         temporalDataUri={ temporalDataUri }
                         maxFileSize={ 20971520 }
-                        aspectRatio={ 1.86 }
+                        aspectRatio={ [ 1.86, 1, 0.86 ] }
                       />
                     </Grid>
                     <Grid xs={ 12 } item>
@@ -455,8 +465,11 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                             multiline
                             onChange={onChange}
                             value={ value }
-                            label="Enlace personalizado" 
-                            placeholder="https://mienlace.com"
+                            label="Enlace personalizado"
+                            InputProps={{
+                              startAdornment: <InputAdornment position="start">http://</InputAdornment>
+                            }}
+                            placeholder="mienlace.com"
                           />
                         )}
                       />

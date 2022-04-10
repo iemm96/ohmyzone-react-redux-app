@@ -92,13 +92,17 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zon
                             backgroundColor: theme.palette.background.paper
                         }}
                         >
-                    
-                        <CardMedia
-                            component="img"
-                            sx={{ width: 151 }}
-                            image={ data.coverImg?.url ? data.coverImg.url : '' }
-                            alt="Cover link"
-                        />
+                        {
+                             data?.coverImg?.url && (
+                                <CardMedia
+                                    component="img"
+                                    sx={{ width: 151 }}
+                                    image={ data.coverImg?.url ? data.coverImg.url : '' }
+                                    alt="Link imagen"
+                                />
+                             )
+                        }
+                        
                         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                             <CardContent sx={{ flex: '1 0 auto' }}>
                             <Typography component="div" variant="h6">

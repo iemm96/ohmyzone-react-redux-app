@@ -7,7 +7,8 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import Grid from '@mui/material/Grid';
 import StyledButton from '../styled/StyledButton';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Crop, CropLandscape, CropPortrait, CropSquare } from "@mui/icons-material";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -28,17 +29,29 @@ export const ModalCropper = ({
     file, 
     setCropper, 
     getCropData,
-    aspectRatio=1
+    aspectRatio=1,
+    cropper,
  }:{ 
     openModal?:boolean,
     handleModal:any,
     file:any,
     setCropper:any,
-    getCropData:any
-    aspectRatio?:number
+    getCropData:any,
+    aspectRatio?:number | number[],
+    cropper?:any,
+
  }) => {
 
     const [ loadingCropper, setLoadingCropper ] = useState<boolean>( true );
+    const [ selectedAspectRatio, setSelectedAspectRatio ] = useState<number>( 1 );
+
+    const handleChangeAspectRatio = (e:any, newValue:number) => {
+        if (newValue !== null) {
+            setSelectedAspectRatio( newValue );
+            cropper.setAspectRatio( newValue );
+        }
+    }
+
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -68,11 +81,11 @@ export const ModalCropper = ({
                     }
                     <Cropper
                         style={{ height: 400, width: "100%" }}
-                        initialAspectRatio={1}
+                        initialAspectRatio={ selectedAspectRatio }
                         src={file}
                         ready={ () => setLoadingCropper( false ) }
                         viewMode={1}
-                        aspectRatio={ aspectRatio }
+                        aspectRatio={ selectedAspectRatio }
                         minCropBoxHeight={10}
                         minCropBoxWidth={10}
                         background={false}
@@ -85,6 +98,46 @@ export const ModalCropper = ({
                         }}
                         guides={true}
                     />
+                    {
+                        Array.isArray( aspectRatio ) && (
+                            <Box
+                                sx={{
+                                    mb: 2
+                                }}
+                            >
+                                <ToggleButtonGroup
+                                    color="primary"
+                                    value={ selectedAspectRatio }
+                                    exclusive
+                                    onChange={ handleChangeAspectRatio }
+                                    fullWidth
+                                >
+                                    {
+                                        aspectRatio.map( (value:number, index:number) => (
+                                            <ToggleButton key={ index } value={ value }>
+                                                {
+                                                    value === 1.86 && (
+                                                        <CropLandscape/>
+                                                    )
+                                                }
+                                                {
+                                                    value === 1 && (
+                                                        <CropSquare/>
+                                                    )
+                                                }
+                                                {
+                                                    value === 0.86 && (
+                                                        <CropPortrait/>
+                                                    )
+                                                }
+                                            </ToggleButton>
+                                        ) )
+                                    }        
+                                </ToggleButtonGroup>
+                            </Box>
+                        )
+                    }
+
                     <Grid sx={{ mt: 2 }} spacing={ 2 } container>
                         <Grid 
                             order={{
@@ -116,6 +169,7 @@ export const ModalCropper = ({
                                 variant="contained"
                                 fullWidth
                                 onClick={ getCropData }
+                                startIcon={ <Crop/> }
                             >
                                 Recortar imagen
                             </StyledButton>
