@@ -23,11 +23,12 @@ type UploadFilePropsType = {
     file?: any;
     getCropData?: any;
     setCropper?: any;
+    cropper?: any;
     temporalDataUri?: string | null;
     useCropper?: boolean;
     roundedPreview?: boolean;
     maxFileSize?: number;
-    aspectRatio?: number;
+    aspectRatio?: number | number[];
     height?: number;
 }
 
@@ -156,7 +157,7 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
               }
 
               fileToUpload = new File([ dataBlob ], file.name, metadata);
-        
+              cropper.destroy();
         }else {
             fileToUpload = file;
         }
@@ -182,7 +183,7 @@ export const useUploader = ( useCropper = false,  initialState = null ) => {
         setImageSrc(null);
     }
 
-    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper,setDataUri, imageServerUid, setImageServerUid, imageHasChanged, setImageHasChanged  }
+    return { temporalDataUri, dataUri, imageSrc, handleDelete, onChange, uploadToCloudinary, file, uploadToServer, openModal, handleModal , getCropData, setCropper, cropper, setDataUri, imageServerUid, setImageServerUid, imageHasChanged, setImageHasChanged  }
 };
 
 
@@ -195,6 +196,7 @@ export const UploadFile = ({
     openModal,
     handleModal,
     setCropper,
+    cropper,
     getCropData,
     temporalDataUri,
     maxFileSize = 5242880,
@@ -212,6 +214,7 @@ export const UploadFile = ({
         <>
             { useCropper && 
                 <ModalCropper
+                    cropper={cropper}
                     openModal={ openModal }
                     handleModal={ handleModal }
                     file={ temporalDataUri }

@@ -4,7 +4,7 @@ export const subscriptionReducer = ( state = { } , action:any ) => {
     switch( action.type ) {
         case actionTypes.updateSubscription:
             return {
-                current: action?.payload.current,
+                uid: action?.payload._id,
                 activeUntil: action?.payload.activeUntil,
             }
         case actionTypes.clearSubscription: 

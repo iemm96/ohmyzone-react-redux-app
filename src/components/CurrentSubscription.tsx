@@ -11,9 +11,10 @@ import { ModalDelete, useModalDelete } from './ModalDelete';
 import { useState } from 'react';
 import { LinkForm } from './LinkForm';
 import { CategoryItemType } from '../types/CategoryItemType';
+import { format,add } from 'date-fns';
+import es from 'date-fns/locale/es';
 
-
-const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zoneName }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[], zoneName?:string }) => {
+const CurrentSubscription = ({ getLinks, data, disableEdit = false, defaultCategories, zoneName }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[], zoneName?:string }) => {
     const [ editMode, setEditMode ] = useState<boolean>( false );
 
     const {
@@ -92,24 +93,20 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zon
                             backgroundColor: theme.palette.background.paper
                         }}
                         >
-                        {
-                             data?.coverImg?.url && (
-                                <CardMedia
-                                    component="img"
-                                    sx={{ width: 151 }}
-                                    image={ data.coverImg?.url ? data.coverImg.url : '' }
-                                    alt="Link imagen"
-                                />
-                             )
-                        }
-                        
+                    
+                        <CardMedia
+                            component="img"
+                            sx={{ width: 151 }}
+                            image={ data.coverImg?.url ? data.coverImg.url : '' }
+                            alt="Cover link"
+                        />
                         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                             <CardContent sx={{ flex: '1 0 auto' }}>
                             <Typography component="div" variant="h6">
-                                { data.title }
+                                { data?.plan?.nameToShow }
                             </Typography>
                             <Typography variant="subtitle2" color="text.secondary" component="div">
-                                { data.description }
+                                {  `Activa hasta: ${format( new Date( data.activeUntil ), 'dd/MMMM/yyyy', { locale: es } )}` }
                             </Typography>
                             </CardContent>
                         </Box>
@@ -131,4 +128,4 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zon
   )
 }
 
-export default SavedLink;
+export default CurrentSubscription;

@@ -36,7 +36,10 @@ export const useGoogleButton = ({api_host, googleClient}:{ api_host:string, goog
 
     const { signIn, loaded } = useGoogleLogin({
         onSuccess: onSuccessGoogleAuth,
-        onFailure: (success:any) => console.log(success),
+        onFailure: (success:any) => {
+            alert('Ocurrió un error al iniciar sesión con Google.');
+            setLoadingGoogle( false );
+        },
         clientId: googleClient,
     });
 

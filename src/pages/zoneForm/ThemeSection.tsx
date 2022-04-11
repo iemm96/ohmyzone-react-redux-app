@@ -15,7 +15,6 @@ import { postRecord } from '../../actions/postRecord';
 import { updateRecord } from '../../actions/updateRecord';
 import { fetchFile } from '../../actions/fetchFile';
 
-import Premium from '../../assets/icons/premium.svg';
 import CustomThemeCreator from '../../components/CustomThemeCreator';
 import ThemesList from '../../components/ThemesList';
 import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
@@ -87,7 +86,6 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
       newMode: string,
     ) => {
         console.log( event );
-        const premiumFeature:string = "createTheme";
 
         if( !state.zone?.premiumFeatures ) {
             dispatch( updateZone({
@@ -96,31 +94,6 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
             }) )
         }
 
-        if( newMode === "create" ) {
-
-            if( !state.zone?.premiumFeatures.find((e:any) => {
-                return e === premiumFeature
-            })) {
-                dispatch( updateZone({
-                    ...state.zone,
-                    premiumFeatures: [ ...state.zone.premiumFeatures, premiumFeature ]  
-                }) )
-                
-            }
-            
-           
-        } else {
-            const index:number = state.zone?.premiumFeatures.indexOf( premiumFeature )
-            if( index !== -1 ) {
-                state.zone?.premiumFeatures.splice( index, 1 );
-
-                dispatch( updateZone({
-                    ...state.zone,
-                    premiumFeatures: state.zone?.premiumFeatures 
-                }) )
-                
-            }
-        }
         setThemeMode( newMode );
     };
 
@@ -270,7 +243,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                                 
                                 value="create"
                             >
-                                Crear mi tema <img src={ Premium } style={{ width: 12, marginLeft: 4 }} alt="img-icon" />
+                                Crear mi tema
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Box>

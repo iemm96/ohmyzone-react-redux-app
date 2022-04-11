@@ -6,6 +6,8 @@ import RegisterForm from '../pages/RegisterForm';
 import Login from "../pages/Login";
 import DashboardLayout from "../components/DashboardLayout";
 import ZoneDashboard from "../pages/ZoneDashboard";
+import UserProfile from "../pages/UserProfile";
+import UserSubscription from "../pages/UserSubscription";
 
 const AppRoutes = () => {
     return(
@@ -20,6 +22,9 @@ const AppRoutes = () => {
 
                     <Route path="/zones/edit/:part/:zone" element={<ZoneForm/>}/>
                     <Route path="/zones/:zone" element={<ZoneDashboard/>}/>
+
+                    <Route path="/profile" element={<UserProfile/>}/>
+                    <Route path="/subscription" element={<UserSubscription/>}/>
                 </Route>
 
             </Routes>
