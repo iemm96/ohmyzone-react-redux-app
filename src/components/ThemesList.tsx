@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import { fetchRecords } from '../actions/fetchRecords';
 import { useSelector, useDispatch } from 'react-redux';
 import ThemeCard from "./ThemeCard";
-import { CircularProgress, Grid, Stack } from '@mui/material';
+import { CircularProgress, Grid, Stack, Typography } from '@mui/material';
 import StyledButton from "../styled/StyledButton";
 import { Check } from "@mui/icons-material";
 import { updateRecord } from '../actions/updateRecord';
 import { updateTheme } from '../actions/themes';
 
 const ThemesList = ({ref}:{ref:any}) => {
-    const { zone, theme } = useSelector( (state:any) => state );
+    const { zone, theme, plan } = useSelector( (state:any) => state );
     const [ themes, setThemes ] = useState<any>( [] );
     const [ saveButtonProperties, setSaveButtonProperties ] = useState<any>({
         loading: false, 
@@ -71,7 +71,13 @@ const ThemesList = ({ref}:{ref:any}) => {
 
     return(
         <>
-            <Grid spacing={ 2 } container>
+            <Typography
+                align="center"
+                variant="caption"
+            >
+                Cantidad de temas restantes en tu plan: {  plan?.maxThemesPerZone - zone?.themesCounter }
+            </Typography>
+            <Grid sx={{ mt: 2 }} spacing={ 2 } container>
                 {
                     themes.map( (theme:any, index:number) => (
                         <Grid xs={ 6 } md={ 3 } item>
@@ -90,7 +96,8 @@ const ThemesList = ({ref}:{ref:any}) => {
                     ) )
                 }
             </Grid>
-          
+
+                
                 {
                     saveButtonProperties.visible && (
                         <Stack 

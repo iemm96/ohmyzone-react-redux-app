@@ -41,11 +41,13 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
   const navigate = useNavigate();
   const theme = useTheme();
   
-  const { zone } = useSelector( (state:any) => state );
+  const { zone, plan } = useSelector( (state:any) => state );
   const dispatch = useDispatch();
   const [ categories, setCategories ] = useState<CategoryItemType[]>([]);
   const [ categoriesAutocomplete, setCategoriesAutocomplete ] = useState<ObjectCategoryType[]>([]);
   const [ isFormReady, setIsFormReady ] = useState<boolean>( false );
+  const [ linksCounter, setLinksCounter ] = useState<number | null>( null );
+  const [ remainingLinks, setRemainingLinks ] = useState<number | null>( null );
 
   useEffect(() => {
     dispatch( updateZone({
@@ -58,8 +60,14 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
     dispatch( 
       showPreviewButton( true )
     );
-    getLinks();
   },[  ]);
+
+  useEffect(() => {
+    if( plan ) {
+      getLinks();
+    }
+
+  },[ plan ])
 
   const findCategoryInArray = (category:string, arrayCategories:ObjectCategoryType[]) => {
     let exists = false;
@@ -101,6 +109,9 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
 
       });
   
+      setLinksCounter( links.length );
+
+      setRemainingLinks( plan?.maxLinksPerZone - links.length );
 
       arrayCategories.map((item:any) => {
         const result = links.filter((obj:any) => {
@@ -154,9 +165,17 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
         </Box> 
       ))}
       {
+        remainingLinks !== null && (
+          <Typography variant="caption">
+            Links restantes en tu plan: { remainingLinks }
+          </Typography>
+        )
+      }
+      {
         isFormReady ? (
           <Box sx={{ mt: 2 }}>
             <LinkForm
+              isLocked={ remainingLinks === 0 }
               getLinks={ getLinks }
               zone={ zone.uid }
               zoneName={ zone.username }
