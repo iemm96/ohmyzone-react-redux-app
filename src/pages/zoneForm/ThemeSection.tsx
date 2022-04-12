@@ -19,6 +19,8 @@ import CustomThemeCreator from '../../components/CustomThemeCreator';
 import ThemesList from '../../components/ThemesList';
 import { useFormNavigationButtons } from '../../components/FormNavigationButtons';
 import { showPreviewButton } from '../../actions/ui';
+import { ModalReplaceTheme, useModalReplaceTheme } from '../../components/ModalReplaceTheme';
+import { SettingsInputComponent } from '@mui/icons-material';
 
 const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, fullForm?:boolean }) => {
     const params = useParams();
@@ -39,7 +41,13 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
     const [ themeMode, setThemeMode ] = useState<string>( fullForm ? 'myThemes' : 'search' );
 
     const [ currentThemeState, setCurrentThemeState ] = useState<any>( null );
-
+    const { openModal,
+        handleModal,
+        handleDelete,
+        modalTitle,
+        setModalTitle,
+        setUid,
+        setImageUid } = useModalReplaceTheme('themes');
     useEffect(() => {
         
         dispatch( 
@@ -109,6 +117,12 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
     const submitTheme = async () => {
         const theme = state.theme;
+
+        if ( state?.zone?.themesCounter >= state?.plan?.maxThemesPerZone ) {
+            handleModal();
+            return;
+        }
+
         setButtonSaveProperties((prev:any) => ({
             ...prev,
             text: 'Guardando cambios',
@@ -156,6 +170,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
                 dispatch( updateZone({
                     ...state.zone,
+                    themesCounter: zoneResult.themesCounter,
                     zoneResult
                 }) );
                 
@@ -192,6 +207,11 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
 
     return(
         <>
+            <ModalReplaceTheme
+                handleModal={ handleModal }
+                openModal={ openModal }
+                modalTitle={ modalTitle }
+            />
             <Paper
                 sx={{
                     pt: 2,
