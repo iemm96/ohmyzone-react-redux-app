@@ -15,6 +15,8 @@ export const zoneReducer = ( state = { } , action:any ) => {
                 backgroundImage: action?.payload?.backgroundImage,
                 socialLinks: action?.payload?.socialLinks,
                 links: action?.payload?.links,
+                linksCounter: action?.payload?.linksCounter,
+                themesCounter: action?.payload?.themesCounter
             }
         case actionTypes.clearSelectedZone: 
             return { }
