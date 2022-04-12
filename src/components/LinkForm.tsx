@@ -18,11 +18,14 @@ import { LinksItemType } from '../types/LinksItemType';
 import { CategoryItemType } from '../types/CategoryItemType';
 import { deleteRecord } from '../actions/deleteRecord';
 import { updateRecord } from '../actions/updateRecord';
+import Premium from '../assets/icons/premium.svg';
+import { updateUi } from '../actions/ui';
+import { useAppDispatch } from '../app/hooks';
 
 const filter = createFilterOptions<CategoryItemType>();
 
-export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode, zoneName, setEditMode, userWhatsapp }:{item?:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean, zoneName?:string, setEditMode?:any, userWhatsapp?:string }) => {
-
+export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode, zoneName, setEditMode, userWhatsapp, isLocked }:{item?:any, zone:string | undefined, getLinks:any, defaultCategories?:CategoryItemType[], editingMode:boolean, zoneName?:string, setEditMode?:any, userWhatsapp?:string, isLocked?:boolean }) => {
+    const dispatch = useAppDispatch();
     const [ isEditing, setIsEditing ] = useState<boolean>( editingMode );
 
     const link:LinksItemType = {
@@ -246,7 +249,7 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                         setCropper={ setCropper }
                         temporalDataUri={ temporalDataUri }
                         maxFileSize={ 20971520 }
-                        aspectRatio={ [ 1.86, 1, 0.86 ] }
+                        aspectRatio={ [ 16/9, 1, 4/5 ] }
                       />
                     </Grid>
                     <Grid xs={ 12 } item>
@@ -527,13 +530,21 @@ export const LinkForm = ({ item, zone, getLinks, defaultCategories, editingMode,
                   <Box sx={{ mt: 2, justifyContent: 'right', display: 'flex'}}>
                     <StyledButton
                         color="secondary"
-                        
-                        startIcon={( <Add/> )}
-                        onClick={ () => setIsEditing(true) }
+                        startIcon={( isLocked ? <img src={ Premium } style={{ width: 16 }} alt="img-icon" /> : <Add/> )}
+                        onClick={ () => {
+                          if( isLocked ) {
+                            dispatch( updateUi({
+                              modalPremium: true,
+                              titleModalPremium: "¡Conviértete en Zoner Pro y crea hasta 200 enlaces!"
+                            }) );
+                          }else {
+                            setIsEditing(true)}
+                          }
+                         }
                         variant="contained"
                         size="medium"
                     >
-                        Crear otro enlace
+                        { isLocked ? 'Cámbiate a pro para crear más enlaces' : 'Crear otro enlace' }
                     </StyledButton>
                   </Box> 
                 )

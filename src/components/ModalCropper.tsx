@@ -116,7 +116,7 @@ export const ModalCropper = ({
                                         aspectRatio.map( (value:number, index:number) => (
                                             <ToggleButton key={ index } value={ value }>
                                                 {
-                                                    value === 1.86 && (
+                                                    value === (16/9) && (
                                                         <CropLandscape/>
                                                     )
                                                 }
@@ -126,7 +126,7 @@ export const ModalCropper = ({
                                                     )
                                                 }
                                                 {
-                                                    value === 0.86 && (
+                                                    value === (4/5) && (
                                                         <CropPortrait/>
                                                     )
                                                 }
