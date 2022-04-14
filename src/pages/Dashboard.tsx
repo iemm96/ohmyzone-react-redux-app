@@ -48,7 +48,7 @@ const Dashboard = () => {
         >
             <Container maxWidth="md">
                 {
-                    auth.zonesCounter <= plan?.maxZones && (
+                   ( ( auth.zonesCounter <= plan?.maxZones ))  && (
                         <Grid justifyContent="right" container>
                             <Grid item>
                                 <StyledButton
@@ -56,7 +56,7 @@ const Dashboard = () => {
                                     variant="contained"
                                     color="secondary"
                                     endIcon={ !plan?.isPremium && <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                                    onClick={  !plan.isPremium ?
+                                    onClick={ ( ( !plan.isPremium ) || ( subscription.isExpired  ) ) ?
                                     () => dispatch( updateUi({
                                         modalPremium: true,
                                         titleModalPremium: "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" 
@@ -83,6 +83,9 @@ const Dashboard = () => {
                         </Grid>
                     )) }
                 </Grid>
+                <Typography variant="caption">
+                    Zones disponibles en tu plan: { plan.maxZones - auth.zonesCounter }
+                </Typography>
                 {
                     ( auth.zonesCounter >= plan?.maxZones  ) && (
                         <Typography

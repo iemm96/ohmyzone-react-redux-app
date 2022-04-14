@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { updateSubscription } from '../actions/subscriptions';
 import { subscribe } from "../actions/subscribe";
 import { add } from 'date-fns';
+import { updatePlan } from '../actions/plans';
 
 const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", user:string}) => {
     const dispatch = useDispatch();
@@ -20,10 +21,11 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
             return actions.subscription.get().then( async function(details:any) {
   
               const { transaction } = await postRecord( 'transactions', {
+                status: "paid",
                 orderIdPaypal: data.orderID,
                 subscriptionIdPaypal: data.subscriptionID,
                 planName,
-                user
+                user,
               } );
 
               let monthsToAdd:number = 0;
@@ -48,9 +50,13 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
 
               console.log( 'resultSubscribe ', resultSubscribe );
 
-              dispatch( updateSubscription({
-                current: ''
-              }) );
+              dispatch( updateSubscription(
+                resultSubscribe.subscription
+              ) );
+
+              dispatch( updatePlan(
+                resultSubscribe.plan
+              ) );
 
               return transaction;
             });

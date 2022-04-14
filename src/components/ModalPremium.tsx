@@ -152,7 +152,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                 </Box>
                 <Box sx={{ p: 3, pb: 2 }}>
                 {
-                   ( plan.name === "proWithFreeTrial" || plan.name === "proMonthly" || plan.name === "proAnnual") && (
+                   ( plan.name === "proWithFreeTrial" || plan.name === "proMonthly" || plan.name === "proAnnual") && ( !subscription.isExpired ) && (
                         <>
                             <Typography
                                 align="center"
@@ -177,7 +177,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 }
                             </Typography>
                             {
-                                plan.name === ("proAnnual" || "proproMonthly" ) && (
+                                plan.name === ("proAnnual" || "proMonthly" ) && (
                                     <>
                                         <Typography
                                             align="center"
@@ -202,13 +202,13 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 fullWidth
                                 onClick={ handleModal }
                             >
-                                ¡Continua explorando!
+                                ¡Continúa explorando!
                             </StyledButton>
                         </>
                     )
                 }
                 {
-                    ( plan.name === "free" || plan.name === "expired" ) && (
+                    ( plan.name === "free" || subscription.isExpired ) && (
                         <>
                             <Typography
                                 color="primary"
@@ -287,7 +287,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                 />
                             </ToggleButtonGroup>
                             {
-                                plan.name === "expired" ? (
+                                subscription.isExpired ? (
                                     <PaypalButtonComponent
                                         user={ auth.uid }
                                         planName={ planMode }

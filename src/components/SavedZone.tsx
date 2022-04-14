@@ -12,7 +12,7 @@ import { ModalDelete, useModalDelete } from './ModalDelete';
 import { useNavigate } from 'react-router-dom';
 import { getZoneStatusLabel } from '../helpers/getZoneStatusLabel';
 import { useDispatch } from 'react-redux';
-import { showModalPremium } from '../actions/ui';
+import { showModalPremium, updateUi } from '../actions/ui';
 
 
 const SavedZone = ({ getZones, data, isLocked }:{  getZones?:any, data:any, isLocked?:boolean }) => {
@@ -74,7 +74,10 @@ const SavedZone = ({ getZones, data, isLocked }:{  getZones?:any, data:any, isLo
                     cursor: 'pointer'
                 }} 
                 onClick={ isLocked ? 
-                    () => dispatch( showModalPremium("¡Continúa editando tus Zones siendo Zoner Pro!") )
+                    () => dispatch( updateUi({
+                        modalPremium: true,
+                        titleModalPremium: "Conviértete en Zoner Pro para editar este Zone"
+                    }) )
                     : 
                     data.currentStatus === 'isEditing' ?  
                         () => navigate( `/zones/edit/1/${ data.uid }`)
