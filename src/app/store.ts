@@ -26,10 +26,19 @@ const composeEnhancers =
   ui: uiReducer,
   zone: zoneReducer,
   plan: planReducer
-})
+});
+
+const rootReducer = (state:any, action:any) => {
+  if (action.type === '[Auth] Logout') {
+    const { routing } = state
+    state = { routing } 
+  }
+  return reducers(state, action)
+}
+
 
 export const store = createStore(
-  reducers,
+  rootReducer,
   composeEnhancers(
     applyMiddleware( thunk )
   )
