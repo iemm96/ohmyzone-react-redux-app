@@ -6,6 +6,8 @@ import { subscribe } from "../actions/subscribe";
 import { add } from 'date-fns';
 import { updatePlan } from '../actions/plans';
 
+const { REACT_APP_PAYPAL_CLIENT, REACT_APP_ZONER_PRO_ANNUAL_PAYPAL_CODE, REACT_APP_ZONER_PRO_MONTHLY_CODE } = process.env;
+
 const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", user:string}) => {
     const dispatch = useDispatch();
 
@@ -13,7 +15,7 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
       <PayPalButton
         createSubscription={(data:any, actions:any) => {
             return actions.subscription.create({
-              plan_id: planName === 'proAnnual' ? 'P-9MV67954VP388794WMIXHMEQ' : 'P-2HT01121J34452333MIXHLJI'
+              plan_id: planName === 'proAnnual' ? REACT_APP_ZONER_PRO_ANNUAL_PAYPAL_CODE : REACT_APP_ZONER_PRO_MONTHLY_CODE
             });
           }}
         onApprove={(data:any, actions:any) => {
@@ -64,7 +66,7 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
         options={{
             vault: true,
             currency: 'MXN',
-            clientId: "AfuBu7MGQ6uUdMn51-SPipIEFOlSWvKIu7SBHYYtJL_pZfDgX0kiFhxLb2_s2eR1kU8Viwz0KFHkYppv"
+            clientId: REACT_APP_PAYPAL_CLIENT
         }}
       />
     );
