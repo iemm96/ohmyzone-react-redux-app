@@ -17,6 +17,7 @@ const AppRoutes = () => {
                 <Route path="/register" element={<RegisterForm/>}/>
                 <Route element={ <DashboardLayout/> }>
                     <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/dashboard/:token" element={<Dashboard/>}/>
                     <Route path="/zones/new/:part" element={<ZoneForm/>}/>
                     <Route path="/zones/new/:part/:zone" element={<ZoneForm/>}/>
 
