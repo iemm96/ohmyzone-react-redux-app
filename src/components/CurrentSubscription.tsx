@@ -93,21 +93,19 @@ const CurrentSubscription = ({ getLinks, data, disableEdit = false, defaultCateg
                             backgroundColor: theme.palette.background.paper
                         }}
                         >
-                    
-                        <CardMedia
-                            component="img"
-                            sx={{ width: 151 }}
-                            image={ data.coverImg?.url ? data.coverImg.url : '' }
-                            alt="Cover link"
-                        />
                         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                             <CardContent sx={{ flex: '1 0 auto' }}>
                             <Typography component="div" variant="h6">
                                 { data?.plan?.nameToShow }
                             </Typography>
-                            <Typography variant="subtitle2" color="text.secondary" component="div">
-                                {  `Activa hasta: ${format( new Date( data.activeUntil ), 'dd/MMMM/yyyy', { locale: es } )}` }
-                            </Typography>
+                            {
+                                data?.activeUntil && (
+                                    <Typography variant="subtitle2" color="text.secondary" component="div">
+                                    {  `Activa hasta: ${format( new Date( data.activeUntil ), 'dd/MMMM/yyyy', { locale: es } )}` }
+                                    </Typography>
+                                )
+                            }
+  
                             </CardContent>
                         </Box>
                     </Card>

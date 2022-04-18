@@ -1,9 +1,9 @@
-import { Container, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { Container, Grid, Paper, Typography, useTheme, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { fetchRecords } from '../actions/fetchRecords';
 import { useSelector, useDispatch } from 'react-redux';
 import SavedZone from '../components/SavedZone';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import StyledButton from '../styled/StyledButton';
 import { Add } from '@mui/icons-material';
 import Premium from '../assets/icons/premium.svg';
@@ -17,7 +17,13 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const theme = useTheme();
+    const params = useParams();
 
+    useEffect(() => {
+        if( params?.token ) {
+
+        }
+    },[ ]);
     useEffect(() => {
         dispatch( clearSelectedTheme() )
         dispatch( clearSelectedZone() );
@@ -48,15 +54,27 @@ const Dashboard = () => {
         >
             <Container maxWidth="md">
                 {
-                    auth.zonesCounter <= plan?.maxZones && (
-                        <Grid justifyContent="right" container>
-                            <Grid item>
+                   ( ( auth.zonesCounter <= plan?.maxZones ))  && (
+                        <Stack direction="row" justifyContent={params?.token ? 'space-between' : 'right'}>
+                            {
+                                params?.token && (
+                                    <Stack>
+                                        <Typography color="text.primary" variant="h6">
+                                            ¡Bienvenido a OhMyZone!
+                                        </Typography>
+                                        <Typography color="text.secondary" variant="caption">
+                                            ¡Ahora podrás continuar editando tu Zone!
+                                        </Typography>
+                                    </Stack>
+                                )
+                                
+                            }       
                                 <StyledButton
                                     startIcon={ <Add/> }
                                     variant="contained"
                                     color="secondary"
                                     endIcon={ !plan?.isPremium && <img src={ Premium } style={{ width: 12 }} alt="img-icon" /> }
-                                    onClick={  !plan.isPremium ?
+                                    onClick={ ( ( !plan.isPremium ) || ( subscription.isExpired  ) ) ?
                                     () => dispatch( updateUi({
                                         modalPremium: true,
                                         titleModalPremium: "¡Es momento de ser un Zoner pro, para crear un nuevo Zone!" 
@@ -67,8 +85,7 @@ const Dashboard = () => {
                                 >
                                     Crear nuevo Zone
                                 </StyledButton>
-                            </Grid>
-                        </Grid>
+                        </Stack>
                     )
                 }
                 
@@ -83,19 +100,9 @@ const Dashboard = () => {
                         </Grid>
                     )) }
                 </Grid>
-                {
-                    ( auth.zonesCounter >= plan?.maxZones  ) && (
-                        <Typography
-                            sx={{
-                                mt: 2,
-                                color: theme.palette.text.secondary
-                            }}
-                        >
-                            Haz alcanzado el número máximo de Zones disponibles para tu cuenta
-                        </Typography>
-                    )
-                }
-                
+                <Typography color="text.secondary" variant="caption">
+                    Zones disponibles en tu plan: { plan.maxZones - auth.zonesCounter }
+                </Typography>
             </Container>
         </Paper>
     )

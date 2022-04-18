@@ -34,12 +34,14 @@ const DashboardLayout = () => {
         if( token ) {
             const result = await dispatch( startValidateJWT(token) );
 
+            console.log( 'RESULT TOKEN!!! ', result )
             /*
             dispatch( updateSubscription({
                 current: 
             }));*/
 
             if(!result) {
+                //localStorage.removeItem('token');
                 //navigate('/');    
             }
         }else{

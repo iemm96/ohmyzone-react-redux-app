@@ -1,8 +1,13 @@
+type linkType = {
+    value: String;
+    clicksCounter: Number;
+};
+
 export type ContactOptionsType = {
-    facebook: boolean;
-    instagram: boolean;
-    tiktok: boolean;
-    whatsapp: boolean;
-    phone: boolean;
-    email: boolean;
+    facebook: linkType | null;
+    instagram: linkType | null;
+    tiktok: linkType | null;
+    whatsapp: linkType | null;
+    phone: linkType | null;
+    email: linkType | null;
 }
