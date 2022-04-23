@@ -82,12 +82,12 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
             setContactOptions( zone?.socialLinks );
         }
 
-        zone?.socialLinks?.instagram && setValue( 'instagram', zone?.socialLinks?.instagram.value );
-        zone?.socialLinks?.email && setValue( 'email', zone?.socialLinks?.email.value );
-        zone?.socialLinks?.whatsapp && setValue( 'whatsapp', zone?.socialLinks?.whatsapp.value );
-        zone?.socialLinks?.tiktok && setValue( 'tiktok', zone?.socialLinks?.tiktok.value );
-        zone?.socialLinks?.phone && setValue( 'phone', zone.socialLinks.phone.value );
-        zone?.socialLinks?.facebook && setValue( 'facebook', zone?.socialLinks?.facebook.value );
+        zone?.socialLinks?.instagram && setValue( 'instagram', zone?.socialLinks?.instagram );
+        zone?.socialLinks?.email && setValue( 'email', zone?.socialLinks?.email );
+        zone?.socialLinks?.whatsapp && setValue( 'whatsapp', zone?.socialLinks?.whatsapp );
+        zone?.socialLinks?.tiktok && setValue( 'tiktok', zone?.socialLinks?.tiktok );
+        zone?.socialLinks?.phone && setValue( 'phone', zone.socialLinks.phone );
+        zone?.socialLinks?.facebook && setValue( 'facebook', zone?.socialLinks?.facebook );
     }
 
     const onSubmit = async ( data:any ) => {
@@ -138,10 +138,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.facebook?.clicksCounter ? contactOptions?.facebook?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null;
                                         setContactOptions({ ...contactOptions, facebook: val});
 
                                         dispatch( updateZone({
@@ -161,11 +158,11 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                     name="facebook"
                                     control={ control }
                                     rules={{
-                                        required: contactOptions?.facebook ? 'Ingresa tu nombre de usuario de Facebook' : false
+                                        required: contactOptions?.facebook !== null ? 'Ingresa tu nombre de usuario de Facebook' : false
                                     }}
                                     render={({ field: { onChange, value } }) => (
                                         <TextField
-                                            disabled={ !contactOptions.facebook }
+                                            disabled={ contactOptions.facebook === null }
                                             placeholder="Nombre de usuario de tu Facebook"
                                             fullWidth
                                             onBlur={ (e) => {
@@ -173,10 +170,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        facebook: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.facebook ? contactOptions?.facebook?.clicksCounter : 0
-                                                        }
+                                                        facebook: e.target.value
                                                     }
                                                 }));
                                             } }
@@ -199,10 +193,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.instagram?.clicksCounter ? contactOptions?.instagram?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null;
                                         setContactOptions({ ...contactOptions, instagram: val })
                                         dispatch( updateZone({
                                             ...zone,
@@ -219,13 +210,13 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 <Controller
                                     name="instagram"
                                     rules={{
-                                        required: contactOptions?.instagram ? 'Ingresa tu nombre de usuario de Instagram' : false
+                                        required: contactOptions?.instagram !== null ? 'Ingresa tu nombre de usuario de Instagram' : false
                                     }}
                                     control={ control }
                                     render={ ({ field: { onChange, value } }) => (
                                         
                                         <TextField
-                                            disabled={ !contactOptions.instagram }
+                                            disabled={ contactOptions.instagram === null }
                                             placeholder="Nombre de usuario de tu instagram"
                                             fullWidth
                                             onBlur={ (e) => {
@@ -233,10 +224,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        instagram: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.instagram ? contactOptions?.instagram?.clicksCounter : 0
-                                                        }
+                                                        instagram: e.target.value
                                                     }
                                                 }));
                                             }}
@@ -259,10 +247,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.phone?.clicksCounter ? contactOptions?.phone?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null;
                                         setContactOptions({ ...contactOptions, phone: val});
                                         dispatch( updateZone({
                                             ...zone,
@@ -278,13 +263,13 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 <Controller
                                     name="phone"
                                     rules={{
-                                        required: contactOptions.phone ? 'Ingresa tu teléfono' : false
+                                        required: contactOptions.phone !== null ? 'Ingresa tu teléfono' : false
                                     }}
                                     control={ control }
                                     render={ ({ field: { onChange, value } }) => (
                                         
                                         <TextField
-                                            disabled={ !contactOptions.phone }
+                                            disabled={ contactOptions.phone === null }
                                             placeholder="Tu teléfono"
                                             fullWidth
                                             onChange={ onChange }
@@ -293,10 +278,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        phone: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.phone ? contactOptions?.phone?.clicksCounter : 0
-                                                        }
+                                                        phone: e.target.value
                                                     }
                                                 }));
                                             } }
@@ -319,10 +301,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.whatsapp?.clicksCounter ? contactOptions?.whatsapp?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null
                                         setContactOptions({ ...contactOptions, whatsapp: val});
                                         dispatch( updateZone({
                                             ...zone,
@@ -338,13 +317,13 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 <Controller
                                     name="whatsapp"
                                     rules={{
-                                        required: contactOptions?.whatsapp ? 'Ingresa tu WhatsApp' : false
+                                        required: contactOptions?.whatsapp !== null ? 'Ingresa tu WhatsApp' : false
                                     }}
                                     control={ control }
                                     render={ ({ field: { onChange, value } }) => (
                                         
                                         <TextField
-                                            disabled={ !contactOptions.whatsapp }
+                                            disabled={ contactOptions.whatsapp === null }
                                             placeholder="Tu WhatsApp"
                                             fullWidth
                                             onChange={ onChange }
@@ -353,10 +332,10 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        whatsapp: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.whatsapp ? contactOptions?.whatsapp?.clicksCounter : 0
-                                                        }
+                                                        whatsapp: e.target.value
+                                                    },
+                                                    socialLinksCounter: {
+
                                                     }
                                                 }));
                                             } }
@@ -379,10 +358,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.email?.clicksCounter ? contactOptions?.email?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null;
                                         setContactOptions({ ...contactOptions, email: val})
                                         dispatch( updateZone({
                                             ...zone,
@@ -399,7 +375,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 <Controller
                                     name="email"
                                     rules={{
-                                        required: contactOptions.email ? 'Ingresa tu Email' : false,
+                                        required: contactOptions.email !== null ? 'Ingresa tu Email' : false,
                                         pattern: {
                                             value: /^\S+@\S+$/i,
                                             message: 'El correo no es válido.'
@@ -409,7 +385,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                     render={ ({ field: { onChange, value } }) => (
                                         
                                         <TextField
-                                            disabled={ !contactOptions.email }
+                                            disabled={ contactOptions.email === null }
                                             placeholder="Tu Email"
                                             fullWidth
                                             onChange={ onChange }
@@ -418,10 +394,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        email: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.email ? contactOptions?.email?.clicksCounter : 0
-                                                        }
+                                                        email: e.target.value
                                                     }
                                                 }));
                                             } }
@@ -444,10 +417,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
                                 <StyledSwitch 
                                     onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
-                                        let val:any = e.target.checked ? {
-                                            value: '',
-                                            clicksCounter: contactOptions?.tiktok?.clicksCounter ? contactOptions?.tiktok?.clicksCounter : 0
-                                        } : null;
+                                        let val:any = e.target.checked ? '' : null;
                                         setContactOptions({ ...contactOptions, tiktok: val})
                                         dispatch( updateZone({
                                             ...zone,
@@ -464,13 +434,13 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 <Controller
                                     name="tiktok"
                                     rules={{
-                                        required: contactOptions.tiktok ? 'Ingresa tu usuario de Tiktok' : false
+                                        required: contactOptions.tiktok !== null ? 'Ingresa tu usuario de Tiktok' : false
                                     }}
                                     control={ control }
                                     render={ ({ field: { onChange, value } }) => (
                                         
                                         <TextField
-                                            disabled={ !contactOptions.tiktok }
+                                            disabled={ contactOptions.tiktok === null }
                                             placeholder="Nombre de usuario de tu Tiktok"
                                             fullWidth
                                             onChange={ onChange }
@@ -479,10 +449,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                                     ...zone,
                                                     socialLinks: {
                                                         ...contactOptions,
-                                                        tiktok: {
-                                                            value: e.target.value,
-                                                            clicksCounter: contactOptions?.tiktok ? contactOptions?.tiktok?.clicksCounter : 0
-                                                        }
+                                                        tiktok: e.target.value
                                                     }
                                                 }));
                                             } }
