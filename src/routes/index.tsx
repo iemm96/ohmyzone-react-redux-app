@@ -8,6 +8,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import ZoneDashboard from "../pages/ZoneDashboard";
 import UserProfile from "../pages/UserProfile";
 import UserSubscription from "../pages/UserSubscription";
+import ConfirmEmail from '../pages/ConfirmEmail';
 
 const AppRoutes = () => {
     return(
@@ -15,6 +16,7 @@ const AppRoutes = () => {
             <Routes>
                 <Route path="/" element={<Login/>}/>
                 <Route path="/register" element={<RegisterForm/>}/>
+                <Route path="/confirm/email/:user/:token" element={<ConfirmEmail/>}/>
                 <Route element={ <DashboardLayout/> }>
                     <Route path="/dashboard" element={<Dashboard/>}/>
                     <Route path="/dashboard/:token" element={<Dashboard/>}/>
