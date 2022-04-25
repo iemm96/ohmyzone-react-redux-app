@@ -17,11 +17,11 @@ export const startValidateJWT = ( jwt:string ) => {
         try{
             const { data } = await axios.get(
                 `${ REACT_APP_API_HOST }auth`,
-                {
-                    headers: {'x-token': jwt}
-                }
-            );
-
+                    {
+                        headers: {'x-token': jwt}
+                    }
+                );
+            
             if(data.user) {
                 dispatch( login(data.user.name, data.user.uid, jwt, data.user.zonesCounter, data.user?.subscription, data.user?.img ));
                 dispatch( updateSubscription( data.user?.subscription ) );
@@ -31,8 +31,9 @@ export const startValidateJWT = ( jwt:string ) => {
                 //dispatch( logout );
                 return false;
             }
-        }catch(e){
-            console.log(e);
+        }catch(e:any){
+            
+            return e.response.data;
         }
     
     }

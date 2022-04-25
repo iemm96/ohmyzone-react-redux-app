@@ -23,7 +23,7 @@ const Login = () => {
     const { signIn, loadingGoogle, setLoadingGoogle } = useGoogleButton({
       api_host: REACT_APP_API_HOST ? REACT_APP_API_HOST : '',
       googleClient: REACT_APP_GOOGLE_CLIENT ? REACT_APP_GOOGLE_CLIENT : ''
-  });
+    });
 
     const dispatch = useDispatch();
 

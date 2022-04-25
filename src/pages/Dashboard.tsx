@@ -1,9 +1,9 @@
-import { Container, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { Container, Grid, Paper, Typography, useTheme, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { fetchRecords } from '../actions/fetchRecords';
 import { useSelector, useDispatch } from 'react-redux';
 import SavedZone from '../components/SavedZone';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import StyledButton from '../styled/StyledButton';
 import { Add } from '@mui/icons-material';
 import Premium from '../assets/icons/premium.svg';
@@ -17,7 +17,13 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const theme = useTheme();
+    const params = useParams();
 
+    useEffect(() => {
+        if( params?.token ) {
+
+        }
+    },[ ]);
     useEffect(() => {
         dispatch( clearSelectedTheme() )
         dispatch( clearSelectedZone() );
@@ -49,8 +55,20 @@ const Dashboard = () => {
             <Container maxWidth="md">
                 {
                    ( ( auth.zonesCounter <= plan?.maxZones ))  && (
-                        <Grid justifyContent="right" container>
-                            <Grid item>
+                        <Stack direction="row" justifyContent={params?.token ? 'space-between' : 'right'}>
+                            {
+                                params?.token && (
+                                    <Stack>
+                                        <Typography color="text.primary" variant="h6">
+                                            ¡Bienvenido a OhMyZone!
+                                        </Typography>
+                                        <Typography color="text.secondary" variant="caption">
+                                            ¡Ahora podrás continuar editando tu Zone!
+                                        </Typography>
+                                    </Stack>
+                                )
+                                
+                            }       
                                 <StyledButton
                                     startIcon={ <Add/> }
                                     variant="contained"
@@ -67,8 +85,7 @@ const Dashboard = () => {
                                 >
                                     Crear nuevo Zone
                                 </StyledButton>
-                            </Grid>
-                        </Grid>
+                        </Stack>
                     )
                 }
                 
@@ -83,9 +100,6 @@ const Dashboard = () => {
                         </Grid>
                     )) }
                 </Grid>
-                <Typography variant="caption">
-                    Zones disponibles en tu plan: { plan.maxZones - auth.zonesCounter }
-                </Typography>
                 {
                     ( auth.zonesCounter >= plan?.maxZones  ) && (
                         <Typography

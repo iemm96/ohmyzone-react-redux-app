@@ -91,7 +91,7 @@ const PreviewSection = ({fullForm}:{fullForm?:boolean}) => {
     }
 
     return (
-        <Container sx={{ mb: fullForm ? 10 : 0 }} maxWidth="sm">
+        <Container sx={{ mt: 2, mb: fullForm ? 10 : 0 }} maxWidth="sm">
             <ModalZonePublished
                 handleModal={ handleModal }
                 openModal={ openModal }

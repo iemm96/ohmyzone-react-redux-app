@@ -1,5 +1,5 @@
 import Header from "./Header";
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import withTheme from './WithTheme';
 import { useEffect } from 'react';
 import { startValidateJWT } from '../actions/auth';
@@ -11,6 +11,7 @@ const DashboardLayout = () => {
     const { ui } = useSelector( (state:any) => state );
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const params = useParams();
     const { handleModal, openModal, modalTitle, handleStartFreeTrial, plan, auth , subscription } = useModalPremium();
 
     useEffect(() => {
@@ -20,23 +21,27 @@ const DashboardLayout = () => {
     },[ ui?.showModalPremium ])
 
     useEffect( ( ) => {
-        validateJWT().then();
+        console.log( params );
+        validateJWT( params?.token ).then();
     }, [ ] );
 
-    const validateJWT = async () => {
+    const validateJWT = async (token:string | undefined | null) => {
         
-        let token:string | null = localStorage.getItem('token');
+        if( !token ) {
+            token = localStorage.getItem('token');
+        }
 
         if( token ) {
-            const result = await dispatch( startValidateJWT(token) );
+            const result:any = await dispatch( startValidateJWT(token) );
 
             /*
             dispatch( updateSubscription({
                 current: 
             }));*/
 
-            if(!result) {
-                //navigate('/');    
+            if( result.success === false ) {
+                localStorage.removeItem('token');
+                navigate('/');
             }
         }else{
             navigate('/');
