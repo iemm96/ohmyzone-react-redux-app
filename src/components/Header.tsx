@@ -171,21 +171,38 @@ const Header = () => {
                         }}
                         
                     >
-                        <Typography
-                            sx={{
-                                ml: 1
-                            }}
-                            variant="caption"
-                        >
-                            { zone.currentStatus === "isPublished" ?  'Tu Zone está publicado' : 'Tu Zone está invisible' }
-                        </Typography>
-                        <StyledSwitch
-                            sx={{
-                                mr: 1
-                            }}
-                            defaultChecked={  zone.currentStatus === "isPublished" }
-                            onChange={ handleChangeZoneStatus }
-                        />
+                        {
+                            auth?.hasVerifiedEmail ? (
+                                <>
+                                    <Typography
+                                        sx={{
+                                            ml: 1
+                                        }}
+                                        variant="caption"
+                                    >
+                                        { zone.currentStatus === "isPublished" ?  'Tu Zone está publicado' : 'Tu Zone está invisible' }
+                                    </Typography>
+                                    <StyledSwitch
+                                        sx={{
+                                            mr: 1
+                                        }}
+                                        disabled={ auth?.hasVerifiedEmail }
+                                        defaultChecked={  zone.currentStatus === "isPublished" }
+                                        onChange={ handleChangeZoneStatus }
+                                    />
+                                </>
+                            ) : (
+                                <Typography
+                                    sx={{
+                                        ml: 1
+                                    }}
+                                    variant="caption"
+                                >
+                                    Debes confirmar tu correo antes de poder publicar tu Zone
+                                </Typography>
+                            )
+                        }
+                        
                     </Box>
                     
                 )

@@ -23,7 +23,7 @@ export const startValidateJWT = ( jwt:string ) => {
                 );
             
             if(data.user) {
-                dispatch( login(data.user.name, data.user.uid, jwt, data.user.zonesCounter, data.user?.subscription, data.user?.img ));
+                dispatch( login(data.user.name, data.user.uid, jwt, data.user.zonesCounter, data.user?.subscription, data.user?.img, data.user?.hasVerifiedEmail ));
                 dispatch( updateSubscription( data.user?.subscription ) );
                 dispatch( updatePlan( data.user?.subscription?.plan ) );
                 return data.user;
@@ -61,7 +61,8 @@ export const startLogin = ( email:string, password:string ) => {
                 data.user.uid,
                 data.token,
                 data.user?.subscription,
-                data.img
+                data.img,
+                data.user?.hasVerifiedEmail
             ));
         }catch(e:any){
             return e.response.data
@@ -88,7 +89,7 @@ export const startRegister = ( name:string, email:string, password:string, role:
     }
 }
 
-export const login = ( name:string, uid:string, token:string, zonesCounter:string, subscription:string, img?:string ) => ({
+export const login = ( name:string, uid:string, token:string, zonesCounter:string, subscription:string, img?:string, hasVerifiedEmail?:boolean ) => ({
     type: actionTypes.login,
     payload: {
         name,
@@ -96,7 +97,8 @@ export const login = ( name:string, uid:string, token:string, zonesCounter:strin
         token,
         zonesCounter,
         subscription,
-        img
+        img,
+        hasVerifiedEmail
     }
 });
 
