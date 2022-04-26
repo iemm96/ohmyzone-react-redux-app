@@ -45,6 +45,9 @@ const ConfirmEmail = () => {
         if( params.user && params.token ) {
             const result = await validateEmail( params.user, params.token );
             if( result.success ) {
+                localStorage.removeItem('token');
+                localStorage.setItem('token', result.token );
+
                 setLoading( false );
             }
         }
