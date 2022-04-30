@@ -186,7 +186,7 @@ const Header = () => {
                                         sx={{
                                             mr: 1
                                         }}
-                                        disabled={ auth?.hasVerifiedEmail }
+                                        disabled={ !auth?.hasVerifiedEmail }
                                         defaultChecked={  zone.currentStatus === "isPublished" }
                                         onChange={ handleChangeZoneStatus }
                                     />
