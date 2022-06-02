@@ -1,7 +1,7 @@
 import StyledSwitch from '../../styled/StyledSwitch';
 import TextField from '@mui/material/TextField';
 import { InputAdornment, Grid, Stack, useTheme, Typography } from '@mui/material';
-import { Call, Email, Facebook, Instagram, WhatsApp } from '@mui/icons-material';
+import { Call, Email, Facebook, Instagram, LinkedIn, Twitter, WhatsApp } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { ContactOptionsType } from '../../types/ContactOptionsType';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -40,6 +40,8 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
         tiktok: null,
         phone: null,
         email: null,
+        twitter: null,
+        linkedin: null,
     });
 
     useEffect(() => {
@@ -85,6 +87,8 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
         zone?.socialLinks?.instagram && setValue( 'instagram', zone?.socialLinks?.instagram );
         zone?.socialLinks?.email && setValue( 'email', zone?.socialLinks?.email );
         zone?.socialLinks?.whatsapp && setValue( 'whatsapp', zone?.socialLinks?.whatsapp );
+        zone?.socialLinks?.twitter && setValue( 'twitter', zone?.socialLinks?.twitter );
+        zone?.socialLinks?.linkedin && setValue( 'linkedin', zone?.socialLinks?.linkedin );
         zone?.socialLinks?.tiktok && setValue( 'tiktok', zone?.socialLinks?.tiktok );
         zone?.socialLinks?.phone && setValue( 'phone', zone.socialLinks.phone );
         zone?.socialLinks?.facebook && setValue( 'facebook', zone?.socialLinks?.facebook );
@@ -352,7 +356,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 />
                                 
                             </Stack>
-                            { errors.whatsapp && <Typography variant="caption" sx={{color:'red'}}>{errors.whatsapp.message }</Typography>}
+                            { errors.whatsapp && <Typography variant="caption" sx={{color:'red'}}>{errors.whatsapp.message }</Typography> }
                         </Grid>
                         <Grid item xs={12}>
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
@@ -412,6 +416,120 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 
                             </Stack>
                             { errors.email && <Typography variant="caption" sx={{color:'red'}}>{errors.email.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        let val:any = e.target.checked ? '' : null
+                                        setContactOptions({ ...contactOptions, twitter: val});
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                twitter: val
+                                            }
+                                        }));
+                                        clearErrors('twitter');
+                                    } }
+                                    checked={ contactOptions.twitter !== null } 
+                                />
+                                <Controller
+                                    name="twitter"
+                                    rules={{
+                                        required: contactOptions?.twitter !== null ? 'Ingresa tu Twitter' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ contactOptions.twitter === null }
+                                            placeholder="Tu Twitter"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            onBlur={ (e) => {
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        twitter: e.target.value
+                                                    },
+                                                    socialLinksCounter: {
+
+                                                    }
+                                                }));
+                                            } }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Twitter color={ contactOptions.twitter ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                                
+                            </Stack>
+                            { errors.twitter && <Typography variant="caption" sx={{color:'red'}}>{errors.twitter.message }</Typography> }
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch 
+                                    onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                        let val:any = e.target.checked ? '' : null
+                                        setContactOptions({ ...contactOptions, linkedin: val});
+                                        dispatch( updateZone({
+                                            ...zone,
+                                            socialLinks: {
+                                                ...contactOptions,
+                                                linkedin: val
+                                            }
+                                        }));
+                                        clearErrors('linkedin');
+                                    } }
+                                    checked={ contactOptions.linkedin !== null } 
+                                />
+                                <Controller
+                                    name="linkedin"
+                                    rules={{
+                                        required: contactOptions?.linkedin !== null ? 'Ingresa tu LinkedIn' : false
+                                    }}
+                                    control={ control }
+                                    render={ ({ field: { onChange, value } }) => (
+                                        
+                                        <TextField
+                                            disabled={ contactOptions.linkedin === null }
+                                            placeholder="Tu LinkedIn"
+                                            fullWidth
+                                            onChange={ onChange }
+                                            onBlur={ (e) => {
+                                                dispatch( updateZone({
+                                                    ...zone,
+                                                    socialLinks: {
+                                                        ...contactOptions,
+                                                        linkedin: e.target.value
+                                                    },
+                                                    socialLinksCounter: {
+
+                                                    }
+                                                }));
+                                            } }
+                                            value={ value }
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <LinkedIn color={ contactOptions.linkedin ? "primary" : "disabled" }/>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                                
+                            </Stack>
+                            { errors.linkedin && <Typography variant="caption" sx={{color:'red'}}>{errors.linkedin.message }</Typography> }
                         </Grid>
                         <Grid item xs={12}>
                             <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>

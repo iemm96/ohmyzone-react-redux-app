@@ -2,7 +2,7 @@ import { useTheme, styled } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { Grid, Avatar, Typography, IconButton } from '@mui/material';
-import { Email, Phone, Facebook, Instagram, WhatsApp } from '@mui/icons-material';
+import { Email, Phone, Facebook, Instagram, WhatsApp, Twitter, LinkedIn } from '@mui/icons-material';
 import { Tiktok } from 'styled-icons/boxicons-logos';
 
 const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageUrl?:string }) => {
@@ -132,6 +132,26 @@ const BannerPreview = ({ data, backgroundImageUrl }:{ data:any, backgroundImageU
                                     backgroundColor: theme.palette.primary.main
                                 }} aria-label="mail">
                                     <Instagram fontSize="medium" />
+                                </IconButton>
+                            </Grid>
+                        )}
+                        {  data?.socialLinks?.twitter && (
+                            <Grid item>
+                                <IconButton
+                                sx={{
+                                    backgroundColor: theme.palette.primary.main
+                                }} aria-label="mail">
+                                    <Twitter fontSize="medium" />
+                                </IconButton>
+                            </Grid>
+                        )}
+                        {  data?.socialLinks?.linkedin && (
+                            <Grid item>
+                                <IconButton
+                                sx={{
+                                    backgroundColor: theme.palette.primary.main
+                                }} aria-label="mail">
+                                    <LinkedIn fontSize="medium" />
                                 </IconButton>
                             </Grid>
                         )}
