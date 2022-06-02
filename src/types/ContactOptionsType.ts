@@ -10,4 +10,6 @@ export type ContactOptionsType = {
     whatsapp: linkType | null;
     phone: linkType | null;
     email: linkType | null;
+    twitter: linkType | null;
+    linkedin: linkType | null;
 }
