@@ -158,7 +158,7 @@ export const LinksSection = ({prev, next, fullForm}:{ prev?:number, next?:number
           { itemCategory.links?.map( (itemLink:any, indexLink) => (
             
             <Stack key={indexLink} sx={{ position: 'relative' }}>
-              <SavedLink getLinks={ getLinks } data={ itemLink } defaultCategories={ categoriesAutocomplete } zoneName={ zone.username }/>
+              <SavedLink getLinks={ getLinks } data={ itemLink } defaultCategories={ categoriesAutocomplete } zoneName={ zone.username } userWhatsapp={ zone?.socialLinks?.whatsapp }/>
             </Stack>
             
           ))}

@@ -13,7 +13,7 @@ import { LinkForm } from './LinkForm';
 import { CategoryItemType } from '../types/CategoryItemType';
 
 
-const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zoneName }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[], zoneName?:string }) => {
+const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zoneName, userWhatsapp }:{  getLinks?:any, data:any, disableEdit?:boolean, defaultCategories?:CategoryItemType[], zoneName?:string, userWhatsapp?:string }) => {
     const [ editMode, setEditMode ] = useState<boolean>( false );
 
     const {
@@ -123,6 +123,7 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zon
                         getLinks={ getLinks }
                         editingMode={ true }
                         setEditMode={ setEditMode }
+                        userWhatsapp={ userWhatsapp }
                     />
                 )
             }

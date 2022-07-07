@@ -354,7 +354,6 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                         />
                                     )}
                                 />
-                                
                             </Stack>
                             { errors.whatsapp && <Typography variant="caption" sx={{color:'red'}}>{errors.whatsapp.message }</Typography> }
                         </Grid>
