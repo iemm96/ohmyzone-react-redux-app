@@ -31,18 +31,19 @@ const DashboardLayout = () => {
             token = localStorage.getItem('token');
         }
 
-        if( token ) {
-            const result:any = await dispatch( startValidateJWT(token) );
+        if( token ) {
 
-            /*
-            dispatch( updateSubscription({
-                current: 
-            }));*/
-
-            if( result.success === false ) {
-                localStorage.removeItem('token');
-                navigate('/');
+            try {
+                const result:any = await dispatch( startValidateJWT( token ) );
+                console.log(result)
+                if( result?.success === false ) {
+                    localStorage.removeItem('token');
+                    navigate('/');
+                }
+            }catch (e) {
+                console.log(e);
             }
+
         }else{
             navigate('/');
         }

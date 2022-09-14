@@ -32,8 +32,8 @@ export const startValidateJWT = ( jwt:string ) => {
                 return false;
             }
         }catch(e:any){
-            
-            return e.response.data;
+
+            throw e;
         }
     
     }
@@ -65,7 +65,7 @@ export const startLogin = ( email:string, password:string ) => {
                 data.user?.hasVerifiedEmail
             ));
         }catch(e:any){
-            return e.response.data
+            throw e
         }
         
     }

@@ -170,9 +170,7 @@ export const ModalPremium = ({ handleModal, openModal, modalTitle, loading, hand
                                     (`Tu prueba gratuita termina el día ${ 
                                         format( new Date( subscription.activeUntil ), 'dd/MMMM/yyyy', { locale: es } ) 
                                     }`) : (
-                                        `Tu subscripción está activa hasta el día ${ 
-                                            format( new Date( subscription.activeUntil ), 'dd/MMMM/yyyy', { locale: es } ) 
-                                        }`
+                                        `¡Tu subscripción está activa!`
                                     )
                                 }
                             </Typography>

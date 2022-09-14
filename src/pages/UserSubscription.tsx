@@ -6,7 +6,7 @@ import CircularProgressComponent from "../components/CircularProgressComponent";
 import CurrentSubscription from "../components/CurrentSubscription";
 
 const UserSubscription = () => {
-    const { auth, subscription } = useSelector( (state:any) => state );
+    const { subscription } = useSelector( (state:any) => state );
     const theme = useTheme();
     const [ currentSubscription, setCurrentSubscription ] = useState<any>( null );
 

@@ -22,7 +22,6 @@ export const subscribe = async ( user:string, planName:"free" | "expired" | "pro
         data: {
             planName,
             user,
-            activeUntil,
             transactionUid
         }
     };

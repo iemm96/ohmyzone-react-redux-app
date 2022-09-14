@@ -99,13 +99,16 @@ const CurrentSubscription = ({ getLinks, data, disableEdit = false, defaultCateg
                                 { data?.plan?.nameToShow }
                             </Typography>
                             {
-                                data?.activeUntil && (
+                                data?.activeUntil ? (
                                     <Typography variant="subtitle2" color="text.secondary" component="div">
                                     {  `Activa hasta: ${format( new Date( data.activeUntil ), 'dd/MMMM/yyyy', { locale: es } )}` }
                                     </Typography>
+                                ) : (
+                                  <Typography variant="subtitle2">
+                                      Activa
+                                  </Typography>
                                 )
                             }
-  
                             </CardContent>
                         </Box>
                     </Card>
