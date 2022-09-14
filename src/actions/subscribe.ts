@@ -2,7 +2,7 @@ import axios, {AxiosRequestConfig, AxiosRequestHeaders} from "axios";
 
 const { REACT_APP_API_HOST } = process.env;
 
-export const subscribe = async ( user:string, planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", paypalSubscriptionId:String, transactionUid?:string  ) => {
+export const subscribe = async ( user:string, planName:"free" | "expired" | "proWithFreeTrial" | "proMonthly" | "proAnnual" | "proLifetime", paypalSubscriptionId?:string, transactionUid?:string, activeUntil?:Date ) => {
 
     const authToken = localStorage.getItem('token');
 

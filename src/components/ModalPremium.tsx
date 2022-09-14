@@ -73,7 +73,7 @@ export const useModalPremium = () => {
               })
 
               if( auth?.uid ) {
-                const result = await subscribe( auth.uid, "proWithFreeTrial", dateModified);
+                const result = await subscribe( auth.uid, "proWithFreeTrial", undefined, undefined, dateModified);
                 dispatch( updateSubscription( result.subscription ) );
                 dispatch( updatePlan( result.plan ) );
 
