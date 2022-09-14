@@ -30,24 +30,11 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
                 user,
               } );
 
-              let monthsToAdd:number = 0;
-              if( planName === 'proAnnual' ) {
-                monthsToAdd = 12
-              }
-
-              if( planName === 'proMonthly' ) {
-                monthsToAdd = 1
-              }
-
-              const dateModified = add(new Date(), {
-                months: monthsToAdd,
-              })
-
               const resultSubscribe = await subscribe(
                 user,
                 planName,
-                dateModified,
-                transaction.uid, 
+                data.subscriptionID,
+                transaction.uid,
               );
 
               console.log( 'resultSubscribe ', resultSubscribe );
