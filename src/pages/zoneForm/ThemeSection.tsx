@@ -43,11 +43,8 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
     const [ currentThemeState, setCurrentThemeState ] = useState<any>( null );
     const { openModal,
         handleModal,
-        handleDelete,
-        modalTitle,
-        setModalTitle,
-        setUid,
-        setImageUid } = useModalReplaceTheme('themes');
+        modalTitle
+    } = useModalReplaceTheme('themes');
     useEffect(() => {
         
         dispatch( 
@@ -118,10 +115,12 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
     const submitTheme = async () => {
         const theme = state.theme;
 
+        /*
+        //Validate if current themes counter is greater than maxThemesPerZone
         if ( state?.zone?.themesCounter >= state?.plan?.maxThemesPerZone ) {
             handleModal();
             return;
-        }
+        }*/
 
         setButtonSaveProperties((prev:any) => ({
             ...prev,
@@ -283,7 +282,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                                     setSearchOptions={ setSearchOptions }
                                     searchOptions={ searchOptions }
                                     loadingResults={ loadingResults }
-                                    fullForm={ fullForm }
+                                    fullForm={ fullForm }
                                     isPremium
                                 />
                                 {
@@ -310,7 +309,7 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
                             <FormNavigationButtons
                                 prev={ `/zones/edit/${prev}/${ state.zone.uid }` }
                                 next={ submitTheme }
-                                loading={ loading }
+                                loading={ loading }
                                 fullForm={ fullForm }
                                 buttonSaveProperties={ buttonSaveProperties }
                             />
