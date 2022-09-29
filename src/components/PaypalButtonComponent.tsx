@@ -37,8 +37,6 @@ const PaypalButtonComponent = ({planName, user }:{planName:"free" | "expired" | 
                 transaction.uid,
               );
 
-              console.log( 'resultSubscribe ', resultSubscribe );
-
               dispatch( updateSubscription(
                 resultSubscribe.subscription
               ) );

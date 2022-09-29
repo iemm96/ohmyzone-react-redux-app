@@ -21,7 +21,6 @@ const DashboardLayout = () => {
     },[ ui?.showModalPremium ])
 
     useEffect( ( ) => {
-        console.log( params );
         validateJWT( params?.token ).then();
     }, [ ] );
 
@@ -35,7 +34,6 @@ const DashboardLayout = () => {
 
             try {
                 const result:any = await dispatch( startValidateJWT( token ) );
-                console.log(result)
                 if( result?.success === false ) {
                     localStorage.removeItem('token');
                     navigate('/');

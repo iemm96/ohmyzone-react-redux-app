@@ -28,7 +28,6 @@ export const useModalCategory = ( currentCategoriesList:any ) => {
     
     const handleNewCategory = ( value:string ) => {
 
-        console.log('value ',value)
         const result = currentCategoriesList.find( (element:any) => element.title === value );
         if( !result ) {
             setNewCategory( value );

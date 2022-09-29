@@ -13,7 +13,6 @@ export const fetchFile = async (resource:string) => {
 
         if(response) {
             const buffer:any = Buffer.from(response.data, 'binary');
-            console.log(  response.headers["content-type"] );
             let dataBlob:Blob = new Blob([ buffer ]);
             let metadata = {
                 type: response.headers["content-type"]

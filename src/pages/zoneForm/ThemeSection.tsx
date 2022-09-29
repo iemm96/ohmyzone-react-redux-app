@@ -90,7 +90,6 @@ const ThemeSection = ({ prev, next, fullForm }:{ prev?:number, next?:number, ful
       event: React.MouseEvent<HTMLElement>,
       newMode: string,
     ) => {
-        console.log( event );
 
         if( !state.zone?.premiumFeatures ) {
             dispatch( updateZone({
