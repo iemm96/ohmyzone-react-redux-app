@@ -96,7 +96,7 @@ const SavedLink = ({ getLinks, data, disableEdit = false, defaultCategories, zon
                              data?.coverImg?.url && (
                                 <CardMedia
                                     component="img"
-                                    sx={{ width: 151 }}
+                                    sx={{ width: 151, height: 100, objectPosition: 'cover' }}
                                     image={ data.coverImg?.url ? data.coverImg.url : '' }
                                     alt="Link imagen"
                                 />
