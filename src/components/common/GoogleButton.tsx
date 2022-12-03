@@ -57,9 +57,8 @@ export const GoogleButton = ({signIn, loadingGoogle, setLoadingGoogle}:{signIn:a
             disabled={ loadingGoogle }
             sx={{
                 width: '100%',
-                backgroundColor: 'white',
-                border: '1px solid #4664F6',
-                color: '#4664F6',
+                border: '1px solid #8A9DF9',
+                color: '#8A9DF9',
                 padding: '14px 0',
                 borderRadius: 3.5,
                 textTransform: 'none'

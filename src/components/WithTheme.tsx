@@ -20,7 +20,7 @@ const Theme = (props:any) => {
     const [ mode, setMode ] = useState<PaletteMode>( 'dark' );
     const [ theme, setTheme ] = useState<any>(null);
     const defaultTheme:DefaultThemeType = {
-        primaryMainLight: '#4664F6',
+        primaryMainLight: '#8A9DF9',
         primaryMainDark: '#4664F6',
         secondaryMain: '#6EFAFB',
         backgroundLight: '#F8FAFF',

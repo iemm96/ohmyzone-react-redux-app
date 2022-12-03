@@ -7,9 +7,9 @@ export const defaultTheme = createTheme({
         },
     },
     palette: {
-        mode:'light',
+        mode:'dark',
         primary: {
-            light: '#000B57',
+            light: '#8A9DF9',
             main: '#4664F6',
             dark: '#0F0338'
         }
