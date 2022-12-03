@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { startLogin } from '../actions/auth';
+import { startLogin, startValidateJWT } from '../actions/auth';
 import { useEffect, useState } from 'react';
 import { transition, enteringFormTransition, inputTransition } from '../constants/transitions';
 import { inputLoginStyles } from '../styles/inputLoginStyles';
@@ -19,7 +19,7 @@ const Login = () => {
     const navigate = useNavigate();
     const { handleSubmit, control, formState: {errors}, setError } = useForm();
     const [ loading, setLoading ] = useState<boolean>(false);
-
+    const token = localStorage.getItem('token');
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -27,10 +27,20 @@ const Login = () => {
     },[ ]);
 
     useEffect(() => {
+        if(token) {
+          validateJWT(token).then();
+        }
+    },[ ]);
+
+    useEffect(() => {
         if( name ) {
           navigate('/dashboard');
         }
     },[ name ]);
+
+    const validateJWT = async (token:string) => {
+      await dispatch( startValidateJWT( token ) );
+    }
 
     const onSubmit = async (data: any) => {
         setLoading( true );
@@ -57,7 +67,6 @@ const Login = () => {
 
     return(
         <>
-           
           <ThemeProvider theme={ defaultTheme }>
             <Paper>
               <motion.div
