@@ -35,14 +35,22 @@ const Login = () => {
     const onSubmit = async (data: any) => {
         setLoading( true );
 
+        try {
           const result:any = await dispatch( startLogin( data.email, data.password ) );
-        
-          if(result?.type) {
-            setError( result.type , {
+          
+          if(result?.success === false ) {
+
+            const { type, msg } = result?.error?.data;
+            console.log( result?.error?.data );
+
+            setError( type ? type : 'email' , {
               type: "manual",
-              message: result.msg,
+              message: msg ? msg : 'Ocurrió un error al iniciar sesión',
             });
           }
+        } catch(e) {
+          console.log('e ', e );
+        }
           
         setLoading( false );
     };

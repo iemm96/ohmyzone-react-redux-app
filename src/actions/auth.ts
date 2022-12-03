@@ -65,9 +65,11 @@ export const startLogin = ( email:string, password:string ) => {
                 data.user?.hasVerifiedEmail
             ));
         }catch(e:any){
-            throw e
+            return {
+                success: false,
+                error: e.response
+            }
         }
-        
     }
 }
 
