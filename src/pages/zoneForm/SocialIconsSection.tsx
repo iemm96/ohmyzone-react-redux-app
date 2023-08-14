@@ -1,7 +1,7 @@
 import StyledSwitch from '../../styled/StyledSwitch';
 import TextField from '@mui/material/TextField';
 import { InputAdornment, Grid, Stack, useTheme, Typography } from '@mui/material';
-import { Call, Email, Facebook, Instagram, LinkedIn, Twitter, WhatsApp } from '@mui/icons-material';
+import { Call, Email, Facebook, Instagram, LinkedIn, Twitter, WhatsApp, YouTube } from "@mui/icons-material";
 import { useState, useEffect } from 'react';
 import { ContactOptionsType } from '../../types/ContactOptionsType';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -42,6 +42,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
         email: null,
         twitter: null,
         linkedin: null,
+        youtube: null,
     });
 
     useEffect(() => {
@@ -92,6 +93,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
         zone?.socialLinks?.tiktok && setValue( 'tiktok', zone?.socialLinks?.tiktok );
         zone?.socialLinks?.phone && setValue( 'phone', zone.socialLinks.phone );
         zone?.socialLinks?.facebook && setValue( 'facebook', zone?.socialLinks?.facebook );
+        zone?.socialLinks?.youtube && setValue( 'youtube', zone?.socialLinks?.youtube );
     }
 
     const onSubmit = async ( data:any ) => {
@@ -584,6 +586,62 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                 
                             </Stack>
                             { errors.tiktok && <Typography variant="caption" sx={{color:'red'}}>{errors.tiktok.message }</Typography>}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Stack direction="row" sx={{alignItems: 'center', justifyContent: 'space-between' }}>
+                                <StyledSwitch
+                                  onChange={ (e:React.ChangeEvent<HTMLInputElement>) => {
+                                      let val:any = e.target.checked ? '' : null;
+                                      setContactOptions({ ...contactOptions, youtube: val})
+                                      dispatch( updateZone({
+                                          ...zone,
+                                          socialLinks: {
+                                              ...contactOptions,
+                                              youtube: val
+                                          }
+                                      }));
+
+                                      clearErrors('youtube');
+                                  } }
+                                  checked={ contactOptions.youtube !== null }
+                                />
+                                <Controller
+                                  name="tiktok"
+                                  rules={{
+                                      required: contactOptions.youtube !== null ? 'Ingresa tu usuario de YouTube' : false
+                                  }}
+                                  control={ control }
+                                  render={ ({ field: { onChange, value } }) => (
+
+                                    <TextField
+                                      disabled={ contactOptions.youtube === null }
+                                      placeholder="Nombre de usuario de YouTube"
+                                      fullWidth
+                                      onChange={ onChange }
+                                      onBlur={ (e) => {
+                                          dispatch( updateZone({
+                                              ...zone,
+                                              socialLinks: {
+                                                  ...contactOptions,
+                                                  youtube: e.target.value
+                                              }
+                                          }));
+                                      } }
+                                      value={ value }
+                                      InputProps={{
+                                          startAdornment: (
+                                            <InputAdornment position="start">
+                                                { /* @ts-ignore */ }
+                                                <YouTube size={24} color={ contactOptions.youtube ? theme.palette.primary.main : "rgba(255,255,255,0.3)" }/>
+                                            </InputAdornment>
+                                          ),
+                                      }}
+                                    />
+                                  )}
+                                />
+
+                            </Stack>
+                            { errors.youtube && <Typography variant="caption" sx={{color:'red'}}>{errors.youtube.message }</Typography>}
                         </Grid>
                     </Grid>
                     <Box sx={{ mt: 8, mb: fullForm ? 10 : 4 }}>

@@ -12,4 +12,5 @@ export type ContactOptionsType = {
     email: linkType | null;
     twitter: linkType | null;
     linkedin: linkType | null;
+    youtube: linkType | null;
 }
