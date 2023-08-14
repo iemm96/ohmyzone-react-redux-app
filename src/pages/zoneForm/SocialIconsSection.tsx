@@ -606,7 +606,7 @@ const SocialIconsSection = ( {prev, next, fullForm}:{ prev?:number, next?:number
                                   checked={ contactOptions.youtube !== null }
                                 />
                                 <Controller
-                                  name="tiktok"
+                                  name="youtube"
                                   rules={{
                                       required: contactOptions.youtube !== null ? 'Ingresa tu usuario de YouTube' : false
                                   }}
